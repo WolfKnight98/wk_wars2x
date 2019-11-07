@@ -568,7 +568,7 @@ Citizen.CreateThread( function()
 		local pos = GetEntityCoords( RADAR.caughtEnt )
 		local speed = GetEntitySpeed( RADAR.caughtEnt )
 
-		DrawMarker( 28, pos.x, pos.y, pos.z + 6, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 0.5, 0.5, 3.0, 255, 255, 255, 255, false, true, 2, nil, nil, false )
+		DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
 
 		UTIL:DrawDebugText( 0.500, 0.700, 0.80, true, "Ent: " .. tostring( RADAR.caughtEnt ) .. "\nSpeed: " .. RADAR:GetVehSpeedFormatted( speed ) .. "mph" )
 
