@@ -78,14 +78,11 @@ RADAR.rayTraces = {
 	{ startVec = { x = 0.0,   y = 5.0 },  endVec = { x = 0.0,   y = 150.0 } },
 	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,  y = 150.0 } },
 	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,   y = 150.0 } }
-	--{ startVec = { x = -12.0, y = 25.0 }, endVec = { x = -12.0, y = 150.0 } },
-	--{ startVec = { x = 12.0,  y = 25.0 }, endVec = { x = 12.0,  y = 150.0 } }
 }
 
 RADAR.sorting = {
 	[1] = { name = "CLOSEST", func = function( a, b ) return a.dist < b.dist end }, 
 	[2] = { name = "FASTEST", func = function( a, b ) return a.speed > b.speed end }, 
-	--[3] = { name = "FASTEST & CLOSEST", func = function( a, b ) return math.ceil( a.speed ) > math.ceil( b.speed ) and a.dist < b.dist end }, 
 	[3] = { name = "LARGEST", func = function( a, b ) return a.size > b.size end } 
 }
 
@@ -163,10 +160,9 @@ end
 ------------------------------------------------------------------------]]--
 function RADAR:GetVehSpeedFormatted( speed )
 	if ( self.vars.speedType == "mph" ) then 
-		-- return GetEntitySpeed( veh ) * 2.236936
 		return math.ceil( speed * 2.236936 )
 	else 
-		return GetEntitySpeed( veh ) * 3.6
+		return math.ceil( speed * 3.6 )
 	end 
 end 
 
@@ -331,19 +327,17 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 end 
 
 function RADAR:CreateRayThread( vehs, from, startX, endX, endY )
-	--Citizen.CreateThread( function()
-		local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
-		local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
+	local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
+	local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
 
-		UTIL:DrawDebugLine( startP, endP )
+	UTIL:DrawDebugLine( startP, endP )
 
-		local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
+	local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
 
-		self:InsertCapturedVehicleData( hitVehs )
+	self:InsertCapturedVehicleData( hitVehs )
 
-		print( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
-		self:IncreaseRayTraceState()
-	--end )
+	print( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
+	self:IncreaseRayTraceState()
 end 
 
 function RADAR:RunControlManager()
