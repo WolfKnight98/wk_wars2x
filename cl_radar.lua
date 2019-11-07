@@ -83,7 +83,8 @@ RADAR.rayTraces = {
 RADAR.sorting = {
 	[1] = { name = "CLOSEST", func = function( a, b ) return a.dist < b.dist end }, 
 	[2] = { name = "FASTEST", func = function( a, b ) return a.speed > b.speed end }, 
-	[3] = { name = "LARGEST", func = function( a, b ) return a.size > b.size end } 
+	[3] = { name = "LARGEST", func = function( a, b ) return a.size > b.size end },
+	[4] = { name = "LARGEST & FASTEST", func = function( a, b ) return a.size > b.size and a.speed > b.speed end }
 }
 
 --[[------------------------------------------------------------------------
@@ -210,16 +211,26 @@ function RADAR:GetAllVehicles()
 	return t
 end 
 
+function RADAR:GetDynamicDataValue( key )
+	return self.vars.sphereSizes[key]
+end 
+
 function RADAR:DoesDynamicRadiusDataExist( key )
-	return self.vars.sphereSizes[key] ~= nil 
+	return self:GetDynamicDataValue( key ) ~= nil 
 end
 
-function RADAR:InsertDynamicRadiusData( key, radius, actualSize )
-	if ( self.vars.sphereSizes[key] == nil ) then 
-		self.vars.sphereSizes[key] = {}
+function RADAR:SetDynamicRadiusKey( key, t )
+	self.vars.sphereSizes[key] = t
+end 
 
-		self.vars.sphereSizes[key].radius = radius 
-		self.vars.sphereSizes[key].actualSize = actualSize
+function RADAR:InsertDynamicRadiusData( key, radius, actualSize )
+	if ( self:GetDynamicDataValue( key ) == nil ) then 
+		local tbl = {}
+
+		tbl.radius = radius 
+		tbl.actualSize = actualSize
+
+		self:SetDynamicRadiusKey( key, tbl )
 	end 
 end 
 
@@ -417,8 +428,6 @@ function RADAR:Main()
 			self:ResetRadarStage()
 			self:ResetRayTraceState()
 		end 
-
-		--Wait( 1000 )
 	end 
 end 
 
@@ -513,12 +522,6 @@ Citizen.CreateThread( function()
 	end 
 end )
 
--- Citizen.SetTimeout( 3000, function()
--- 	local vehs = RADAR:GetAllVehicles()
-
--- 	RADAR:SetVehiclePool( vehs )
--- end)
-
 -- Main thread
 Citizen.CreateThread( function()
 	RADAR:CacheNumOfRays()
@@ -551,4 +554,4 @@ Citizen.CreateThread( function()
 
 		Citizen.Wait( 0 )
 	end 
-end)
+end )
