@@ -8,7 +8,7 @@
 local next = next 
 local dot = dot 
 local table = table 
-local type = type 
+local type = type
 
 --[[------------------------------------------------------------------------
 	Resource Rename Fix 
@@ -58,9 +58,9 @@ RADAR.vars =
 	vehiclePool = {}, 
 
 	-- Radar stage, this is used to tell the system what it should currently be doing, the stages are:
-	--    - 0 = gathering vehicles hit by the radar
+	--    - 0 = Gathering vehicles hit by the radar
 	--    - 1 = Filtering the vehicles caught 
-	--    - 3 = Calculating what vehicle speed to show based on modes
+	--    - 2 = Calculating what vehicle speed to show based on modes
 	radarStage = 0,
 
 	-- Ray stage
@@ -77,7 +77,7 @@ RADAR.caughtEnt = 0
 RADAR.rayTraces = {
 	{ startVec = { x = 0.0,   y = 5.0 },  endVec = { x = 0.0,   y = 150.0 } },
 	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,  y = 150.0 } },
-	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,   y = 150.0 } },
+	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,   y = 150.0 } }
 	--{ startVec = { x = -12.0, y = 25.0 }, endVec = { x = -12.0, y = 150.0 } },
 	--{ startVec = { x = 12.0,  y = 25.0 }, endVec = { x = 12.0,  y = 150.0 } }
 }
