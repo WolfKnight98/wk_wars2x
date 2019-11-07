@@ -15,7 +15,7 @@ local type = type
 ------------------------------------------------------------------------]]--
 Citizen.CreateThread( function()
 	-- Wait for a short period of time to give the resource time to load
-	Citizen.Wait( 5000 )
+	Citizen.Wait( 10000 )
 
 	-- Get the name of the resource, for example the default name is 'wk_wrs2'
 	local resourceName = GetCurrentResourceName()
@@ -98,13 +98,13 @@ RADAR.sorting = {
 		func = function( a, b ) 
 			if ( a.size > b.size + 2.0 ) then 
 				return true 
-			elseif ( a.size - b.size <= 2.0 ) then 
+			elseif ( a.size - b.size <= 1.0 ) then 
 				return false 
 			end 
 
 			return a.speed > b.speed 
 		end 
-	}
+	} 
 }
 
 --[[------------------------------------------------------------------------
