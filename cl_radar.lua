@@ -145,6 +145,14 @@ function RADAR:CacheNumOfRays()
 	self.vars.numberOfRays = #self.rayTraces
 end 
 
+function RADAR:GetSortModeText()
+	return self.sorting[self.vars.sortMode].name
+end 
+
+function RADAR:GetSortModeFunc()
+	return self.sorting[self.vars.sortMode].func
+end 
+
 function RADAR:ToggleSortMode()
 	if ( self.vars.sortMode < #self.sorting ) then 
 		self.vars.sortMode = self.vars.sortMode + 1
@@ -152,7 +160,7 @@ function RADAR:ToggleSortMode()
 		self.vars.sortMode = 1 
 	end 
 
-	UTIL:Notify( "Radar mode set to " .. self.sorting[self.vars.sortMode].name )
+	UTIL:Notify( "Radar mode set to " .. self:GetSortModeText() )
 end 
 
 --[[------------------------------------------------------------------------
@@ -394,10 +402,9 @@ function RADAR:Main()
 			local caughtVehs = self:GetCapturedVehicles()
 
 			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
-				-- table.sort( caughtVehs, RADAR.sorting.fastest )
-				table.sort( caughtVehs, self.sorting[self.vars.sortMode].func )
+				table.sort( caughtVehs, self:GetSortModeFunc() )
 
-				print( "Printing table for sort mode " .. self.sorting[self.vars.sortMode].name )
+				print( "Printing table for sort mode " .. self:GetSortModeText() )
 				for k, v in pairs( caughtVehs ) do 
 					print( tostring( k ) .. " - " .. tostring( v.veh ) .. " - " .. tostring( v.relPos ) .. " - " .. tostring( v.dist ) .. " - " .. tostring( v.speed ) .. " - " .. tostring( v.size ) )
 				end
