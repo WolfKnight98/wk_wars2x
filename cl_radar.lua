@@ -39,11 +39,25 @@ RADAR.vars =
 	-- Antennas 
 	antennas = {
 		front = {
-
+			xmit = false,
+			mode = 0, -- 0 = off, 1 = same, 2 = opp, 3 = same and opp 
+			speed = 0,
+			dir = nil, 
+			fastMode = 1, -- 1 = polling, 2 = lock on fast
+			fastSpeed = 0, 
+			fastDir = nil, 
+			fastLocked = false
 		}, 
 
 		back = {
-
+			xmit = false, 
+			mode = 0, -- 0 = off, 1 = same, 2 = opp, 3 = same and opp 
+			speed = 0,
+			dir = nil, 
+			fastMode = 1, -- 1 = polling, 2 = lock on fast
+			fastSpeed = 0, 
+			fastDir = nil, 
+			fastLocked = false
 		}
 	}, 
 
