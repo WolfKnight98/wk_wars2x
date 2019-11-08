@@ -366,17 +366,19 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 end 
 
 function RADAR:CreateRayThread( vehs, from, startX, endX, endY )
-	local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
-	local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
+	Citizen.CreateThread( function()
+		local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
+		local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
 
-	UTIL:DrawDebugLine( startP, endP )
+		UTIL:DrawDebugLine( startP, endP )
 
-	local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
+		local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
 
-	self:InsertCapturedVehicleData( hitVehs )
+		self:InsertCapturedVehicleData( hitVehs )
 
-	print( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
-	self:IncreaseRayTraceState()
+		print( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
+		self:IncreaseRayTraceState()
+	end )
 end 
 
 function RADAR:RunControlManager()
