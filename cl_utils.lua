@@ -98,6 +98,12 @@ function UTIL:DrawDebugLine( startP, endP, col )
 	end
 end 
 
+function UTIL:DebugPrint( text )
+	if ( RADAR.config.debug_mode ) then 
+		print( text )
+	end 
+end 
+
 UTIL.car_colours = {
 	[ "0" ] = "Metallic Black",
 	[ "1" ] = "Metallic Graphite Black",

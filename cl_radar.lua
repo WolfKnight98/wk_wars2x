@@ -376,7 +376,7 @@ function RADAR:CreateRayThread( vehs, from, startX, endX, endY )
 
 		self:InsertCapturedVehicleData( hitVehs )
 
-		print( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
+		UTIL:DebugPrint( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
 		self:IncreaseRayTraceState()
 	end )
 end 
@@ -410,26 +410,26 @@ function RADAR:Main()
 		-- First stage of the radar - get all of the vehicles hit by the radar
 		if ( self:GetRadarStage() == 0 ) then 
 			if ( self:GetRayTraceState() == 0 ) then 
-				print( "Radar stage at 0, starting ray trace." )
+				UTIL:DebugPrint( "Radar stage at 0, starting ray trace." )
 				local vehs = self:GetVehiclePool()
 
-				print( "Resetting captured vehicles and ray trace state." )
+				UTIL:DebugPrint( "Resetting captured vehicles and ray trace state." )
 				self:ResetCapturedVehicles()
 				self:ResetRayTraceState()
 
-				print( "Creating ray threads." )
+				UTIL:DebugPrint( "Creating ray threads." )
 				for _, v in pairs( self.rayTraces ) do 
 					self:CreateRayThread( vehs, plyVeh, v.startVec.x, v.endVec.x, v.endVec.y )
 				end 
 
-				print( "Reached end of stage 0." )
-				print( "Stage = " .. tostring( self:GetRadarStage() ) .. "\tTrace state = " .. tostring( self:GetRayTraceState() ) )
+				UTIL:DebugPrint( "Reached end of stage 0." )
+				UTIL:DebugPrint( "Stage = " .. tostring( self:GetRadarStage() ) .. "\tTrace state = " .. tostring( self:GetRayTraceState() ) )
 			elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
-				print( "Ray traces finished, increasing radar stage." )
+				UTIL:DebugPrint( "Ray traces finished, increasing radar stage." )
 				self:IncreaseRadarStage()
 			end 
 		elseif ( self:GetRadarStage() == 1 ) then 
-			print( "Radar stage now 1." )
+			UTIL:DebugPrint( "Radar stage now 1." )
 
 			self:FilterCapturedVehicles()
 			local caughtVehs = self:GetCapturedVehicles()
@@ -437,9 +437,9 @@ function RADAR:Main()
 			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
 				table.sort( caughtVehs, self:GetSortModeFunc() )
 
-				print( "Printing table for sort mode " .. self:GetSortModeText() )
+				UTIL:DebugPrint( "Printing table for sort mode " .. self:GetSortModeText() )
 				for k, v in pairs( caughtVehs ) do 
-					print( tostring( k ) .. " - " .. tostring( v.veh ) .. " - " .. tostring( v.relPos ) .. " - " .. tostring( v.dist ) .. " - " .. tostring( v.speed ) .. " - " .. tostring( v.size ) )
+					UTIL:DebugPrint( tostring( k ) .. " - " .. tostring( v.veh ) .. " - " .. tostring( v.relPos ) .. " - " .. tostring( v.dist ) .. " - " .. tostring( v.speed ) .. " - " .. tostring( v.size ) )
 				end
 
 				self.caughtEnt = caughtVehs[1].veh
@@ -451,86 +451,6 @@ function RADAR:Main()
 			self:ResetRayTraceState()
 		end 
 	end 
-end 
-
-function RADAR:Mainold()
-	-- Get the local player's ped and store it in a variable 
-	local ped = GetPlayerPed( -1 )
-
-	-- As we only want the radar to work when a player is sitting in a
-	-- vehicle, we run that check first
-	if ( IsPedSittingInAnyVehicle( ped ) ) then 
-		-- Get the vehicle the player is sitting in 
-		local vehicle = GetVehiclePedIsIn( ped, false )
-
-		UTIL:DrawDebugText( 0.50, 0.020, 0.60, true, "Found player vehicle: " .. tostring( vehicle ), 255, 255, 255, 255 )
-
-		-- Check to make sure the player is in the driver's seat, and also 
-		-- that the vehicle has a class of VC_EMERGENCY (18)
-		if ( GetPedInVehicleSeat( vehicle, -1 ) == ped --[[ and GetVehicleClass( vehicle ) == 18 ]] ) then 
-			local vehicleSpeed = UTIL:Round( self:GetVehSpeed( vehicle ), 0 )
-			local vehicleHeading = UTIL:Round( GetEntityHeading( vehicle ), 0 )
-
-			UTIL:DrawDebugText( 0.50, 0.060, 0.60, true, "Self speed: " .. tostring( vehicleSpeed ), 255, 255, 255, 255 )
-
-			local vehiclePos = GetEntityCoords( vehicle, true )
-			-- local edge = GetOffsetFromEntityInWorldCoords( vehicle, 20.0, 50.0, 0.0 ) 
-		   
-			local newX = UTIL:Round( vehiclePos.x, 0 )
-			local newY = UTIL:Round( vehiclePos.y, 0 )
-			local newZ = UTIL:Round( vehiclePos.z, 0 )
-
-			UTIL:DrawDebugText( 0.50, 0.100, 0.60, true, "Vehicle X: " .. tostring( newX ) .. "  Vehicle Y: " .. tostring( newY ) .. " Vehicle Z: " .. tostring( newZ ), 255, 255, 255, 255 )
-
-			local model = GetEntityModel( vehicle )
-			local min, max = GetModelDimensions( model )
-			local format = "Min X: " .. tostring( min.x ) .. " Min Y: " .. tostring( min.y ) .. " Min Z: " .. tostring( min.z )
-			local format2 = "Max X: " .. tostring( max.x ) .. " Max Y: " .. tostring( max.y ) .. " Max Z: " .. tostring( max.z )
-
-			UTIL:DrawDebugText( 0.50, 0.180, 0.60, true, "Model: " .. tostring( model ), 255, 255, 255, 255 )
-			UTIL:DrawDebugText( 0.50, 0.220, 0.60, true, format, 255, 255, 255, 255 )
-			UTIL:DrawDebugText( 0.50, 0.260, 0.60, true, format2, 255, 255, 255, 255 )
-
-			for veh in EnumerateVehicles() do
-				if ( GetEntitySpeed( veh ) > 1.0 and veh ~= vehicle ) then 
-					local aiVehHeading = UTIL:Round( GetEntityHeading( veh ), 0 )
-					local sameHeading = UTIL:IsEntityInMyHeading( vehicleHeading, aiVehHeading, 45 )
-
-					if ( sameHeading ) then 
-						local mdl = GetEntityModel( veh )
-
-						if ( IsThisModelACar( mdl ) or IsThisModelABike( mdl ) or IsThisModelAQuadbike( mdl ) ) then 
-							local bounds = getBoundingBox( veh )	
-							local boundsDrawable = getBoundingBoxDrawable( bounds )
-							drawBoundingBox( veh, boundsDrawable )
-						end
-					end
-				end
-			end
-
-			-- self:RayTraceFromVeh( vehicle )
-
-			-- local newPos = GetOffsetFromEntityInWorldCoords( vehicle, 0.0, 10.0, 0.0 )
-
-			-- UTIL:DrawSphere( newPos.x, newPos.y, newPos.z, 6.0, 128, 255, 0, 0.15 )
-
-			-- local ranVeh = GetRandomVehicleInSphere( newPos.x, newPos.y, newPos.z, 6.0, 0, 23 )
-
-			-- UTIL:DrawDebugText( 0.50, 0.140, 0.60, true, "Found random vehicle: " .. tostring( ranVeh ), 255, 255, 255, 255 )
-
-			-- if ( DoesEntityExist( ranVeh ) and IsEntityAVehicle( ranVeh ) ) then 
-			-- 	local targetPos = GetEntityCoords( ranVeh, true )
-			-- 	DrawMarker(2, targetPos.x, targetPos.y, targetPos.z + 6, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 2.0, 2.0, 2.0, 255, 128, 0, 50, false, true, 2, nil, nil, false)
-			-- end
-
-			-- begin bubble test 
-			-- for i = 1, 5 do 
-			-- 	local newPos = GetOffsetFromEntityInWorldCoords( vehicle, 0.0, i * 10.0, 0.0 )
-			-- 	-- UTIL:DrawSphere( newPos1.x, newPos1.y, newPos1.z, 2.0, 128, 255, 20, 0.4 )
-			-- 	DrawMarker( 28, newPos.x, newPos.y, newPos.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, i * 2.0, i * 2.0, 0.5, 0, 250, 0, 200, false, true, 2, false, false, false, false )
-			-- end
-		end
-	end
 end 
 
 -- Update the vehicle pool every 3 seconds
@@ -550,7 +470,6 @@ Citizen.CreateThread( function()
 
 	while ( true ) do
 		RADAR:Main()
-		-- RADAR:Test()
 
 		Citizen.Wait( 50 )
 	end
