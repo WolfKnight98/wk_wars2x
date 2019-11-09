@@ -23,8 +23,7 @@ Citizen.CreateThread( function()
 	-- Get the name of the resource, for example the default name is 'wk_wrs2'
 	local resourceName = GetCurrentResourceName()
 
-	-- Send a message through the NUI system to the JavaScript file to 
-	-- give the name of the resource 
+	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
 	SendNUIMessage( { resourcename = resourceName } )
 end )
 
@@ -37,60 +36,60 @@ RADAR.vars =
 	patrolSpeed = 0,
 
 	-- The speed type, this is used when converting speeds to a readable format
-	-- Either "mph" or "kmh"
+	-- Either "mph" or "kmh", can be toggle in-game 
 	speedType = "mph",
 
 	-- Antennas, this table contains all of the data needed for operation of the front and rear antennas 
 	antennas = {
 		-- Variables for the front antenna 
-		front = {
-			-- Xmit, whether the antenna is on or off
-			-- true of false
-			xmit = false,
-
-			-- Mode, what the front
-			mode = 0, -- 0 = off, 1 = same, 2 = opp, 3 = same and opp 
-			speed = 0,
-			dir = nil, 
-			fastMode = 1, -- 1 = polling, 2 = lock on fast
-			fastSpeed = 0, 
-			fastDir = nil, 
-			fastLocked = false
+		[ "front" ] = {
+			xmit = false,		-- Whether the antenna is on or off
+			mode = 0,			-- Current antenna mode, 0 = off, 1 = same, 2 = opp, 3 = same and opp 
+			speed = 0,			-- Speed of the vehicle caught by the front antenna 
+			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
+			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
+			fastSpeed = 0, 		-- Speed of the fastest vehicle caught by the front antenna
+			fastDir = nil, 		-- Direction the fastest vehicle is going, 0 = towards, 1 = away  
+			fastLocked = false	-- Whether the fast speed is locked or not 
 		}, 
 
-		back = {
-			xmit = false, 
-			mode = 0, -- 0 = off, 1 = same, 2 = opp, 3 = same and opp 
-			speed = 0,
-			dir = nil, 
-			fastMode = 1, -- 1 = polling, 2 = lock on fast
-			fastSpeed = 0, 
-			fastDir = nil, 
-			fastLocked = false
+		[ "rear" ] = {
+			xmit = false,		-- Whether the antenna is on or off
+			mode = 0,			-- Current antenna mode, 0 = off, 1 = same, 2 = opp, 3 = same and opp 
+			speed = 0,			-- Speed of the vehicle caught by the front antenna 
+			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
+			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
+			fastSpeed = 0, 		-- Speed of the fastest vehicle caught by the front antenna
+			fastDir = nil, 		-- Direction the fastest vehicle is going, 0 = towards, 1 = away  
+			fastLocked = false	-- Whether the fast speed is locked or not 
 		}
 	}, 
 
+	-- Sort mode, defines the table position for RADAR.sorting   
 	sortMode = 1, 
 
+	-- The maximum distance that the radar system's ray traces can go 
 	maxCheckDist = 300.0,
 
-	-- Cached dynamic sphere sizes 
+	-- Cached dynamic vehicle sphere sizes, automatically populated when the system is running 
 	sphereSizes = {}, 
 
-	-- Vehicle pool 
+	-- Vehicle pool, automatically populated when the system is running, holds all of the current
+	-- vehicle IDs for the player using entity enumeration (see cl_utils.lua) 
 	vehiclePool = {}, 
 
 	-- Radar stage, this is used to tell the system what it should currently be doing, the stages are:
-	--    - 0 = Gathering vehicles hit by the radar
-	--    - 1 = Filtering the vehicles caught 
-	--    - 2 = Calculating what vehicle speed to show based on modes and settings
+	--    - 0 = Gathering vehicles hit by the rays 
+	--    - 1 = Filtering the vehicles caught (removing duplicates, etc)
+	--    - 2 = Calculating what needs to be shown to the user based on modes and settings
 	--    - 3 = Sending all required data across to the NUI system for display 
 	radarStage = 0,
 
-	-- Ray stage
+	-- Ray trace state, this is used so the radar stage doesn't progress to the next stage unless 
+	-- all of the ray trace threads have completed 
 	rayTraceState = 0,
 
-	-- Number of rays
+	-- Number of ray traces, automaticaally cached when the system first runs 
 	numberOfRays = 0
 }
 
@@ -98,12 +97,17 @@ RADAR.vars =
 RADAR.capturedVehicles = {}
 RADAR.caughtEnt = nil 
 
+-- These vectors are used in the custom ray tracing system 
 RADAR.rayTraces = {
-	{ startVec = { x = 0.0,   y = 5.0 },  endVec = { x = 0.0,   y = 150.0 } },
-	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,  y = 150.0 } },
-	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,   y = 150.0 } }
+	{ startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,  y = 150.0 } },
+	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0, y = 150.0 } },
+	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,  y = 150.0 } }
 }
 
+-- Each of these are used for sorting the captured vehicle data, depending on what the 
+-- player has the mode set to, dictates what sorting function to use. The name is just the 
+-- name of the mode that is used to let the user know what mode it is, and the func is the
+-- function used in table.sort()
 RADAR.sorting = {
 	[1] = { 
 		name = "CLOSEST", 
@@ -132,26 +136,14 @@ RADAR.sorting = {
 }
 
 --[[------------------------------------------------------------------------
-	Radar variable functions  
+	Radar setters and getters, other functions  
 ------------------------------------------------------------------------]]--
-function RADAR:SetPatrolSpeed( speed )
-	if ( type( speed ) == "number" ) then 
-		self.vars.patrolSpeed = speed
-	end
-end
-
-function RADAR:GetPatrolSpeed()
+function RADAR:GetPatrolSpeed()	
 	return self.vars.patrolSpeed
 end 
 
-function RADAR:SetVehiclePool( pool )
-	if ( type( pool ) == "table" ) then 
-		self.vars.vehiclePool = pool 
-	end
-end 
-
 function RADAR:GetVehiclePool()
-	return self.vars.vehiclePool 
+	return self.vars.vehiclePool
 end 
 
 function RADAR:GetMaxCheckDist()
@@ -160,6 +152,88 @@ end
 
 function RADAR:GetRayTraceState()
 	return self.vars.rayTraceState
+end
+
+function RADAR:GetRadarStage()
+	return self.vars.radarStage
+end
+
+function RADAR:GetNumOfRays()
+	return self.vars.numberOfRays
+end
+
+function RADAR:GetCapturedVehicles()
+	return self.capturedVehicles
+end
+
+function RADAR:SetPatrolSpeed( speed )
+	if ( type( speed ) == "number" ) then 
+		self.vars.patrolSpeed = speed
+	end
+end
+
+function RADAR:ToggleAntenna( ant )
+	self.vars.antennas.[ant].xmit = not self.vars.antennas.[ant].xmit 
+end 
+
+function RADAR:SetAntennaMode( ant, mode )
+	if ( type( mode ) == "number" ) then 
+		if ( mode >= 0 and mode <= 3 ) then 
+			self.vars.antennas.[ant].mode = mode 
+		end 
+	end 
+end 
+
+function RADAR:SetAntennaSpeed( ant, speed ) 
+	if ( type( speed ) == "number" ) then 
+		if ( speed >= 0 and speed <= 999 ) then 
+			self.vars.antennas.[ant].speed = speed
+		end 
+	end 
+end 
+
+function RADAR:SetAntennaDir( ant, dir )
+	if ( type( dir ) == "number" ) then 
+		if ( dir == 0 or dir == 1 ) then 
+			self.vars.antennas.[ant].dir = dir 
+		end 
+	end 
+end 
+
+function RADAR:SetAntennaFastMode( ant, mode )
+	if ( type( mode ) == "number" ) then 
+		if ( mode == 1 or mode == 2 ) then 
+			self.vars.antennas.[ant].fastMode = mode 
+		end 
+	end 
+end 
+
+function RADAR:SetAntennaFastSpeed( ant, speed ) 
+	if ( type( speed ) == "number" ) then 
+		if ( speed >= 0 and speed <= 999 ) then 
+			self.vars.antennas.[ant].fastSpeed = speed
+		end 
+	end 
+end 
+
+function RADAR:SetAntennaFastDir( ant, dir )
+	if ( type( dir ) == "number" ) then 
+		if ( dir == 0 or dir == 1 ) then 
+			self.vars.antennas.[ant].fastDir = dir 
+		end 
+	end 
+end 
+
+function RADAR:SetAntennaFastLock( ant, state )
+	if ( type( state ) == "boolean" ) then 
+		self.vars.antennas.[ant].fastLocked = state 
+	end 
+end 
+
+function RADAR:SetVehiclePool( pool )
+	if ( type( pool ) == "table" ) then 
+		self.vars.vehiclePool = pool 
+	end
 end 
 
 function RADAR:IncreaseRayTraceState()
@@ -170,20 +244,12 @@ function RADAR:ResetRayTraceState()
 	self.vars.rayTraceState = 0
 end 
 
-function RADAR:GetRadarStage()
-	return self.vars.radarStage
-end
-
 function RADAR:IncreaseRadarStage()
 	self.vars.radarStage = self.vars.radarStage + 1
 end 
 
 function RADAR:ResetRadarStage()
 	self.vars.radarStage = 0
-end 
-
-function RADAR:GetNumOfRays()
-	return self.vars.numberOfRays
 end 
 
 function RADAR:CacheNumOfRays()
@@ -196,7 +262,7 @@ end
 
 function RADAR:GetSortModeFunc()
 	return self.sorting[self.vars.sortMode].func
-end 
+end
 
 function RADAR:ToggleSortMode()
 	if ( self.vars.sortMode < #self.sorting ) then 
@@ -230,10 +296,6 @@ function RADAR:InsertCapturedVehicleData( t )
 		end
 	end 
 end 
-
-function RADAR:GetCapturedVehicles()
-	return self.capturedVehicles
-end
 
 function RADAR:FilterCapturedVehicles()
 	for k, vehTable in pairs( self.capturedVehicles ) do 
