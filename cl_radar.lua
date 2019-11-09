@@ -173,13 +173,13 @@ function RADAR:SetPatrolSpeed( speed )
 end
 
 function RADAR:ToggleAntenna( ant )
-	self.vars.antennas.[ant].xmit = not self.vars.antennas.[ant].xmit 
+	self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
 end 
 
 function RADAR:SetAntennaMode( ant, mode )
 	if ( type( mode ) == "number" ) then 
 		if ( mode >= 0 and mode <= 3 ) then 
-			self.vars.antennas.[ant].mode = mode 
+			self.vars.antennas[ant].mode = mode 
 		end 
 	end 
 end 
@@ -187,7 +187,7 @@ end
 function RADAR:SetAntennaSpeed( ant, speed ) 
 	if ( type( speed ) == "number" ) then 
 		if ( speed >= 0 and speed <= 999 ) then 
-			self.vars.antennas.[ant].speed = speed
+			self.vars.antennas[ant].speed = speed
 		end 
 	end 
 end 
@@ -195,7 +195,7 @@ end
 function RADAR:SetAntennaDir( ant, dir )
 	if ( type( dir ) == "number" ) then 
 		if ( dir == 0 or dir == 1 ) then 
-			self.vars.antennas.[ant].dir = dir 
+			self.vars.antennas[ant].dir = dir 
 		end 
 	end 
 end 
@@ -203,7 +203,7 @@ end
 function RADAR:SetAntennaFastMode( ant, mode )
 	if ( type( mode ) == "number" ) then 
 		if ( mode == 1 or mode == 2 ) then 
-			self.vars.antennas.[ant].fastMode = mode 
+			self.vars.antennas[ant].fastMode = mode 
 		end 
 	end 
 end 
@@ -211,7 +211,7 @@ end
 function RADAR:SetAntennaFastSpeed( ant, speed ) 
 	if ( type( speed ) == "number" ) then 
 		if ( speed >= 0 and speed <= 999 ) then 
-			self.vars.antennas.[ant].fastSpeed = speed
+			self.vars.antennas[ant].fastSpeed = speed
 		end 
 	end 
 end 
@@ -219,14 +219,14 @@ end
 function RADAR:SetAntennaFastDir( ant, dir )
 	if ( type( dir ) == "number" ) then 
 		if ( dir == 0 or dir == 1 ) then 
-			self.vars.antennas.[ant].fastDir = dir 
+			self.vars.antennas[ant].fastDir = dir 
 		end 
 	end 
 end 
 
 function RADAR:SetAntennaFastLock( ant, state )
 	if ( type( state ) == "boolean" ) then 
-		self.vars.antennas.[ant].fastLocked = state 
+		self.vars.antennas[ant].fastLocked = state 
 	end 
 end 
 

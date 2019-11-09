@@ -402,8 +402,8 @@ function RADAR:Test()
 
 		-- Check the vehicle actually exists and that the player is in the driver's seat
 		if ( DoesEntityExist( plyVeh ) and GetPedInVehicleSeat( plyVeh, -1 ) ) then 
-			local startPoint = GetOffsetFromEntityInWorldCoords( plyVeh, 0.0, -5.0, 0.0 )
-			local endPoint = GetOffsetFromEntityInWorldCoords( plyVeh, 0.0, -50.0, 1.0 )
+			local startPoint = GetOffsetFromEntityInWorldCoords( plyVeh, 0.0, 5.0, 0.0 )
+			local endPoint = GetOffsetFromEntityInWorldCoords( plyVeh, 0.0, 50.0, 1.0 )
 			DrawLine( startPoint, endPoint, 0, 255, 0, 255 )
 
 			--for veh in EnumerateVehicles() do
