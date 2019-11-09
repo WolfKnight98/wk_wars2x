@@ -317,6 +317,42 @@ function RADAR:GetAllVehicles()
 	return t
 end 
 
+function RADAR:GetFastestFrontAndRear()
+	local t = self.capturedVehicles
+	table.sort( t, self.sorting[2].func )
+
+	local vehs = { front = nil, rear = nil }
+
+	for i = 1, -1, 2 do 
+		for k, v in pairs( t ) do 
+			if ( v.relPos == i ) then 
+				if ( i == 1 ) then vehs.front = v else vehs.rear = v end 
+				return 
+			end 
+		end 
+	end 
+end 
+
+--[[
+	TEST!
+
+function RADAR:GetVehiclesForAntenna()
+	local vehs = { front = nil, frontFast = nil, rear = nil, rearFast = nil }
+
+	local t = self.capturedVehicles
+	table.sort( t, self.sorting[2].func )
+
+	-- 1 = front, -1 = rear
+	for i = 1, -1, -2 do 
+		local c = 1 
+
+		for k, v in pairs( self.capturedVehicles ) do 
+			if ( v.relPos == i and c ~= 2 ) then 
+				vehs
+		end 
+	end 
+end ]]
+
 function RADAR:GetDynamicDataValue( key )
 	return self.vars.sphereSizes[key]
 end 
