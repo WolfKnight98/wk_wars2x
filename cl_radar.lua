@@ -9,9 +9,12 @@ local next = next
 local dot = dot 
 local table = table 
 local type = type
+local tostring = tostring
+local math = math 
 
 --[[------------------------------------------------------------------------
-	Resource Rename Fix 
+	Resource Rename Fix - for those muppets who rename the resource and 
+	complain that the NUI aspect doesn't work!
 ------------------------------------------------------------------------]]--
 Citizen.CreateThread( function()
 	-- Wait for a short period of time to give the resource time to load
@@ -30,16 +33,22 @@ end )
 ------------------------------------------------------------------------]]--
 RADAR.vars = 
 {
-	-- Player's vehicle speed 
+	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
 	patrolSpeed = 0,
 
-	-- The speed type
+	-- The speed type, this is used when converting speeds to a readable format
+	-- Either "mph" or "kmh"
 	speedType = "mph",
 
-	-- Antennas 
+	-- Antennas, this table contains all of the data needed for operation of the front and rear antennas 
 	antennas = {
+		-- Variables for the front antenna 
 		front = {
+			-- Xmit, whether the antenna is on or off
+			-- true of false
 			xmit = false,
+
+			-- Mode, what the front
 			mode = 0, -- 0 = off, 1 = same, 2 = opp, 3 = same and opp 
 			speed = 0,
 			dir = nil, 
@@ -74,7 +83,8 @@ RADAR.vars =
 	-- Radar stage, this is used to tell the system what it should currently be doing, the stages are:
 	--    - 0 = Gathering vehicles hit by the radar
 	--    - 1 = Filtering the vehicles caught 
-	--    - 2 = Calculating what vehicle speed to show based on modes
+	--    - 2 = Calculating what vehicle speed to show based on modes and settings
+	--    - 3 = Sending all required data across to the NUI system for display 
 	radarStage = 0,
 
 	-- Ray stage
@@ -86,7 +96,7 @@ RADAR.vars =
 
 -- Table to store entity IDs of captured vehicles 
 RADAR.capturedVehicles = {}
-RADAR.caughtEnt = 0 
+RADAR.caughtEnt = nil 
 
 RADAR.rayTraces = {
 	{ startVec = { x = 0.0,   y = 5.0 },  endVec = { x = 0.0,   y = 150.0 } },
@@ -456,9 +466,9 @@ function RADAR:Main()
 					UTIL:DebugPrint( tostring( k ) .. " - " .. tostring( v.veh ) .. " - " .. tostring( v.relPos ) .. " - " .. tostring( v.dist ) .. " - " .. tostring( v.speed ) .. " - " .. tostring( v.size ) )
 				end
 
-				self.caughtEnt = caughtVehs[1].veh
+				self.caughtEnt = caughtVehs[1]
 			else
-				self.caughtEnt = 0
+				self.caughtEnt = nil
 			end
 
 			self:ResetRadarStage()
@@ -500,12 +510,24 @@ end )
 
 Citizen.CreateThread( function()
 	while ( true ) do
-		local pos = GetEntityCoords( RADAR.caughtEnt )
-		local speed = GetEntitySpeed( RADAR.caughtEnt )
+		-- Caught veh debug printing 
+		if ( RADAR.caughtEnt ~= nil ) then 
+			local pos = GetEntityCoords( RADAR.caughtEnt.veh )
+			local speed = GetEntitySpeed( RADAR.caughtEnt.veh )
 
-		DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
+			DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
+			UTIL:DrawDebugText( 0.500, 0.700, 0.80, true, "Ent: " .. tostring( RADAR.caughtEnt.veh ) .. "\nSpeed: " .. RADAR:GetVehSpeedFormatted( speed ) .. "mph" .. "\nRel pos: " .. tostring( RADAR.caughtEnt.relPos ) )
+		end 
 
-		UTIL:DrawDebugText( 0.500, 0.700, 0.80, true, "Ent: " .. tostring( RADAR.caughtEnt ) .. "\nSpeed: " .. RADAR:GetVehSpeedFormatted( speed ) .. "mph" )
+		-- Ray line drawing
+		local veh = GetVehiclePedIsIn( PlayerPedId(), false )
+
+		for k, v in pairs( RADAR.rayTraces ) do 
+			local startP = GetOffsetFromEntityInWorldCoords( veh, v.startVec.x, 0.0, 0.0 )
+			local endP = GetOffsetFromEntityInWorldCoords( veh, v.endVec.x, v.endVec.y, 0.0 )
+
+			UTIL:DrawDebugLine( startP, endP )
+		end 
 
 		Citizen.Wait( 0 )
 	end 
