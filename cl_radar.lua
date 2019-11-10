@@ -115,6 +115,8 @@ RADAR.rayTraces = {
 -- player has the mode set to, dictates what sorting function to use. The name is just the 
 -- name of the mode that is used to let the user know what mode it is, and the func is the
 -- function used in table.sort()
+--
+-- DO NOT TOUCH THESE UNLESS YOU KNOW WHAT YOU'RE DOING!
 RADAR.sorting = {
 	[1] = { 
 		name = "CLOSEST", 
@@ -297,6 +299,14 @@ function RADAR:GetSortModeFunc()
 	return self.sorting[self.vars.sortMode].func
 end
 
+function RADAR:IsSortModeFastest()
+	if ( self.vars.sortMode == 2 ) then 
+		return true 
+	end 
+
+	return false 
+end 
+
 function RADAR:ToggleSortMode()
 	if ( self.vars.sortMode < #self.sorting ) then 
 		self.vars.sortMode = self.vars.sortMode + 1
@@ -407,7 +417,11 @@ function RADAR:GetVehiclesForAntenna()
 				if ( vehs[ant][1].veh ~= fastVehs[ant].veh ) then 
 					normVehs[ant] = vehs[ant][1]
 				else 
-					normVehs[ant] = vehs[ant][2]
+					for i = 2, #vehs[ant], 1 do 
+						if ( self:GetVehSpeedFormatted( vehs[ant][i].speed ) <= self:GetFastLimit() ) then 
+							normVehs[ant] = vehs[ant][i]
+						end 
+					end 
 				end
 			elseif ( fastVehs.front == nil ) then 
 				normVehs[ant] = vehs[ant][1]
@@ -710,8 +724,10 @@ Citizen.CreateThread( function()
 		-- Caught veh debug printing 
 		local av = RADAR:GetActiveVehicles()
 
+		DrawRect( 0.500, 0.830, 0.400, 0.200, 0, 0, 0, 150 )
+
 		for i = 1, 4, 1 do 
-			UTIL:DrawDebugText( 0.200 + ( 0.125 * i ), 0.650, 0.60, true, types[i] )
+			UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.750, 0.60, true, types[i] )
 
 			if ( av[i] ~= nil ) then 
 				local pos = GetEntityCoords( av[i].veh )
@@ -720,9 +736,9 @@ Citizen.CreateThread( function()
 				local rp = av[i].relPos
 
 				DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
-				UTIL:DrawDebugText( 0.200 + ( 0.125 * i ), 0.700, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: " .. tostring( speed ) .. "mph" .. "\nRel pos: " .. tostring( rp ) )
+				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: " .. tostring( speed ) .. "mph" .. "\nRel pos: " .. tostring( rp ) )
 			else 
-				UTIL:DrawDebugText( 0.200 + ( 0.125 * i ), 0.700, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRel pos: nil" )
+				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRel pos: nil" )
 			end 
 		end 
 
@@ -739,3 +755,10 @@ Citizen.CreateThread( function()
 		Citizen.Wait( 0 )
 	end 
 end )
+
+-- Commands for debugging 
+RegisterCommand( "rdr", function( src, args, raw )
+	if ( args[1] == "setlimit" ) then 
+		RADAR:SetFastLimit( tonumber( args[2] ) ) 
+	end 
+end, false )
