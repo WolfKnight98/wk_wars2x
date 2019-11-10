@@ -99,9 +99,10 @@ RADAR.caughtEnt = nil
 
 -- These vectors are used in the custom ray tracing system 
 RADAR.rayTraces = {
-	{ startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,  y = 150.0 } },
-	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0, y = 150.0 } },
-	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,  y = 150.0 } }
+	{ startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,  y = 150.0 }, rayType = "same" },
+	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0, y = 150.0 }, rayType = "same" },
+	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,  y = 150.0 }, rayType = "same" },
+	{ startVec = { x = -15.0,   y = 15.0 }, endVec = { x = -15.0,  y = 150.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, depending on what the 
@@ -174,6 +175,10 @@ end
 
 function RADAR:ToggleAntenna( ant )
 	self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
+end 
+
+function RADAR:IsAntennaOn( ant )
+	return self.vars.antennas[ant].xmit 
 end 
 
 function RADAR:SetAntennaMode( ant, mode )
@@ -289,9 +294,10 @@ function RADAR:ResetCapturedVehicles()
 	self.capturedVehicles = {}
 end
 
-function RADAR:InsertCapturedVehicleData( t )
+function RADAR:InsertCapturedVehicleData( t, rt )
 	if ( type( t ) == "table" and not UTIL:IsTableEmpty( t ) ) then 
 		for _, v in pairs( t ) do
+			v.rayType = rt 
 			table.insert( self.capturedVehicles, v )
 		end
 	end 
@@ -333,6 +339,16 @@ function RADAR:GetFastestFrontAndRear()
 	end 
 
 	return vehs 
+end 
+
+function RADAR:GetVehiclesForAntenna()
+	if ( self:IsAntennaOn( "front" ) or self:IsAntennaOn( "rear" ) ) then 
+		local fastVehs = self:GetFastestFrontAndRear()
+
+		for i = 1, -1, -2 do 
+			
+		end 
+	end 
 end 
 
 --[[
@@ -489,7 +505,7 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 	if ( hasData ) then return t end
 end 
 
-function RADAR:CreateRayThread( vehs, from, startX, endX, endY )
+function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
 	Citizen.CreateThread( function()
 		local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
 		local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
@@ -498,11 +514,19 @@ function RADAR:CreateRayThread( vehs, from, startX, endX, endY )
 
 		local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
 
-		self:InsertCapturedVehicleData( hitVehs )
+		self:InsertCapturedVehicleData( hitVehs, rayType )
 
 		UTIL:DebugPrint( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
 		self:IncreaseRayTraceState()
 	end )
+end 
+
+function RADAR:CreateRayThreads( ownVeh, vehicles )
+	UTIL:DebugPrint( "Creating ray threads." )
+
+	for _, v in pairs( self.rayTraces ) do 
+		self:CreateRayThread( vehicles, ownVeh, v.startVec.x, v.endVec.x, v.endVec.y, v.rayType )
+	end 
 end 
 
 function RADAR:RunControlManager()
@@ -541,10 +565,7 @@ function RADAR:Main()
 				self:ResetCapturedVehicles()
 				self:ResetRayTraceState()
 
-				UTIL:DebugPrint( "Creating ray threads." )
-				for _, v in pairs( self.rayTraces ) do 
-					self:CreateRayThread( vehs, plyVeh, v.startVec.x, v.endVec.x, v.endVec.y )
-				end 
+				self:CreateRayThreads( plyVeh, vehs )
 
 				UTIL:DebugPrint( "Reached end of stage 0." )
 				UTIL:DebugPrint( "Stage = " .. tostring( self:GetRadarStage() ) .. "\tTrace state = " .. tostring( self:GetRayTraceState() ) )
@@ -563,7 +584,7 @@ function RADAR:Main()
 
 				UTIL:DebugPrint( "Printing table for sort mode " .. self:GetSortModeText() )
 				for k, v in pairs( caughtVehs ) do 
-					UTIL:DebugPrint( tostring( k ) .. " - " .. tostring( v.veh ) .. " - " .. tostring( v.relPos ) .. " - " .. tostring( v.dist ) .. " - " .. tostring( v.speed ) .. " - " .. tostring( v.size ) )
+					UTIL:DebugPrint( tostring( k ) .. " - " .. tostring( v.veh ) .. " - " .. tostring( v.relPos ) .. " - " .. tostring( v.dist ) .. " - " .. tostring( v.speed ) .. " - " .. tostring( v.size ) .. " - " .. tostring( v.rayType ) )
 				end
 
 				self.caughtEnt = caughtVehs[1]
@@ -595,7 +616,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:Main()
 
-		Citizen.Wait( 50 )
+		Citizen.Wait( 100 )
 	end
 end )
 
