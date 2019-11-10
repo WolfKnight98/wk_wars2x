@@ -323,14 +323,16 @@ function RADAR:GetFastestFrontAndRear()
 
 	local vehs = { front = nil, rear = nil }
 
-	for i = 1, -1, 2 do 
+	for i = 1, -1, -2 do 
 		for k, v in pairs( t ) do 
 			if ( v.relPos == i ) then 
 				if ( i == 1 ) then vehs.front = v else vehs.rear = v end 
-				return 
+				break 
 			end 
 		end 
 	end 
+
+	return vehs 
 end 
 
 --[[
