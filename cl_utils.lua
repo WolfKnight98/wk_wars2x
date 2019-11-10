@@ -37,6 +37,17 @@ function UTIL:IsTableEmpty( t )
 	return c == 0
 end 
 
+-- Credit to Deltanic for this function
+function UTIL:Values( xs )
+	local i = 0
+
+	return function()
+		i = i + 1
+		return xs[i]
+	end
+end
+  
+
 function UTIL:GetVehicleInDirection( entFrom, coordFrom, coordTo )
 	local rayHandle = StartShapeTestCapsule( coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 20.0, 10, entFrom, 7 )
 	local _, hitEntity, endCoords, surfaceNormal, vehicle = GetShapeTestResult( rayHandle )

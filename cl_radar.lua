@@ -343,15 +343,19 @@ function RADAR:GetFastestFrontAndRear()
 	local t = self.capturedVehicles
 	table.sort( t, self.sorting[2].func )
 
-	local vehs = { front = nil, rear = nil }
+	local vehs = { ["front"] = nil, ["rear"] = nil }
 
 	for i = 1, -1, -2 do 
 		for k, v in pairs( t ) do 
-			if ( v.relPos == i ) then 
-				if ( i == 1 and self:IsAntennaOn( "front" ) ) then 
-					vehs.front = v 
-				elseif ( i == -1 and self:IsAntennaOn( "rear" ) ) then 
-					vehs.rear = v 
+			if ( v.relPos == i ) then
+				local speed = self:GetVehSpeedFormatted( v.speed )
+
+				if ( speed >= self:GetFastLimit() ) then 
+					if ( i == 1 and self:IsAntennaOn( "front" ) ) then 
+						vehs["front"] = v 
+					elseif ( i == -1 and self:IsAntennaOn( "rear" ) ) then 
+						vehs["rear"] = v 
+					end 
 				end 
 
 				break 
@@ -368,40 +372,38 @@ function RADAR:GetVehiclesForAntenna()
 	local fastVehs = self:GetFastestFrontAndRear()
 
 	-- Loop through and split up the vehicles based on front and rear
-	local vehs = { front = {}, rear = {} }
+	local vehs = { ["front"] = {}, ["rear"] = {} }
 
 	for k, v in pairs( self.capturedVehicles ) do 
 		if ( v.relPos == 1 and self:IsAntennaOn( "front" ) ) then 
-			table.insert( vehs.front, v )
+			table.insert( vehs["front"], v )
 		elseif ( v.relPos == -1 and self:IsAntennaOn( "rear" ) ) then 
-			table.insert( vehs.rear, v )
+			table.insert( vehs["rear"], v )
 		end 
 	end 
 
 	-- Sort the tables based on the radar mode 
-	table.sort( vehs.front, self:GetSortModeFunc() )
-	table.sort( vehs.rear, self:GetSortModeFunc() )
+	table.sort( vehs["front"], self:GetSortModeFunc() )
+	table.sort( vehs["rear"], self:GetSortModeFunc() )
 
 	-- Grab the vehicles for display 
-	local frontVeh, rearVeh = nil, nil 
+	local normVehs = { ["front"] = nil, ["rear"] = nil }
 
-	if ( not UTIL:IsTableEmpty( vehs.front ) ) then 
-		if ( vehs.front[1].veh ~= fastVehs.front.veh ) then 
-			frontVeh = vehs.front[1]
-		else
-			frontVeh = vehs.front[2] 
+	for ant in UTIL:Values( { "front", "rear" } ) do 
+		if ( not UTIL:IsTableEmpty( vehs[ant] ) ) then 
+			if ( fastVehs[ant] ~= nil ) then 
+				if ( vehs[ant][1].veh ~= fastVehs[ant].veh ) then 
+					normVehs[ant] = vehs[ant][1]
+				else 
+					normVehs[ant] = vehs[ant][2]
+				end
+			elseif ( fastVehs.front == nil ) then 
+				normVehs[ant] = vehs[ant][1]
+			end 
 		end 
 	end 
 
-	if ( not UTIL:IsTableEmpty( vehs.rear ) ) then 
-		if ( vehs.rear[1].veh ~= fastVehs.rear.veh ) then 
-			rearVeh = vehs.rear[1]
-		else
-			rearVeh = vehs.rear[2] 
-		end 
-	end 
-
-	return { frontVeh, fastVehs.front, rearVeh, fastVehs.rear }
+	return { normVehs["front"], fastVehs["front"], normVehs["rear"], fastVehs["rear"] }
 end 
 
 function RADAR:GetDynamicDataValue( key )
