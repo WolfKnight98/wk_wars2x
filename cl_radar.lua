@@ -607,7 +607,7 @@ function RADAR:RunControlManager()
 		UTIL:Notify( "Front antenna toggled." )
 	end 
 
-	-- 'Num8' key, toggles front antenna
+	-- 'Num8' key, toggles rear antenna
 	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
 		self:ToggleAntenna( "rear" )
 		UTIL:Notify( "Rear antenna toggled." )
