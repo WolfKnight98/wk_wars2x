@@ -80,9 +80,9 @@ RADAR.vars =
 
 	-- Radar stage, this is used to tell the system what it should currently be doing, the stages are:
 	--    - 0 = Gathering vehicles hit by the rays 
-	--    - 1 = Filtering the vehicles caught (removing duplicates, etc)
-	--    - 2 = Calculating what needs to be shown to the user based on modes and settings
-	--    - 3 = Sending all required data across to the NUI system for display 
+	--    - 1 = Filtering the vehicles caught (removing duplicates, etc) and calculating what needs to be shown 
+	--	        to the user based on modes and settings
+	--    - 2 = Sending all required data across to the NUI system for display 
 	radarStage = 0,
 
 	-- Ray trace state, this is used so the radar stage doesn't progress to the next stage unless 
@@ -332,7 +332,12 @@ function RADAR:GetFastestFrontAndRear()
 	for i = 1, -1, -2 do 
 		for k, v in pairs( t ) do 
 			if ( v.relPos == i ) then 
-				if ( i == 1 ) then vehs.front = v else vehs.rear = v end 
+				if ( i == 1 and self:IsAntennaOn( "front" ) ) then 
+					vehs.front = v 
+				elseif ( i == -1 and self:IsAntennaOn( "rear" ) ) then 
+					vehs.rear = v 
+				end 
+
 				break 
 			end 
 		end 
@@ -342,13 +347,45 @@ function RADAR:GetFastestFrontAndRear()
 end 
 
 function RADAR:GetVehiclesForAntenna()
-	if ( self:IsAntennaOn( "front" ) or self:IsAntennaOn( "rear" ) ) then 
-		local fastVehs = self:GetFastestFrontAndRear()
+	-- Get the vehicle data that needs to be displayed in the fast box on the radar, this is 
+	-- because the radar mode doesn't have an effect on what gets displayed in the fast box
+	local fastVehs = self:GetFastestFrontAndRear()
 
-		for i = 1, -1, -2 do 
-			
+	-- Loop through and split up the vehicles based on front and rear
+	local vehs = { front = {}, rear = {} }
+
+	for k, v in pairs( self.capturedVehicles ) do 
+		if ( v.relPos == 1 and self:IsAntennaOn( "front" ) ) then 
+			table.insert( vehs.front, v )
+		elseif ( v.relPos == -1 and self:IsAntennaOn( "rear" ) ) then 
+			table.insert( vehs.rear, v )
 		end 
 	end 
+
+	-- Sort the tables based on the radar mode 
+	table.sort( vehs.front, self:GetSortModeFunc() )
+	table.sort( vehs.rear, self:GetSortModeFunc() )
+
+	-- Grab the vehicles for display 
+	local frontVeh, rearVeh = nil, nil 
+
+	if ( not UTIL:IsTableEmpty( vehs.front ) ) then 
+		if ( vehs.front[1].veh ~= fastVehs.front.veh ) then 
+			frontVeh = vehs.front[1]
+		else
+			frontVeh = vehs.front[2] 
+		end 
+	end 
+
+	if ( not UTIL:IsTableEmpty( vehs.rear ) ) then 
+		if ( vehs.rear[1].veh ~= fastVehs.rear.veh ) then 
+			rearVeh = vehs.rear[1]
+		else
+			rearVeh = vehs.rear[2] 
+		end 
+	end 
+
+	return { frontVeh, fastVehs.front, rearVeh, fastVehs.rear }
 end 
 
 --[[
@@ -535,9 +572,21 @@ function RADAR:RunControlManager()
 		self.config.debug_mode = not self.config.debug_mode
 	end 
 
-	-- Change the sort mode 
+	-- 'X' key, change the sort mode 
 	if ( IsDisabledControlJustPressed( 1, 105 ) ) then 
 		self:ToggleSortMode()
+	end 
+
+	-- 'Num7' key, toggles front antenna
+	if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
+		self:ToggleAntenna( "front" )
+		UTIL:Notify( "Front antenna toggled." )
+	end 
+
+	-- 'Num8' key, toggles front antenna
+	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
+		self:ToggleAntenna( "rear" )
+		UTIL:Notify( "Rear antenna toggled." )
 	end 
 end 
 
@@ -580,18 +629,33 @@ function RADAR:Main()
 			local caughtVehs = self:GetCapturedVehicles()
 
 			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
-				table.sort( caughtVehs, self:GetSortModeFunc() )
+				-- table.sort( caughtVehs, self:GetSortModeFunc() ) - sort data in func now 
 
 				UTIL:DebugPrint( "Printing table for sort mode " .. self:GetSortModeText() )
 				for k, v in pairs( caughtVehs ) do 
 					UTIL:DebugPrint( tostring( k ) .. " - " .. tostring( v.veh ) .. " - " .. tostring( v.relPos ) .. " - " .. tostring( v.dist ) .. " - " .. tostring( v.speed ) .. " - " .. tostring( v.size ) .. " - " .. tostring( v.rayType ) )
 				end
 
+				local vehsForDisplay = self:GetVehiclesForAntenna()
+
+				-- for k, v in pairs( vehsForDisplay ) do 
+				-- 	print( type( v ) )
+				-- end 
+
+				print( "\nFront veh: " .. tostring( vehsForDisplay[1] ) )
+				print( "Front fast veh: " .. tostring( vehsForDisplay[2] ) )
+				print( "Rear veh: " .. tostring( vehsForDisplay[3] ) )
+				print( "Rear fast veh: " .. tostring( vehsForDisplay[4] ) )
+				print()
+
 				self.caughtEnt = caughtVehs[1]
 			else
 				self.caughtEnt = nil
 			end
 
+			UTIL:DebugPrint( "Reached end of stage 1, increasing to stage 2." )
+			self:IncreaseRadarStage()
+		elseif ( self:GetRadarStage() == 2 ) then 
 			self:ResetRadarStage()
 			self:ResetRayTraceState()
 		end 
@@ -616,7 +680,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:Main()
 
-		Citizen.Wait( 100 )
+		Citizen.Wait( 500 )
 	end
 end )
 
