@@ -99,7 +99,9 @@ RADAR.vars =
 
 -- Table to store entity IDs of captured vehicles 
 RADAR.capturedVehicles = {}
-RADAR.caughtEnt = nil 
+
+-- The current vehicle data for display 
+RADAR.activeVehicles = {}
 
 -- These vectors are used in the custom ray tracing system 
 RADAR.rayTraces = {
@@ -174,6 +176,10 @@ end
 function RADAR:GetCapturedVehicles()
 	return self.capturedVehicles
 end
+
+function RADAR:GetActiveVehicles()
+	return self.activeVehicles
+end 
 
 function RADAR:SetPatrolSpeed( speed )
 	if ( type( speed ) == "number" ) then 
@@ -254,6 +260,12 @@ function RADAR:SetFastLimit( limit )
 		if ( limit >= 0 and limit <= 999 ) then 
 			self.vars.fastLimit = limit 
 		end 
+	end 
+end 
+
+function RADAR:SetActiveVehicles( t )
+	if ( type( t ) == "table" ) then 
+		self.activeVehicles = t 
 	end 
 end 
 
@@ -646,9 +658,9 @@ function RADAR:Main()
 				print( "Rear fast veh: " .. tostring( vehsForDisplay[4] ) )
 				print()
 
-				self.caughtEnt = caughtVehs[1]
+				self:SetActiveVehicles( vehsForDisplay )
 			else
-				self.caughtEnt = nil
+				self:SetActiveVehicles( { nil, nil, nil, nil } )
 			end
 
 			UTIL:DebugPrint( "Reached end of stage 1, increasing to stage 2." )
@@ -678,7 +690,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:Main()
 
-		Citizen.Wait( 500 )
+		Citizen.Wait( 50 )
 	end
 end )
 
@@ -691,15 +703,27 @@ Citizen.CreateThread( function()
 	end 
 end )
 
+local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
+
 Citizen.CreateThread( function()
 	while ( true ) do
 		-- Caught veh debug printing 
-		if ( RADAR.caughtEnt ~= nil ) then 
-			local pos = GetEntityCoords( RADAR.caughtEnt.veh )
-			local speed = GetEntitySpeed( RADAR.caughtEnt.veh )
+		local av = RADAR:GetActiveVehicles()
 
-			DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
-			UTIL:DrawDebugText( 0.500, 0.700, 0.80, true, "Ent: " .. tostring( RADAR.caughtEnt.veh ) .. "\nSpeed: " .. RADAR:GetVehSpeedFormatted( speed ) .. "mph" .. "\nRel pos: " .. tostring( RADAR.caughtEnt.relPos ) )
+		for i = 1, 4, 1 do 
+			UTIL:DrawDebugText( 0.200 + ( 0.125 * i ), 0.650, 0.60, true, types[i] )
+
+			if ( av[i] ~= nil ) then 
+				local pos = GetEntityCoords( av[i].veh )
+				local speed = RADAR:GetVehSpeedFormatted( GetEntitySpeed( av[i].veh ) )
+				local veh = av[i].veh
+				local rp = av[i].relPos
+
+				DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
+				UTIL:DrawDebugText( 0.200 + ( 0.125 * i ), 0.700, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: " .. tostring( speed ) .. "mph" .. "\nRel pos: " .. tostring( rp ) )
+			else 
+				UTIL:DrawDebugText( 0.200 + ( 0.125 * i ), 0.700, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRel pos: nil" )
+			end 
 		end 
 
 		-- Ray line drawing
