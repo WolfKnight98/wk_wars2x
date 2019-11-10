@@ -672,6 +672,10 @@ function RADAR:Main()
 				print( "Rear fast veh: " .. tostring( vehsForDisplay[4] ) )
 				print()
 
+				if ( vehsForDisplay[2] or vehsForDisplay[4] ) then 
+					PlaySoundFrontend( -1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", 1 )
+				end 
+
 				self:SetActiveVehicles( vehsForDisplay )
 			else
 				self:SetActiveVehicles( { nil, nil, nil, nil } )
@@ -733,12 +737,17 @@ Citizen.CreateThread( function()
 				local pos = GetEntityCoords( av[i].veh )
 				local speed = RADAR:GetVehSpeedFormatted( GetEntitySpeed( av[i].veh ) )
 				local veh = av[i].veh
-				local rp = av[i].relPos
+				local rt = av[i].rayType
 
 				DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
-				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: " .. tostring( speed ) .. "mph" .. "\nRel pos: " .. tostring( rp ) )
+
+				if ( i % 2 == 0 ) then 
+					UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: ~r~" .. tostring( speed ) .. "~s~mph" .. "\nRay type: " .. tostring( rt ) )
+				else 
+					UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: " .. tostring( speed ) .. "mph" .. "\nRay type: " .. tostring( rt ) )
+				end 
 			else 
-				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRel pos: nil" )
+				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRay type: nil" )
 			end 
 		end 
 
