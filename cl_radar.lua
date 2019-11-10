@@ -39,6 +39,10 @@ RADAR.vars =
 	-- Either "mph" or "kmh", can be toggle in-game 
 	speedType = "mph",
 
+	-- Fast limit, can be changed by the user during radar operation 
+	-- Default is 65 for speed type MPH
+	fastLimit = 65, 
+
 	-- Antennas, this table contains all of the data needed for operation of the front and rear antennas 
 	antennas = {
 		-- Variables for the front antenna 
@@ -143,6 +147,10 @@ function RADAR:GetPatrolSpeed()
 	return self.vars.patrolSpeed
 end 
 
+function RADAR:GetFastLimit()
+	return self.vars.fastLimit
+end 
+
 function RADAR:GetVehiclePool()
 	return self.vars.vehiclePool
 end 
@@ -239,6 +247,14 @@ function RADAR:SetVehiclePool( pool )
 	if ( type( pool ) == "table" ) then 
 		self.vars.vehiclePool = pool 
 	end
+end 
+
+function RADAR:SetFastLimit( limit )
+	if ( type( limit ) == "number" ) then 
+		if ( limit >= 0 and limit <= 999 ) then 
+			self.vars.fastLimit = limit 
+		end 
+	end 
 end 
 
 function RADAR:IncreaseRayTraceState()
@@ -387,26 +403,6 @@ function RADAR:GetVehiclesForAntenna()
 
 	return { frontVeh, fastVehs.front, rearVeh, fastVehs.rear }
 end 
-
---[[
-	TEST!
-
-function RADAR:GetVehiclesForAntenna()
-	local vehs = { front = nil, frontFast = nil, rear = nil, rearFast = nil }
-
-	local t = self.capturedVehicles
-	table.sort( t, self.sorting[2].func )
-
-	-- 1 = front, -1 = rear
-	for i = 1, -1, -2 do 
-		local c = 1 
-
-		for k, v in pairs( self.capturedVehicles ) do 
-			if ( v.relPos == i and c ~= 2 ) then 
-				vehs
-		end 
-	end 
-end ]]
 
 function RADAR:GetDynamicDataValue( key )
 	return self.vars.sphereSizes[key]
