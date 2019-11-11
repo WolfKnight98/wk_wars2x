@@ -27,6 +27,7 @@ Citizen.CreateThread( function()
 	SendNUIMessage( { resourcename = resourceName } )
 end )
 
+
 --[[------------------------------------------------------------------------
 	Radar variables
 ------------------------------------------------------------------------]]--
@@ -132,8 +133,9 @@ RADAR.sorting = {
 	} 
 }
 
+
 --[[------------------------------------------------------------------------
-	Radar setters and getters, other functions  
+	Radar basics functions  
 ------------------------------------------------------------------------]]--
 function RADAR:GetPatrolSpeed()	
 	return self.vars.patrolSpeed
@@ -151,22 +153,6 @@ function RADAR:GetMaxCheckDist()
 	return self.vars.maxCheckDist
 end 
 
-function RADAR:GetRayTraceState()
-	return self.vars.rayTraceState
-end
-
-function RADAR:GetRadarStage()
-	return self.vars.radarStage
-end
-
-function RADAR:GetNumOfRays()
-	return self.vars.numberOfRays
-end
-
-function RADAR:GetCapturedVehicles()
-	return self.capturedVehicles
-end
-
 function RADAR:GetActiveVehicles()
 	return self.activeVehicles
 end 
@@ -177,6 +163,70 @@ function RADAR:SetPatrolSpeed( speed )
 	end
 end
 
+function RADAR:SetFastLimit( limit )
+	if ( type( limit ) == "number" ) then 
+		if ( limit >= 0 and limit <= 999 ) then 
+			self.vars.fastLimit = limit 
+		end 
+	end 
+end 
+
+function RADAR:SetVehiclePool( pool )
+	if ( type( pool ) == "table" ) then 
+		self.vars.vehiclePool = pool 
+	end
+end 
+
+function RADAR:SetActiveVehicles( t )
+	if ( type( t ) == "table" ) then 
+		self.activeVehicles = t 
+	end 
+end 
+
+
+--[[------------------------------------------------------------------------
+	Radar ray trace functions 
+------------------------------------------------------------------------]]--
+function RADAR:GetRayTraceState()
+	return self.vars.rayTraceState
+end
+
+function RADAR:GetNumOfRays()
+	return self.vars.numberOfRays
+end
+
+function RADAR:IncreaseRayTraceState()
+	self.vars.rayTraceState = self.vars.rayTraceState + 1
+end 
+
+function RADAR:ResetRayTraceState()
+	self.vars.rayTraceState = 0
+end 
+
+function RADAR:CacheNumOfRays()
+	self.vars.numberOfRays = #self.rayTraces
+end 
+
+
+--[[------------------------------------------------------------------------
+	Radar stage functions 
+------------------------------------------------------------------------]]--
+function RADAR:GetRadarStage()
+	return self.vars.radarStage
+end
+
+function RADAR:IncreaseRadarStage()
+	self.vars.radarStage = self.vars.radarStage + 1
+end 
+
+function RADAR:ResetRadarStage()
+	self.vars.radarStage = 0
+end
+
+
+--[[------------------------------------------------------------------------
+	Radar antenna functions 
+------------------------------------------------------------------------]]--
 function RADAR:ToggleAntenna( ant )
 	self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
 end 
@@ -239,46 +289,10 @@ function RADAR:SetAntennaFastLock( ant, state )
 	end 
 end 
 
-function RADAR:SetVehiclePool( pool )
-	if ( type( pool ) == "table" ) then 
-		self.vars.vehiclePool = pool 
-	end
-end 
 
-function RADAR:SetFastLimit( limit )
-	if ( type( limit ) == "number" ) then 
-		if ( limit >= 0 and limit <= 999 ) then 
-			self.vars.fastLimit = limit 
-		end 
-	end 
-end 
-
-function RADAR:SetActiveVehicles( t )
-	if ( type( t ) == "table" ) then 
-		self.activeVehicles = t 
-	end 
-end 
-
-function RADAR:IncreaseRayTraceState()
-	self.vars.rayTraceState = self.vars.rayTraceState + 1
-end 
-
-function RADAR:ResetRayTraceState()
-	self.vars.rayTraceState = 0
-end 
-
-function RADAR:IncreaseRadarStage()
-	self.vars.radarStage = self.vars.radarStage + 1
-end 
-
-function RADAR:ResetRadarStage()
-	self.vars.radarStage = 0
-end 
-
-function RADAR:CacheNumOfRays()
-	self.vars.numberOfRays = #self.rayTraces
-end 
-
+--[[------------------------------------------------------------------------
+	Radar sort mode functions
+------------------------------------------------------------------------]]--
 function RADAR:GetSortModeText()
 	return self.sorting[self.vars.sortMode].name
 end 
@@ -305,16 +319,13 @@ function RADAR:ToggleSortMode()
 	UTIL:Notify( "Radar mode set to " .. self:GetSortModeText() )
 end 
 
+
 --[[------------------------------------------------------------------------
-	Radar functions 
+	Radar captured vehicle functions 
 ------------------------------------------------------------------------]]--
-function RADAR:GetVehSpeedFormatted( speed )
-	if ( self.vars.speedType == "mph" ) then 
-		return math.ceil( speed * 2.236936 )
-	else 
-		return math.ceil( speed * 3.6 )
-	end 
-end 
+function RADAR:GetCapturedVehicles()
+	return self.capturedVehicles
+end
 
 function RADAR:ResetCapturedVehicles()
 	self.capturedVehicles = {}
@@ -337,8 +348,70 @@ function RADAR:FilterCapturedVehicles()
 			if ( v.veh == veh and k ~= b ) then table.remove( self.capturedVehicles, b ) end
 		end 
 	end
+end
+
+
+--[[------------------------------------------------------------------------
+	Radar dynamic sphere radius functions 
+------------------------------------------------------------------------]]--
+function RADAR:GetDynamicDataValue( key )
+	return self.vars.sphereSizes[key]
 end 
 
+function RADAR:DoesDynamicRadiusDataExist( key )
+	return self:GetDynamicDataValue( key ) ~= nil 
+end
+
+function RADAR:SetDynamicRadiusKey( key, t )
+	self.vars.sphereSizes[key] = t
+end 
+
+function RADAR:InsertDynamicRadiusData( key, radius, actualSize )
+	if ( self:GetDynamicDataValue( key ) == nil ) then 
+		local tbl = {}
+
+		tbl.radius = radius 
+		tbl.actualSize = actualSize
+
+		self:SetDynamicRadiusKey( key, tbl )
+	end 
+end 
+
+function RADAR:GetRadiusData( key )
+	return self.vars.sphereSizes[key].radius or 5.0, self.vars.sphereSizes[key].actualSize
+end 
+
+function RADAR:GetDynamicRadius( veh )
+	local mdl = GetEntityModel( veh )
+	local key = tostring( mdl )
+	local dataExists = self:DoesDynamicRadiusDataExist( key )
+	
+	if ( not dataExists ) then 
+		local min, max = GetModelDimensions( mdl )
+		local size = max - min 
+		local numericSize = size.x + size.y + size.z 
+		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 10, 4.0, 10.0 )
+
+		self:InsertDynamicRadiusData( key, dynamicRadius, numericSize )
+
+		return dynamicRadius, numericSize
+	end 
+
+	return self:GetRadiusData( key )
+end
+
+
+--[[------------------------------------------------------------------------
+	Radar functions 
+------------------------------------------------------------------------]]--
+function RADAR:GetVehSpeedFormatted( speed )
+	if ( self.vars.speedType == "mph" ) then 
+		return math.ceil( speed * 2.236936 )
+	else 
+		return math.ceil( speed * 3.6 )
+	end 
+end 
+ 
 function RADAR:GetAllVehicles()
 	local t = {}
 
@@ -418,53 +491,7 @@ function RADAR:GetVehiclesForAntenna()
 	end 
 
 	return { normVehs["front"], fastVehs["front"], normVehs["rear"], fastVehs["rear"] }
-end 
-
-function RADAR:GetDynamicDataValue( key )
-	return self.vars.sphereSizes[key]
-end 
-
-function RADAR:DoesDynamicRadiusDataExist( key )
-	return self:GetDynamicDataValue( key ) ~= nil 
-end
-
-function RADAR:SetDynamicRadiusKey( key, t )
-	self.vars.sphereSizes[key] = t
-end 
-
-function RADAR:InsertDynamicRadiusData( key, radius, actualSize )
-	if ( self:GetDynamicDataValue( key ) == nil ) then 
-		local tbl = {}
-
-		tbl.radius = radius 
-		tbl.actualSize = actualSize
-
-		self:SetDynamicRadiusKey( key, tbl )
-	end 
-end 
-
-function RADAR:GetRadiusData( key )
-	return self.vars.sphereSizes[key].radius or 5.0, self.vars.sphereSizes[key].actualSize
-end 
-
-function RADAR:GetDynamicRadius( veh )
-	local mdl = GetEntityModel( veh )
-	local key = tostring( mdl )
-	local dataExists = self:DoesDynamicRadiusDataExist( key )
-	
-	if ( not dataExists ) then 
-		local min, max = GetModelDimensions( mdl )
-		local size = max - min 
-		local numericSize = size.x + size.y + size.z 
-		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 10, 4.0, 10.0 )
-
-		self:InsertDynamicRadiusData( key, dynamicRadius, numericSize )
-
-		return dynamicRadius, numericSize
-	end 
-
-	return self:GetRadiusData( key )
-end 
+end  
 
 function RADAR:GetIntersectedVehIsFrontOrRear( t )
 	if ( t > 10.0 ) then 
@@ -602,8 +629,9 @@ function RADAR:RunControlManager()
 	end 
 end 
 
+
 --[[------------------------------------------------------------------------
-	Test time 
+	Main function  
 ------------------------------------------------------------------------]]--
 function RADAR:Main()
 	-- Get the local player's ped and store it in a variable 
