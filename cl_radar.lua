@@ -500,7 +500,7 @@ function RADAR:GetVehiclesForAntenna()
 					normVehs[ant] = v 
 					break
 				end 
-			end  
+			end 
 		end 
 	end 
 
@@ -679,7 +679,7 @@ function RADAR:Main()
 		elseif ( self:GetRadarStage() == 1 ) then 
 			UTIL:DebugPrint( "Radar stage now 1." )
 
-			self:RemoveDuplicateCapturedVehicles()
+			-- self:RemoveDuplicateCapturedVehicles()
 			local caughtVehs = self:GetCapturedVehicles()
 
 			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
@@ -707,7 +707,6 @@ function RADAR:Main()
 				self:SetActiveVehicles( { nil, nil, nil, nil } )
 			end
 
-			UTIL:DebugPrint( "Reached end of stage 1, increasing to stage 2." )
 			self:IncreaseRadarStage()
 		elseif ( self:GetRadarStage() == 2 ) then 
 			self:ResetRadarStage()
