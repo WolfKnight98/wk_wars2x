@@ -357,9 +357,10 @@ end
 function RADAR:RemoveDuplicateCapturedVehicles()
 	for k, vehTable in pairs( self.capturedVehicles ) do 
 		local veh = vehTable.veh 
+		local rt = vehTable.rayType 
 
 		for b, v in pairs( self.capturedVehicles ) do 
-			if ( v.veh == veh and k ~= b ) then table.remove( self.capturedVehicles, b ) end
+			if ( v.veh == veh and k ~= b and rt == v.rayType ) then table.remove( self.capturedVehicles, b ) end
 		end 
 	end
 end
@@ -679,7 +680,7 @@ function RADAR:Main()
 		elseif ( self:GetRadarStage() == 1 ) then 
 			UTIL:DebugPrint( "Radar stage now 1." )
 
-			-- self:RemoveDuplicateCapturedVehicles()
+			self:RemoveDuplicateCapturedVehicles()
 			local caughtVehs = self:GetCapturedVehicles()
 
 			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
