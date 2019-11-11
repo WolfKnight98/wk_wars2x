@@ -129,18 +129,6 @@ RADAR.sorting = {
 	[3] = { 
 		name = "LARGEST", 
 		func = function( a, b ) return a.size > b.size + 1.0 end
-	},
-	[4] = { 
-		name = "LARGEST & FASTEST", 
-		func = function( a, b ) 
-			if ( a.size > b.size + 2.0 ) then 
-				return true 
-			elseif ( a.size - b.size <= 1.0 ) then 
-				return false 
-			end 
-
-			return a.speed > b.speed 
-		end 
 	} 
 }
 
