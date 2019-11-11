@@ -670,11 +670,7 @@ function RADAR:Main()
 				print( "Front fast veh: " .. tostring( vehsForDisplay[2] ) )
 				print( "Rear veh: " .. tostring( vehsForDisplay[3] ) )
 				print( "Rear fast veh: " .. tostring( vehsForDisplay[4] ) )
-				print()
-
-				if ( vehsForDisplay[2] or vehsForDisplay[4] ) then 
-					PlaySoundFrontend( -1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", 1 )
-				end 
+				print() 
 
 				self:SetActiveVehicles( vehsForDisplay )
 			else
