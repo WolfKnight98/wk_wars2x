@@ -11,6 +11,7 @@ local table = table
 local type = type
 local tostring = tostring
 local math = math 
+local pairs = pairs 
 
 --[[------------------------------------------------------------------------
 	Resource Rename Fix - for those muppets who rename the resource and 
@@ -49,7 +50,7 @@ RADAR.vars =
 		-- Variables for the front antenna 
 		[ "front" ] = {
 			xmit = false,		-- Whether the antenna is on or off
-			mode = 0,			-- Current antenna mode, 0 = off, 1 = same, 2 = opp, 3 = same and opp 
+			mode = 1,			-- Current antenna mode, 1 = same, 2 = opp, 3 = same and opp 
 			speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
 			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
@@ -60,7 +61,7 @@ RADAR.vars =
 
 		[ "rear" ] = {
 			xmit = false,		-- Whether the antenna is on or off
-			mode = 0,			-- Current antenna mode, 0 = off, 1 = same, 2 = opp, 3 = same and opp 
+			mode = 1,			-- Current antenna mode, 1 = same, 2 = opp, 3 = same and opp 
 			speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
 			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
@@ -106,10 +107,11 @@ RADAR.activeVehicles = {}
 
 -- These vectors are used in the custom ray tracing system 
 RADAR.rayTraces = {
-	{ startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,  y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0, y = 150.0 }, rayType = "same" },
-	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,  y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -15.0,   y = 15.0 }, endVec = { x = -15.0,  y = 150.0 }, rayType = "opp" }
+	{ startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,    y = 150.0 }, rayType = "same" },
+	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,   y = 150.0 }, rayType = "same" },
+	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,    y = 150.0 }, rayType = "same" },
+	{ startVec = { x = -10.0, y = 15.0 }, endVec = { x = -10.0,  y = 150.0 }, rayType = "opp" },
+	{ startVec = { x = -15.0, y = 15.0 }, endVec = { x = -15.0,  y = 150.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, depending on what the 
@@ -235,6 +237,18 @@ function RADAR:IsAntennaOn( ant )
 	return self.vars.antennas[ant].xmit 
 end 
 
+function RADAR:GetAntennaTextFromNum( relPos )
+	if ( relPos == 1 ) then 
+		return "front"
+	elseif ( relPos == -1 ) then 
+		return "rear"
+	end 
+end 
+
+function RADAR:GetAntennaMode( ant )
+	return self.vars.antennas[ant].mode 
+end 
+
 function RADAR:SetAntennaMode( ant, mode )
 	if ( type( mode ) == "number" ) then 
 		if ( mode >= 0 and mode <= 3 ) then 
@@ -340,7 +354,7 @@ function RADAR:InsertCapturedVehicleData( t, rt )
 	end 
 end 
 
-function RADAR:FilterCapturedVehicles()
+function RADAR:RemoveDuplicateCapturedVehicles()
 	for k, vehTable in pairs( self.capturedVehicles ) do 
 		local veh = vehTable.veh 
 
@@ -422,26 +436,32 @@ function RADAR:GetAllVehicles()
 	return t
 end 
 
+function RADAR:CheckVehicleDataFitsMode( ant, rt )
+	local mode = self:GetAntennaMode( ant )
+
+	if ( ( mode == 3 ) or ( mode == 1 and rt == "same" ) or ( mode == 2 and rt == "opp" ) ) then return true end 
+
+	return false  
+end
+
 function RADAR:GetFastestFrontAndRear()
-	local t = self.capturedVehicles
+	local t = self:GetCapturedVehicles()
 	table.sort( t, self.sorting[2].func )
 
 	local vehs = { ["front"] = nil, ["rear"] = nil }
 
-	for i = 1, -1, -2 do 
+	for ant in UTIL:Values( { "front", "rear" } ) do 
 		for k, v in pairs( t ) do 
-			if ( v.relPos == i ) then
+			local antText = self:GetAntennaTextFromNum( v.relPos )
+
+			if ( ant == antText and self:CheckVehicleDataFitsMode( ant, v.rayType ) and self:IsAntennaOn( ant ) ) then 
 				local speed = self:GetVehSpeedFormatted( v.speed )
 
 				if ( speed >= self:GetFastLimit() ) then 
-					if ( i == 1 and self:IsAntennaOn( "front" ) ) then 
-						vehs["front"] = v 
-					elseif ( i == -1 and self:IsAntennaOn( "rear" ) ) then 
-						vehs["rear"] = v 
-					end 
+					vehs[ant] = v 
 				end 
 
-				break 
+				break
 			end 
 		end 
 	end 
@@ -457,36 +477,30 @@ function RADAR:GetVehiclesForAntenna()
 	-- Loop through and split up the vehicles based on front and rear
 	local vehs = { ["front"] = {}, ["rear"] = {} }
 
-	for k, v in pairs( self.capturedVehicles ) do 
-		if ( v.relPos == 1 and self:IsAntennaOn( "front" ) ) then 
-			table.insert( vehs["front"], v )
-		elseif ( v.relPos == -1 and self:IsAntennaOn( "rear" ) ) then 
-			table.insert( vehs["rear"], v )
-		end 
-	end 
+	for ant in UTIL:Values( { "front", "rear" } ) do 
+		for k, v in pairs( self:GetCapturedVehicles() ) do 
+			local antText = self:GetAntennaTextFromNum( v.relPos )
 
-	-- Sort the tables based on the radar mode 
-	table.sort( vehs["front"], self:GetSortModeFunc() )
-	table.sort( vehs["rear"], self:GetSortModeFunc() )
+			if ( ant == antText and self:IsAntennaOn( ant ) ) then 
+				table.insert( vehs[ant], v )
+			end 
+		end 
+
+		-- Sort the table based on the set mode
+		table.sort( vehs[ant], self:GetSortModeFunc() )
+	end 
 
 	-- Grab the vehicles for display 
 	local normVehs = { ["front"] = nil, ["rear"] = nil }
 
 	for ant in UTIL:Values( { "front", "rear" } ) do 
-		if ( not UTIL:IsTableEmpty( vehs[ant] ) ) then 
-			if ( fastVehs[ant] ~= nil ) then 
-				if ( vehs[ant][1].veh ~= fastVehs[ant].veh ) then 
-					normVehs[ant] = vehs[ant][1]
-				else 
-					for i = 2, #vehs[ant], 1 do 
-						if ( self:GetVehSpeedFormatted( vehs[ant][i].speed ) <= self:GetFastLimit() ) then 
-							normVehs[ant] = vehs[ant][i]
-						end 
-					end 
-				end
-			elseif ( fastVehs.front == nil ) then 
-				normVehs[ant] = vehs[ant][1]
-			end 
+		if ( not UTIL:IsTableEmpty( vehs[ant] ) ) then
+			for k, v in pairs( vehs[ant] ) do 
+				if ( ( self:GetVehSpeedFormatted( v.speed ) <= self:GetFastLimit() ) and self:CheckVehicleDataFitsMode( ant, v.rayType ) ) then 
+					normVehs[ant] = v 
+					break
+				end 
+			end  
 		end 
 	end 
 
@@ -665,7 +679,7 @@ function RADAR:Main()
 		elseif ( self:GetRadarStage() == 1 ) then 
 			UTIL:DebugPrint( "Radar stage now 1." )
 
-			self:FilterCapturedVehicles()
+			self:RemoveDuplicateCapturedVehicles()
 			local caughtVehs = self:GetCapturedVehicles()
 
 			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
@@ -781,5 +795,9 @@ end )
 RegisterCommand( "rdr", function( src, args, raw )
 	if ( args[1] == "setlimit" ) then 
 		RADAR:SetFastLimit( tonumber( args[2] ) ) 
+	elseif ( args[1] == "setmode" ) then 
+		if ( args[2] == "front" or args[2] == "rear" ) then 
+			RADAR:SetAntennaMode( args[2], tonumber( args[3] ) )
+		end 
 	end 
 end, false )
