@@ -1,17 +1,16 @@
+/* Set all div elements to use the box-sizing property of border-box */
 div {
     box-sizing: border-box;
 }
 
+/* Here we set all of the main style properties for the main radar container */
 #radar {
     transform: scale( 2 );
 
     width: 550px;
-    height: 210px;
+    height: 200px;
 
     padding: 0;
-
-    /* Temp border and pos  
-    border: 1px solid black;*/
 
     position: absolute;
     margin: auto;
@@ -24,7 +23,8 @@ div {
     background-color: rgb(30, 33, 38);
 
     display: grid;
-    grid-template-columns: 50px repeat( 6, auto );
+    grid-template-columns: 40px 160px auto;
+    column-gap: 5px;
 }
     #radar > div {
         border: 1px solid orange;
@@ -35,7 +35,7 @@ div {
         display: grid;
         grid-template-rows: 50% 50%;
     }
-        #radar .modes div {
+        #radar .modes .modes_container {
             display: grid;
             grid-template-rows: repeat( 3, auto );
 
@@ -48,7 +48,7 @@ div {
             width: 100%;
 
             font-family: Verdana;
-            font-size: 12px;
+            font-size: 10px;
 
             text-align: center;
 
@@ -58,25 +58,19 @@ div {
         }
 
     #radar .speeds {
-
+        display: grid;
+        grid-template-rows: 50% 50%;
     }
+        #radar .speeds .speed_display {
+            display: flex;
 
-    #radar .dirs {
-
-    }
-
-    #radar .fast_modes {
-
-    }
-
-    #radar .fast_speeds {
-
-    }
-
-    #radar .fast_dirs {
-
-    }
-
-    #radar .patrol {
-        
-    }
+            margin: 15px 0;
+            background-color: orange;
+        }
+            #radar .speeds .speed_display .speed_number {
+                /* width: 100%;
+                margin: 0; */
+                margin: auto;
+                font-size: 50px;
+                text-align: center;
+            }
