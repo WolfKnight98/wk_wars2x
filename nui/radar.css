@@ -1,3 +1,13 @@
+@font-face {
+    font-family: "Seg-7";
+    src: url( "Segment7Standard.otf" );
+}
+
+@font-face {
+    font-family: "Digital-7";
+    src: url( "digital-7.regular.ttf" );
+}
+
 /* Set all div elements to use the box-sizing property of border-box */
 div {
     box-sizing: border-box;
@@ -21,13 +31,14 @@ div {
     right: 0;
     
     background-color: rgb(30, 33, 38);
+    /* background-color: rgb(58, 63, 71); */
 
     display: grid;
     grid-template-columns: 40px 160px auto;
     column-gap: 5px;
 }
     #radar > div {
-        border: 1px solid orange;
+        /* border: 1px solid orange; */
         margin: 0;
     }
 
@@ -41,7 +52,7 @@ div {
 
             margin: 15px 0;
 
-            border: 1px dotted red;
+            /* border: 1px dotted red; */
         }
 
         #radar .modes .mode_text {
@@ -62,15 +73,48 @@ div {
         grid-template-rows: 50% 50%;
     }
         #radar .speeds .speed_display {
-            display: flex;
+            position: relative;
 
-            margin: 15px 0;
-            background-color: orange;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            margin: 10px 0;
+
+            background-color: rgb(61, 18, 0);
+            border: 3px solid black;
         }
-            #radar .speeds .speed_display .speed_number {
-                /* width: 100%;
-                margin: 0; */
+            #radar .speeds .speed_display span {
+                position: absolute;
+
+                display: block;
+
+                width: 93%;
+                height: 65px;
+                line-height: 108%;
                 margin: auto;
-                font-size: 50px;
+
+                font-family: 'Seg-7';
+                font-size: 70px;
                 text-align: center;
+
+                letter-spacing: 10px;
             }
+
+            #radar .speeds .speed_display .ghost {
+                /* position: absolute; */
+                color: rgb(90, 35, 1);
+            }
+
+            #radar .speeds .speed_display .speed_number {
+                color: rgb(252, 113, 1);
+            }
+    
+    #radar .main_area {
+        display: grid;
+        grid-template-rows: 10% 80% 10%;
+    }
+
+* {
+    overflow: hidden;
+}
