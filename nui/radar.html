@@ -6,7 +6,7 @@
 
 	<body onselectstart="return false;" ondragstart="return false;">
 		<div class="radar_container"> 
-			<div class="panel_left_side"></div>
+			<div class="panel_side panel_left"></div>
 
 			<div id="radar">
 				<div class="pwr_button_container">
@@ -26,9 +26,33 @@
 						<p id="rearXmit">XMIT</p>
 					</div>
 				</div>
+
+				<div class="speeds_container">
+					<div class="display">
+						<p class="ghost">000</p>
+						<p class="speed" id="frontSpeed">¦27</p>
+					</div>
+
+					<div class="display">
+						<p class="ghost">000</p>
+						<p class="speed" id="rearSpeed">118</p>
+					</div>
+				</div>
+
+				<div class="speed_arrows_container">
+					<div class="speed_arrows">
+						<div class="arrow arrow_up" id="frontDirAway"></div>
+						<div class="arrow arrow_down" id="frontDirTowards"></div>
+					</div>
+
+					<div class="speed_arrows">
+						<div class="arrow arrow_up" id="rearDirTowards"></div>
+						<div class="arrow arrow_down" id="rearDirAway"></div>
+					</div>
+				</div>
 			</div>
 
-			<div class="panel_right_side"></div>
+			<div class="panel_side panel_right"></div>
 		</div>
     </body>
 </html>
