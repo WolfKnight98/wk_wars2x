@@ -1,0 +1,21 @@
+@font-face {
+    font-family: "Seg-7";
+    src: url( "Segment7Standard.otf" );
+}
+
+.test {
+  width: 300px;
+  height: 200px;
+  
+  background-color: #a0a0a0;
+}
+
+.test2 {
+  font-family: 'Seg7'; 
+  font-size: 72px;
+  
+  padding: 0; 
+  margin: 0;
+  
+  background-color: #ff0000;
+}

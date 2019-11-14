@@ -4,117 +4,74 @@
 }
 
 @font-face {
-    font-family: "Digital-7";
-    src: url( "digital-7.regular.ttf" );
+    font-family: "Muli";
+    src: url( "Muli-Bold.ttf" );
 }
-
-/* Set all div elements to use the box-sizing property of border-box */
-div {
-    box-sizing: border-box;
-}
-
-/* Here we set all of the main style properties for the main radar container */
-#radar {
-    transform: scale( 2 );
-
-    width: 550px;
-    height: 200px;
-
-    padding: 0;
-
-    position: absolute;
-    margin: auto;
-    
-	top: 0;
-	bottom: 0;
-	left: 0;
-    right: 0;
-    
-    background-color: rgb(30, 33, 38);
-    /* background-color: rgb(58, 63, 71); */
-
-    display: grid;
-    grid-template-columns: 40px 160px auto;
-    column-gap: 5px;
-}
-    #radar > div {
-        /* border: 1px solid orange; */
-        margin: 0;
-    }
-
-    #radar .modes {
-        display: grid;
-        grid-template-rows: 50% 50%;
-    }
-        #radar .modes .modes_container {
-            display: grid;
-            grid-template-rows: repeat( 3, auto );
-
-            margin: 15px 0;
-
-            /* border: 1px dotted red; */
-        }
-
-        #radar .modes .mode_text {
-            width: 100%;
-
-            font-family: Verdana;
-            font-size: 10px;
-
-            text-align: center;
-
-            margin: auto;
-            
-            color: white;
-        }
-
-    #radar .speeds {
-        display: grid;
-        grid-template-rows: 50% 50%;
-    }
-        #radar .speeds .speed_display {
-            position: relative;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            margin: 10px 0;
-
-            background-color: rgb(61, 18, 0);
-            border: 3px solid black;
-        }
-            #radar .speeds .speed_display span {
-                position: absolute;
-
-                display: block;
-
-                width: 93%;
-                height: 65px;
-                line-height: 108%;
-                margin: auto;
-
-                font-family: 'Seg-7';
-                font-size: 70px;
-                text-align: center;
-
-                letter-spacing: 10px;
-            }
-
-            #radar .speeds .speed_display .ghost {
-                /* position: absolute; */
-                color: rgb(90, 35, 1);
-            }
-
-            #radar .speeds .speed_display .speed_number {
-                color: rgb(252, 113, 1);
-            }
-    
-    #radar .main_area {
-        display: grid;
-        grid-template-rows: 10% 80% 10%;
-    }
 
 * {
-    overflow: hidden;
+    font-family: Muli, Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 12px;
 }
+
+.radar_container {
+    width: 700px;
+    height: 220px;
+
+    /* Temp centre */
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    display: grid;
+    grid-template-columns: 5% 90% 5%;
+}
+
+.panel_left_side {
+    border-right: 20px solid darkslategray;
+    border-top: 80px solid transparent;
+    border-bottom: 80px solid transparent;
+}
+
+.panel_right_side {
+    border-left: 20px solid darkslategray;
+    border-top: 80px solid transparent;
+    border-bottom: 80px solid transparent;
+}
+
+#radar {
+    background-color: gray; 
+
+    display: grid;
+    grid-template-columns: 60px 50px auto;
+}
+    #radar .pwr_button_container {
+        display: flex;
+        flex-direction: column;
+    }
+        #radar .pwr_button_container .pwr_button {
+            width: 50px;
+            height: 50px;
+            margin: auto;
+            background: linear-gradient(to bottom, rgba( 230, 230, 230, 0.8 ), limegreen 10%, rgb(0, 149, 0)  );
+            box-shadow: 0px 0px 3px 0px rgb( 80, 80, 80 ) ;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 10px;
+        }
+
+    #radar .modes_container {
+        display: grid;
+        grid-template-rows: 50% 50%;
+    }
+        #radar .modes_container .modes {
+            display: flex;
+            flex-direction: column;
+
+            padding: 10px;
+        }
+            #radar .modes_container .modes p {
+                margin: auto;
+            }
