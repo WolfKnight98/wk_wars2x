@@ -8,13 +8,19 @@
     src: url( "Muli-Bold.ttf" );
 }
 
+@font-face {
+    font-family: "Heebo";
+    src: url( "Heebo-Bold.ttf" );
+}
+
 * {
-    font-family: Muli, Verdana, Geneva, Tahoma, sans-serif;
+    font-family: 'Heebo', Verdana, Geneva, Tahoma, sans-serif;
     font-size: 12px;
+    box-sizing: border-box;
 }
 
 .radar_container {
-    width: 700px;
+    width: 660px;
     height: 200px;
 
     /* Temp centre */
@@ -43,28 +49,47 @@
     }
 
 .arrow {
-    transform: scale(0.50);
-    width: 25px;
-    height: 35px;
-    margin: auto;
-    background-color: red;
+    width: 11px;
+    height: 15.4px;
+    min-width: 11px;
+    min-height: 15.4px;
+    margin: 8px auto;
+    background-color: black;
     clip-path: polygon( 50% 0, 100% 55%, 65% 55%, 65% 100%, 35% 100%, 35% 55%, 0 55% );
 }
-    .arrow_up {
-
-    }
-
     .arrow_down {
-
+        transform: rotate(180deg);
     }
 
 #radar {
     /* background-color: gray;  */
     background: linear-gradient( to bottom, rgb( 50, 50, 50 ), rgb( 25, 25, 25 ) );
 
+    height: 100%;
+    width: 100%;
+
     display: grid;
-    grid-template-columns: 45px 50px 150px 45px auto;
+    grid-template-columns: 45px 50px 150px 30px auto;
 }
+    #radar .label {
+        font-size: 15px;
+        text-align: center; 
+        width: 100%; 
+        position: absolute;
+        color: white;
+    }
+        #radar .labeltop {
+            top: 0;
+            left: 0;
+            padding-top: 3px;
+        }
+
+        #radar .labelbottom {
+            bottom: 0;
+            left: 0;
+            padding-bottom: 3px;
+        }
+
     #radar .pwr_button_container {
         display: flex;
         flex-direction: column;
@@ -76,6 +101,7 @@
             background: linear-gradient(to bottom, rgba( 230, 230, 230, 0.8 ), limegreen 10%, rgb(0, 149, 0)  );
             box-shadow: 0px 0px 3px 0px rgb( 80, 80, 80 ) ;
             text-align: center;
+            font-size: 14px;
             line-height: 45px;
             border-radius: 10px;
         }
@@ -87,8 +113,6 @@
         #radar .modes_container .modes {
             display: flex;
             flex-direction: column;
-
-            box-sizing: border-box;
 
             padding: 10px 0;
         }
@@ -105,8 +129,6 @@
             grid-template-columns: 1fr;
 
             height: 70px;
-
-            box-sizing: border-box;
 
             border: 3px solid black;
             
@@ -138,10 +160,16 @@
             }
 
     #radar .speed_arrows_container {
-        display: grid;
-        grid-template-rows: 50% 50%;
+        display: flex;
+        flex-direction: column;
     }
         #radar .speed_arrows_container .speed_arrows {
-            display: flex;
-            flex-direction: column;
+            height: 70px; 
+	
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            justify-content: center;
+            
+            margin: auto 0; 
         }
