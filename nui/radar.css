@@ -22,7 +22,7 @@
 }
 
 .radar_container {
-    width: 668px;
+    width: 670px;
     height: 200px;
 
     /* Temp centre */
@@ -34,7 +34,7 @@
     left: 0;
 
     display: grid;
-    grid-template-columns: 16px 635px 16px;
+    grid-template-columns: 17px 635px 17px;
 }
 
 .panel_side {
@@ -43,7 +43,7 @@
     background: linear-gradient( to bottom, rgb( 50, 50, 50 ), rgb( 25, 25, 25 ) );
 }
     .panel_left {
-        clip-path: polygon( 0 30%, 100% 0, 100% 100%, 0 70% );   
+        clip-path: polygon( 0 30%, 100% 0, 100% 100%, 0 70% );
     }
 
     .panel_right {
