@@ -22,19 +22,19 @@
 }
 
 .radar_container {
-    width: 670px;
+    width: 668px;
     height: 200px;
 
     /* Temp centre */
     position: absolute;
     margin: auto;
-    top: 0;
+    /* top: 0; */
     right: 0;
-    bottom: 0;
+    bottom: 15px;
     left: 0;
 
     display: grid;
-    grid-template-columns: 2.50% 95% 2.50%;
+    grid-template-columns: 16px 635px 16px;
 }
 
 .panel_side {
@@ -71,7 +71,8 @@
     width: 100%;
 
     display: grid;
-    grid-template-columns: auto 50px 150px 35px 50px 135px 35px 135px;
+    grid-template-columns: 45px 50px 150px 35px 50px 135px 35px 135px;
+    gap: 0 0;
 }
     #radar .label {
         font-size: 15px;
@@ -147,7 +148,7 @@
 
             height: 70px;
 
-            border: 3px solid black;
+            border: 1px solid black;
             
             margin: auto 0;
             background-color: rgb(61, 18, 0);
@@ -159,12 +160,12 @@
                 font-size: 70px;
                 text-align: center;
 
-                line-height: 108%;
+                line-height: 115%;
 
                 margin: 0 auto;
                 letter-spacing: 10px;
 
-                margin-right: -6px;
+                margin-right: -8px;
             }
         
         #radar .speeds_container .fast {
@@ -173,8 +174,8 @@
         }
             #radar .speeds_container .fast p {
                 font-size: 60px;
-                line-height: 106%;
-                margin-right: -8px;
+                line-height: 115%;
+                margin-right: -6px;
             }
 
         #radar .speeds_container .fast_top {

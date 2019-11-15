@@ -775,7 +775,7 @@ Citizen.CreateThread( function()
 			else 
 				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRay type: nil" )
 			end 
-		end 
+		end
 
 		-- Ray line drawing
 		local veh = GetVehiclePedIsIn( PlayerPedId(), false )
