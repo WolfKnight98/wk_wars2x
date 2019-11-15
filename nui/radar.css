@@ -10,17 +10,19 @@
 
 @font-face {
     font-family: "Heebo";
+    /* src: url( "Heebo-Regular.ttf" ); */
     src: url( "Heebo-Bold.ttf" );
 }
 
 * {
     font-family: 'Heebo', Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 12px;
+    font-size: 13px;
+    /* color: rgb(216, 74, 17); temp */
     box-sizing: border-box;
 }
 
 .radar_container {
-    width: 660px;
+    width: 670px;
     height: 200px;
 
     /* Temp centre */
@@ -69,7 +71,7 @@
     width: 100%;
 
     display: grid;
-    grid-template-columns: 45px 50px 150px 30px auto;
+    grid-template-columns: auto 50px 150px 35px 50px 135px 35px 135px;
 }
     #radar .label {
         font-size: 15px;
@@ -119,8 +121,23 @@
             #radar .modes_container .modes p {
                 margin: auto;
             }
+        
+        #radar .modes_container .fast_top {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            padding-top: 10px;
+            padding-bottom: 0;
+        }
+
+        #radar .modes_container .fast_bottom {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            padding-top: 0;
+            padding-bottom: 10px;
+        }
     
     #radar .speeds_container {
+        width: 100%;
         display: flex;
         flex-direction: column;
     }
@@ -139,7 +156,6 @@
                 grid-row-start: 1;
                 grid-column-start: 1;
 
-                font-family: 'Seg-7';
                 font-size: 70px;
                 text-align: center;
 
@@ -150,14 +166,24 @@
 
                 margin-right: -6px;
             }
-
-            #radar .speeds_container .display .ghost {
-                color: rgb(90, 35, 1);
+        
+        #radar .speeds_container .fast {
+            height: 60px;
+            background-color: rgb(50, 0, 0)
+        }
+            #radar .speeds_container .fast p {
+                font-size: 60px;
+                line-height: 106%;
+                margin-right: -8px;
             }
 
-            #radar .speeds_container .display .speed {
-                color: rgb(252, 113, 1);;
-            }
+        #radar .speeds_container .fast_top {
+            margin-top: 27px;
+        }
+
+        #radar .speeds_container .fast_bottom {
+            margin-bottom: 27px;
+        }
 
     #radar .speed_arrows_container {
         display: flex;
@@ -173,3 +199,61 @@
             
             margin: auto 0; 
         }
+
+        #radar .speed_arrows_container .fast_top {
+            margin-top: 22px;
+        }
+
+        #radar .speed_arrows_container .fast_bottom {
+            margin-bottom: 22px;
+        }
+    
+    #radar .patrol_and_logo_container {
+        display: grid;
+        grid-template-rows: repeat( 3, 1fr );
+        justify-items: center;
+        align-items: center;
+        height: 100%;
+    }
+        #radar .patrol_and_logo_container .logo {
+            font-size: 18px;
+            color: white;
+        }
+
+        #radar .patrol_and_logo_container .display {
+            background-color: rgb(0, 57, 35);
+        }
+
+        #radar .patrol_and_logo_container .speed_label {
+            color: white;
+            margin-bottom: 40px;
+        }
+    
+    /* Colours and fonts used in multiple areas that are similar */
+    #radar .display p {
+        font-family: 'Seg-7';
+    }
+
+    #radar .display .ghost_speed {
+        color: rgb(90, 35, 1);
+    }
+
+    #radar .display .speed {
+        color: rgb(252, 113, 1);;
+    }
+
+    #radar .display .fast_ghost_speed {
+        color: rgb(70, 0, 0);
+    }
+
+    #radar .display .fast_speed {
+        color: rgb(243, 12, 10);
+    }
+
+    #radar .display .patrol_ghost_speed {
+        color: rgb(0, 91, 68);
+    }
+
+    #radar .display .patrol_speed {
+        color: rgb(15, 244, 57);
+    }
