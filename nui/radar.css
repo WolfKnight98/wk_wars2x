@@ -22,7 +22,7 @@
 }
 
 .radar_container {
-    width: 670px;
+    width: 675px;
     height: 200px;
 
     /* Temp centre */
@@ -34,20 +34,23 @@
     left: 0;
 
     display: grid;
-    grid-template-columns: 17px 635px 17px;
+    grid-template-columns: 1fr 635px 1fr;
 }
 
 .panel_side {
     width: 100%;
     height: 100%;
     background: linear-gradient( to bottom, rgb( 50, 50, 50 ), rgb( 25, 25, 25 ) );
+    z-index: 5;
 }
     .panel_left {
-        clip-path: polygon( 0 30%, 100% 0, 100% 100%, 0 70% );
+        clip-path: polygon( 0 30%, 90% 0, 100% 0, 100% 100%, 90% 100%, 0 70% );
+        transform: translateX( 1px ); 
     }
 
     .panel_right {
-        clip-path: polygon( 0 0, 100% 30%, 100% 70%, 0 100% );   
+        clip-path: polygon( 0 0, 10% 0, 100% 30%, 100% 70%, 10% 100%, 0 100% );   
+        transform: translateX( -1px ); 
     }
 
 .arrow {
@@ -73,6 +76,8 @@
     display: grid;
     grid-template-columns: 45px 50px 150px 35px 50px 135px 35px 135px;
     gap: 0 0;
+
+    z-index: 10;
 }
     #radar .label {
         font-size: 15px;
