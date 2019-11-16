@@ -28,7 +28,7 @@
     /* Temp centre */
     position: absolute;
     margin: auto;
-    /* top: 0; */
+    top: 0;
     right: 0;
     bottom: 15px;
     left: 0;
@@ -222,9 +222,17 @@
         height: 100%;
     }
         #radar .patrol_and_logo_container .logo {
+            width: 75%;
             font-size: 18px;
+            text-align: center;
+            line-height: 100%;
+            margin-top: 15px;
+            font-style: italic;
             color: white;
         }
+            #radar .patrol_and_logo_container .logo .name {
+                font-size: 24px;
+            }
 
         #radar .patrol_and_logo_container .display {
             background-color: rgb(0, 57, 35);
