@@ -5,107 +5,111 @@
     </head>
 
 	<body onselectstart="return false;" ondragstart="return false;">
-		<div class="radar_container"> 
-			<div class="panel_side panel_left"></div>
+		<div class="unit_frame">
+			<div class="frame_border"></div>
+			
+			<div class="radar_container"> 
+				<div class="panel_side panel_left"></div>
 
-			<div id="radar">
-				<div class="label labeltop">FRONT ANTENNA</div>
+				<div id="radar">
+					<div class="label labeltop">FRONT ANTENNA</div>
 
-				<div class="pwr_button_container">
-					<div class="pwr_button">PWR</div>
-				</div>
-
-				<div class="modes_container">
-					<div class="modes">
-						<p id="frontSame">SAME</p>
-						<p id="frontOpp">OPP</p>
-						<p id="frontXmit">XMIT</p>
+					<div class="pwr_button_container">
+						<div class="pwr_button">PWR</div>
 					</div>
 
-					<div class="modes">
-						<p id="rearSame">SAME</p>
-						<p id="rearOpp">OPP</p>
-						<p id="rearXmit">XMIT</p>
-					</div>
-				</div>
+					<div class="modes_container">
+						<div class="modes">
+							<p id="frontSame">SAME</p>
+							<p id="frontOpp">OPP</p>
+							<p id="frontXmit">XMIT</p>
+						</div>
 
-				<div class="speeds_container">
-					<div class="display">
-						<p class="ghost_speed">888</p>
-						<p class="speed" id="frontSpeed"></p>
-					</div>
-
-					<div class="display">
-						<p class="ghost_speed">888</p>
-						<p class="speed" id="rearSpeed"></p>
-					</div>
-				</div>
-
-				<div class="speed_arrows_container">
-					<div class="speed_arrows">
-						<div class="arrow" id="frontDirAway"></div>
-						<div class="arrow arrow_down" id="frontDirTowards"></div>
-					</div>
-
-					<div class="speed_arrows">
-						<div class="arrow" id="rearDirTowards"></div>
-						<div class="arrow arrow_down" id="rearDirAway"></div>
-					</div>
-				</div>
-
-				<div class="modes_container">
-					<div class="modes fast_top">
-						<p id="frontFast">FAST</p>
-						<p id="frontFastLock">LOCK</p>
-					</div>
-
-					<div class="modes fast_bottom">
-						<p id="rearFast">FAST</p>
-						<p id="rearFastLock">LOCK</p>
-					</div>
-				</div>
-
-				<div class="speeds_container">
-					<div class="display fast fast_top">
-						<p class="fast_ghost_speed">888</p>
-						<p class="fast_speed" id="frontFastSpeed"></p>
-					</div>
-
-					<div class="display fast fast_bottom">
-						<p class="fast_ghost_speed">888</p>
-						<p class="fast_speed" id="rearFastSpeed"></p>
-					</div>
-				</div>
-
-				<div class="speed_arrows_container">
-					<div class="speed_arrows fast_top">
-						<div class="arrow" id="frontFastDirAway"></div>
-						<div class="arrow arrow_down" id="frontFastDirTowards"></div>
-					</div>
-
-					<div class="speed_arrows fast_bottom">
-						<div class="arrow" id="rearFastDirTowards"></div>
-						<div class="arrow arrow_down" id="rearFastDirAway"></div>
-					</div>
-				</div>
-
-				<div class="patrol_and_logo_container">
-					<div class="logo"><span class="name">Wraith</span> ARS 2X</div>
-
-					<div class="speeds_container">
-						<div class="display fast">
-							<p class="patrol_ghost_speed">888</p>
-							<p class="patrol_speed" id="patrolSpeed"></p>
+						<div class="modes">
+							<p id="rearSame">SAME</p>
+							<p id="rearOpp">OPP</p>
+							<p id="rearXmit">XMIT</p>
 						</div>
 					</div>
 
-					<div class="speed_label">PATROL SPEED</div>
+					<div class="speeds_container">
+						<div class="display">
+							<p class="ghost_speed">888</p>
+							<p class="speed" id="frontSpeed"></p>
+						</div>
+
+						<div class="display">
+							<p class="ghost_speed">888</p>
+							<p class="speed" id="rearSpeed"></p>
+						</div>
+					</div>
+
+					<div class="speed_arrows_container">
+						<div class="speed_arrows">
+							<div class="arrow" id="frontDirAway"></div>
+							<div class="arrow arrow_down" id="frontDirTowards"></div>
+						</div>
+
+						<div class="speed_arrows">
+							<div class="arrow" id="rearDirTowards"></div>
+							<div class="arrow arrow_down" id="rearDirAway"></div>
+						</div>
+					</div>
+
+					<div class="modes_container">
+						<div class="modes fast_top">
+							<p id="frontFast">FAST</p>
+							<p id="frontFastLock">LOCK</p>
+						</div>
+
+						<div class="modes fast_bottom">
+							<p id="rearFast">FAST</p>
+							<p id="rearFastLock">LOCK</p>
+						</div>
+					</div>
+
+					<div class="speeds_container">
+						<div class="display fast fast_top">
+							<p class="fast_ghost_speed">888</p>
+							<p class="fast_speed" id="frontFastSpeed"></p>
+						</div>
+
+						<div class="display fast fast_bottom">
+							<p class="fast_ghost_speed">888</p>
+							<p class="fast_speed" id="rearFastSpeed"></p>
+						</div>
+					</div>
+
+					<div class="speed_arrows_container">
+						<div class="speed_arrows fast_top">
+							<div class="arrow" id="frontFastDirAway"></div>
+							<div class="arrow arrow_down" id="frontFastDirTowards"></div>
+						</div>
+
+						<div class="speed_arrows fast_bottom">
+							<div class="arrow" id="rearFastDirTowards"></div>
+							<div class="arrow arrow_down" id="rearFastDirAway"></div>
+						</div>
+					</div>
+
+					<div class="patrol_and_logo_container">
+						<div class="logo"><span class="name">Wraith</span> ARS 2X</div>
+
+						<div class="speeds_container">
+							<div class="display fast">
+								<p class="patrol_ghost_speed">888</p>
+								<p class="patrol_speed" id="patrolSpeed"></p>
+							</div>
+						</div>
+
+						<div class="speed_label">PATROL SPEED</div>
+					</div>
+
+					<div class="label labelbottom">REAR ANTENNA</div>
 				</div>
 
-				<div class="label labelbottom">REAR ANTENNA</div>
+				<div class="panel_side panel_right"></div>
 			</div>
-
-			<div class="panel_side panel_right"></div>
 		</div>
     </body>
 </html>
