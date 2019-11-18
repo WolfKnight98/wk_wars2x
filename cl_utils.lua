@@ -1,6 +1,6 @@
 --[[-----------------------------------------------------------------------
 
-	Wraith Radar System - v2.0.0
+	Wraith ARS 2X - v1.0.0
 	Created by WolfKnight
 
 -----------------------------------------------------------------------]]--
@@ -11,13 +11,9 @@ function UTIL:Round( num, numDecimalPlaces )
 	return tonumber( string.format( "%." .. ( numDecimalPlaces or 0 ) .. "f", num ) )
 end 
 
-function UTIL:OppositeAngle( ang )
-	return ( ang + 180 ) % 360
-end
-
-function UTIL:FormatSpeed( speed )
-	return string.format( "%03d", speed )
-end
+-- function UTIL:FormatSpeed( speed )
+-- 	return string.format( "%03d", speed )
+-- end
 
 function UTIL:Clamp( val, min, max )
 	if ( val < min ) then 
@@ -46,12 +42,15 @@ function UTIL:Values( xs )
 		return xs[i]
 	end
 end
-  
 
 function UTIL:GetVehicleInDirection( entFrom, coordFrom, coordTo )
 	local rayHandle = StartShapeTestCapsule( coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 20.0, 10, entFrom, 7 )
 	local _, hitEntity, endCoords, surfaceNormal, vehicle = GetShapeTestResult( rayHandle )
 	return vehicle
+end
+
+function UTIL:OppositeAngle( ang )
+	return ( ang + 180 ) % 360
 end
 
 function UTIL:IsEntityInMyHeading( myAng, tarAng, angToCheck )

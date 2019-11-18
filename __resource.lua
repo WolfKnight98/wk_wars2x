@@ -1,16 +1,16 @@
 --[[-----------------------------------------------------------------------
 
-    Wraith Radar System - v2.0.0
+    Wraith ARS 2X - v1.0.0
     Created by WolfKnight
 
 -----------------------------------------------------------------------]]--
 
 resource_manifest_version '44febabe-d386-4d18-afbe-5e627f4af937'
 
-name 'WraithRS 2'
+name 'Wraith ARS 2X'
 description 'An advanced radar system for FiveM'
 author 'WolfKnight'
-version '2.0.0'
+version '1.0.0'
 
 ui_page "nui/radar.html"
 
