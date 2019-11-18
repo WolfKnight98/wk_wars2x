@@ -282,8 +282,8 @@
             }
 
         #radar .patrol_and_logo_container .display {
-            /* background-color: rgb(0, 57, 35); */
-            background: linear-gradient( to bottom, rgb( 0, 40, 29 ), rgb( 0, 46, 32 ) 40%, rgb( 1, 64, 27 ) 85% );
+            background-color: rgb(0, 57, 35);
+            /* background: linear-gradient( to bottom, rgb( 0, 40, 29 ), rgb( 0, 46, 32 ) 40%, rgb( 1, 64, 27 ) 85% ); */
         }
 
         #radar .patrol_and_logo_container .speed_label {
