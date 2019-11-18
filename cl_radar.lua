@@ -607,13 +607,13 @@ function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
 
 		self:InsertCapturedVehicleData( hitVehs, rayType )
 
-		UTIL:DebugPrint( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
+		-- UTIL:DebugPrint( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
 		self:IncreaseRayTraceState()
 	end )
 end 
 
 function RADAR:CreateRayThreads( ownVeh, vehicles )
-	UTIL:DebugPrint( "Creating ray threads." )
+	-- UTIL:DebugPrint( "Creating ray threads." )
 
 	for _, v in pairs( self.rayTraces ) do 
 		self:CreateRayThread( vehicles, ownVeh, v.startVec.x, v.endVec.x, v.endVec.y, v.rayType )
@@ -662,46 +662,20 @@ function RADAR:Main()
 		-- First stage of the radar - get all of the vehicles hit by the radar
 		if ( self:GetRadarStage() == 0 ) then 
 			if ( self:GetRayTraceState() == 0 ) then 
-				UTIL:DebugPrint( "Radar stage at 0, starting ray trace." )
 				local vehs = self:GetVehiclePool()
 
-				UTIL:DebugPrint( "Resetting captured vehicles and ray trace state." )
 				self:ResetCapturedVehicles()
 				self:ResetRayTraceState()
-
 				self:CreateRayThreads( plyVeh, vehs )
-
-				UTIL:DebugPrint( "Reached end of stage 0." )
-				UTIL:DebugPrint( "Stage = " .. tostring( self:GetRadarStage() ) .. "\tTrace state = " .. tostring( self:GetRayTraceState() ) )
 			elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
-				UTIL:DebugPrint( "Ray traces finished, increasing radar stage." )
 				self:IncreaseRadarStage()
 			end 
 		elseif ( self:GetRadarStage() == 1 ) then 
-			UTIL:DebugPrint( "Radar stage now 1." )
-
 			self:RemoveDuplicateCapturedVehicles()
 			local caughtVehs = self:GetCapturedVehicles()
 
 			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
-				-- table.sort( caughtVehs, self:GetSortModeFunc() ) - sort data in func now 
-
-				UTIL:DebugPrint( "Printing table for sort mode " .. self:GetSortModeText() )
-				for k, v in pairs( caughtVehs ) do 
-					UTIL:DebugPrint( tostring( k ) .. " - " .. tostring( v.veh ) .. " - " .. tostring( v.relPos ) .. " - " .. tostring( v.dist ) .. " - " .. tostring( v.speed ) .. " - " .. tostring( v.size ) .. " - " .. tostring( v.rayType ) )
-				end
-
 				local vehsForDisplay = self:GetVehiclesForAntenna()
-
-				-- for k, v in pairs( vehsForDisplay ) do 
-				-- 	print( type( v ) )
-				-- end 
-
-				print( "\nFront veh: " .. tostring( vehsForDisplay[1] ) )
-				print( "Front fast veh: " .. tostring( vehsForDisplay[2] ) )
-				print( "Rear veh: " .. tostring( vehsForDisplay[3] ) )
-				print( "Rear fast veh: " .. tostring( vehsForDisplay[4] ) )
-				print() 
 
 				self:SetActiveVehicles( vehsForDisplay )
 			else
@@ -749,7 +723,7 @@ end )
 
 local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
 
-Citizen.CreateThread( function()
+--[[Citizen.CreateThread( function()
 	while ( true ) do
 		-- Caught veh debug printing 
 		local av = RADAR:GetActiveVehicles()
@@ -789,7 +763,7 @@ Citizen.CreateThread( function()
 
 		Citizen.Wait( 0 )
 	end 
-end )
+end )]]
 
 -- Commands for debugging 
 RegisterCommand( "rdr", function( src, args, raw )
