@@ -27,9 +27,9 @@
 
     position: absolute;
     margin: auto;
-    top: 0;
+    /* top: 0; */
     right: 0;
-    bottom: 0;
+    bottom: 15px;
     left: 0;
 
     background-image: url( "frame.png" );
@@ -99,6 +99,15 @@
     .arrow_down {
         transform: rotate(180deg);
     }
+
+.active {
+    color: rgb(242, 70, 24);
+    text-shadow: 0 0 6px rgba(235, 62, 15, 0.65);
+}
+
+.active_arrow {
+    background-color: rgb(242, 70, 24);
+}
 
 #radar {
     /* background-color: gray;  */
@@ -292,7 +301,8 @@
     }
 
     #radar .display .speed {
-        color: rgb(252, 113, 1);;
+        color: rgb(252, 113, 1);
+        text-shadow: 0 0 8px rgba(252, 114, 1, 0.65);
     }
 
     #radar .display .fast_ghost_speed {
@@ -301,6 +311,7 @@
 
     #radar .display .fast_speed {
         color: rgb(243, 12, 10);
+        text-shadow: 0 0 8px rgba(243, 14, 10, 0.65);
     }
 
     #radar .display .patrol_ghost_speed {
@@ -309,4 +320,5 @@
 
     #radar .display .patrol_speed {
         color: rgb(15, 244, 57);
+        text-shadow: 0 0 8px rgba(15, 244, 57, 0.65);
     }
