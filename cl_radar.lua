@@ -194,7 +194,8 @@ function RADAR:GetRayTraceState()
 end
 
 function RADAR:GetNumOfRays()
-	return self.vars.numberOfRays
+	-- return self.vars.numberOfRays
+	return #self.rayTraces
 end
 
 function RADAR:IncreaseRayTraceState()
@@ -601,7 +602,7 @@ function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
 		local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
 		local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
 
-		UTIL:DrawDebugLine( startP, endP )
+		-- UTIL:DrawDebugLine( startP, endP )
 
 		local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
 
@@ -723,7 +724,7 @@ end )
 
 local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
 
---[[Citizen.CreateThread( function()
+Citizen.CreateThread( function()
 	while ( true ) do
 		-- Caught veh debug printing 
 		local av = RADAR:GetActiveVehicles()
@@ -763,7 +764,7 @@ local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
 
 		Citizen.Wait( 0 )
 	end 
-end )]]
+end )
 
 -- Commands for debugging 
 RegisterCommand( "rdr", function( src, args, raw )
