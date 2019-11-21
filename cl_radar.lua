@@ -44,10 +44,6 @@ RADAR.vars =
 	-- Either "mph" or "kmh", can be toggle in-game 
 	speedType = "mph",
 
-	-- Fast limit, can be changed by the user during radar operation 
-	-- Default is 65 for speed type MPH
-	fastLimit = 65, 
-
 	-- Antennas, this table contains all of the data needed for operation of the front and rear antennas 
 	antennas = {
 		-- Variables for the front antenna 
@@ -75,7 +71,7 @@ RADAR.vars =
 	}, 
 
 	-- Sort mode, defines the table position for RADAR.sorting   
-	sortMode = 1, 
+	-- sortMode = 1, 
 
 	-- The maximum distance that the radar system's ray traces can go 
 	maxCheckDist = 300.0,
@@ -123,7 +119,7 @@ RADAR.rayTraces = {
 -- function used in table.sort()
 --
 -- DO NOT TOUCH THESE UNLESS YOU KNOW WHAT YOU'RE DOING!
-RADAR.sorting = {
+--[[ RADAR.sorting = {
 	[1] = { 
 		name = "CLOSEST", 
 		func = function( a, b ) return a.dist < b.dist end 
@@ -136,6 +132,11 @@ RADAR.sorting = {
 		name = "LARGEST", 
 		func = function( a, b ) return a.size > b.size + 1.0 end
 	} 
+} ]]
+
+RADAR.sorting = {
+	strongest = function( a, b ) return a.size > b.size end, 
+	fastest = function( a, b ) return a.speed > b.speed end
 }
 
 
@@ -158,10 +159,6 @@ function RADAR:GetPatrolSpeed()
 	return self.vars.patrolSpeed
 end 
 
-function RADAR:GetFastLimit()
-	return self.vars.fastLimit
-end 
-
 function RADAR:GetVehiclePool()
 	return self.vars.vehiclePool
 end 
@@ -174,19 +171,19 @@ function RADAR:GetActiveVehicles()
 	return self.activeVehicles
 end 
 
+function RADAR:GetStrongestSortFunc()
+	return self.sorting.strongest 
+end 
+
+function RADAR:GetFastestSortFunc()
+	return self.sorting.fastest
+end 
+
 function RADAR:SetPatrolSpeed( speed )
 	if ( type( speed ) == "number" ) then 
 		self.vars.patrolSpeed = speed
 	end
 end
-
-function RADAR:SetFastLimit( limit )
-	if ( type( limit ) == "number" ) then 
-		if ( limit >= 0 and limit <= 999 ) then 
-			self.vars.fastLimit = limit 
-		end 
-	end 
-end 
 
 function RADAR:SetVehiclePool( pool )
 	if ( type( pool ) == "table" ) then 
@@ -225,6 +222,114 @@ function RADAR:CacheNumOfRays()
 	self.vars.numberOfRays = #self.rayTraces
 end 
 
+function RADAR:GetIntersectedVehIsFrontOrRear( t )
+	if ( t > 10.0 ) then 
+		return 1 -- vehicle is in front 
+	elseif ( t < -10.0 ) then 
+		return -1 -- vehicle is behind
+	end 
+
+	return 0 -- vehicle is next to self
+end 
+
+function RADAR:GetLineHitsSphereAndDir( centre, radius, rayStart, rayEnd )
+	-- First we get the normalised ray, this way we then know the direction the ray is going 
+	local rayNorm = norm( rayEnd - rayStart )
+
+	-- Then we calculate the ray from the start point to the centre position of the sphere
+	local rayToCentre = centre - rayStart
+
+	-- Now that we have the ray to the centre of the sphere, and the normalised ray direction, we 
+	-- can calculate the shortest point from the centre of the sphere onto the ray itself. This 
+	-- would then give us the opposite side of the right angled triangle. All of the resulting 
+	-- values are also in squared form, as performing square root functions is slower. 
+	local tProj = dot( rayToCentre, rayNorm )
+	local oppLenSqr = dot( rayToCentre, rayToCentre ) - ( tProj * tProj )
+
+	-- Square the radius
+	local radiusSqr = radius * radius 
+
+	local rayDist = #( rayEnd - rayStart )
+	local distToCentre = #( rayStart - centre ) - ( radius * 2 )
+
+	-- Now all we have to do is compare the squared opposite length and the radius squared, this 
+	-- will then tell us if the ray intersects with the sphere.
+	-- if ( oppLenSqr < radiusSqr and ( t0 < ( dist + radius ) ) ) then 
+	if ( oppLenSqr < radiusSqr and not ( distToCentre > rayDist ) ) then 
+		return true, self:GetIntersectedVehIsFrontOrRear( tProj )
+	end
+
+	return false, nil 
+end 
+
+function RADAR:ShootCustomRay( localVeh, veh, s, e )
+	local pos = GetEntityCoords( veh )
+	local dist = #( pos - s )
+
+	if ( DoesEntityExist( veh ) and veh ~= localVeh and dist < self:GetMaxCheckDist() ) then 
+		local entSpeed = GetEntitySpeed( veh )
+		local visible = HasEntityClearLosToEntity( localVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
+
+		if ( entSpeed > 0.1 and visible ) then 
+			local radius, size = self:GetDynamicRadius( veh )
+
+			local hit, relPos = self:GetLineHitsSphereAndDir( pos, radius, s, e )
+
+			if ( hit ) then 
+				UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, radius, { 255, 0, 0, 40 } )
+
+				return true, relPos, dist, entSpeed, size
+			end 
+		end
+	end 
+
+	return false, nil, nil, nil, nil
+end 
+
+function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
+	local t = {}
+	local hasData = false 
+
+	for _, veh in pairs( vehs ) do 
+		local hit, relativePos, distance, speed, size = self:ShootCustomRay( ownVeh, veh, s, e )
+
+		if ( hit ) then 
+			local d = {}
+			d.veh = veh 
+			d.relPos = relativePos
+			d.dist = UTIL:Round( distance, 2 ) -- Possibly remove 
+			d.speed = UTIL:Round( speed, 3 )
+			d.size = size
+
+			table.insert( t, d )
+
+			hasData = true 
+		end 
+	end 
+
+	if ( hasData ) then return t end
+end 
+
+function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
+	Citizen.CreateThread( function()
+		local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
+		local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
+
+		local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
+
+		self:InsertCapturedVehicleData( hitVehs, rayType )
+
+		-- UTIL:DebugPrint( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
+		self:IncreaseRayTraceState()
+	end )
+end 
+
+function RADAR:CreateRayThreads( ownVeh, vehicles )
+	for _, v in pairs( self.rayTraces ) do 
+		self:CreateRayThread( vehicles, ownVeh, v.startVec.x, v.endVec.x, v.endVec.y, v.rayType )
+	end 
+end 
+
 
 --[[------------------------------------------------------------------------
 	Radar stage functions 
@@ -249,7 +354,7 @@ function RADAR:ToggleAntenna( ant )
 	self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
 end 
 
-function RADAR:IsAntennaOn( ant )
+function RADAR:IsAntennaTransmitting( ant )
 	return self.vars.antennas[ant].xmit 
 end 
 
@@ -323,7 +428,7 @@ end
 --[[------------------------------------------------------------------------
 	Radar sort mode functions
 ------------------------------------------------------------------------]]--
-function RADAR:GetSortModeText()
+--[[ function RADAR:GetSortModeText()
 	return self.sorting[self.vars.sortMode].name
 end 
 
@@ -347,7 +452,7 @@ function RADAR:ToggleSortMode()
 	end 
 
 	UTIL:Notify( "Radar mode set to " .. self:GetSortModeText() )
-end 
+end ]]
 
 
 --[[------------------------------------------------------------------------
@@ -461,181 +566,61 @@ function RADAR:CheckVehicleDataFitsMode( ant, rt )
 	return false  
 end
 
-function RADAR:GetFastestFrontAndRear()
-	local t = self:GetCapturedVehicles()
-	table.sort( t, self.sorting[2].func )
-
-	local vehs = { ["front"] = nil, ["rear"] = nil }
-
-	for ant in UTIL:Values( { "front", "rear" } ) do 
-		for k, v in pairs( t ) do 
-			local antText = self:GetAntennaTextFromNum( v.relPos )
-
-			if ( ant == antText and self:CheckVehicleDataFitsMode( ant, v.rayType ) and self:IsAntennaOn( ant ) ) then 
-				local speed = self:GetVehSpeedFormatted( v.speed )
-
-				if ( speed >= self:GetFastLimit() ) then 
-					vehs[ant] = v 
-				end 
-
-				break
-			end 
-		end 
-	end 
-
-	return vehs 
-end 
-
 function RADAR:GetVehiclesForAntenna()
-	-- Get the vehicle data that needs to be displayed in the fast box on the radar, this is 
-	-- because the radar mode doesn't have an effect on what gets displayed in the fast box
-	local fastVehs = self:GetFastestFrontAndRear()
-
-	-- Loop through and split up the vehicles based on front and rear
 	local vehs = { ["front"] = {}, ["rear"] = {} }
+	local results = { ["front"] = { nil, nil }, ["rear"] = { nil, nil } }
 
+	-- Loop through and split up the vehicles based on front and rear, this is simply because the actual system 
+	-- that gets all of the vehicles hit by the radar only has a relative position of either 1 or -1, which we 
+	-- then convert below into an antenna string!
 	for ant in UTIL:Values( { "front", "rear" } ) do 
-		for k, v in pairs( self:GetCapturedVehicles() ) do 
-			local antText = self:GetAntennaTextFromNum( v.relPos )
+		if ( self:IsAntennaTransmitting( ant ) ) then 
+			for k, v in pairs( self:GetCapturedVehicles() ) do 
+				local antText = self:GetAntennaTextFromNum( v.relPos )
 
-			if ( ant == antText and self:IsAntennaOn( ant ) ) then 
-				table.insert( vehs[ant], v )
+				if ( ant == antText ) then 
+					table.insert( vehs[ant], v )
+				end 
 			end 
-		end 
 
-		-- Sort the table based on the set mode
-		table.sort( vehs[ant], self:GetSortModeFunc() )
+			-- As the radar is based on how the real Stalker DSR 2X works, we now sort the dataset by
+			-- the 'strongest' (largest) target, this way the first result for the front and rear data
+			-- will be the one that gets displayed in the target boxes.
+			table.sort( vehs[ant], self:GetStrongestSortFunc() )
+		end
 	end 
-
-	-- Grab the vehicles for display 
-	local normVehs = { ["front"] = nil, ["rear"] = nil }
 
 	for ant in UTIL:Values( { "front", "rear" } ) do 
 		if ( not UTIL:IsTableEmpty( vehs[ant] ) ) then
+			-- Get the 'strongest' vehicle for the antenna 
 			for k, v in pairs( vehs[ant] ) do 
-				if ( ( self:GetVehSpeedFormatted( v.speed ) <= self:GetFastLimit() ) and self:CheckVehicleDataFitsMode( ant, v.rayType ) ) then 
-					normVehs[ant] = v 
+				if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) ) then 
+					results[ant][1] = v 
+					break
+				end 
+			end 
+
+			-- Get the 'fastest' vehicle for the antenna 
+			table.sort( vehs[ant], self:GetFastestSortFunc() )
+
+			for k, v in pairs( vehs[ant] ) do 
+				if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh ) then 
+					results[ant][2] = v 
 					break
 				end 
 			end 
 		end 
-	end 
-
-	return { normVehs["front"], fastVehs["front"], normVehs["rear"], fastVehs["rear"] }
-end  
-
-function RADAR:GetIntersectedVehIsFrontOrRear( t )
-	if ( t > 10.0 ) then 
-		return 1 -- vehicle is in front 
-	elseif ( t < -10.0 ) then 
-		return -1 -- vehicle is behind
-	end 
-
-	return 0 -- vehicle is next to self
-end 
-
-function RADAR:GetLineHitsSphereAndDir( centre, radius, rayStart, rayEnd )
-	-- First we get the normalised ray, this way we then know the direction the ray is going 
-	local rayNorm = norm( rayEnd - rayStart )
-
-	-- Then we calculate the ray from the start point to the centre position of the sphere
-	local rayToCentre = centre - rayStart
-
-	-- Now that we have the ray to the centre of the sphere, and the normalised ray direction, we 
-	-- can calculate the shortest point from the centre of the sphere onto the ray itself. This 
-	-- would then give us the opposite side of the right angled triangle. All of the resulting 
-	-- values are also in squared form, as performing square root functions is slower. 
-	local tProj = dot( rayToCentre, rayNorm )
-	local oppLenSqr = dot( rayToCentre, rayToCentre ) - ( tProj * tProj )
-
-	-- Square the radius
-	local radiusSqr = radius * radius 
-
-	local rayDist = #( rayEnd - rayStart )
-	local distToCentre = #( rayStart - centre ) - ( radius * 2 )
-
-	-- Now all we have to do is compare the squared opposite length and the radius squared, this 
-	-- will then tell us if the ray intersects with the sphere.
-	-- if ( oppLenSqr < radiusSqr and ( t0 < ( dist + radius ) ) ) then 
-	if ( oppLenSqr < radiusSqr and not ( distToCentre > rayDist ) ) then 
-		return true, self:GetIntersectedVehIsFrontOrRear( tProj )
 	end
 
-	return false, nil 
+	return { results["front"][1], results["front"][2], results["rear"][1], results["rear"][2] }
 end 
 
-function RADAR:ShootCustomRay( localVeh, veh, s, e )
-	local pos = GetEntityCoords( veh )
-	local dist = #( pos - s )
-
-	if ( DoesEntityExist( veh ) and veh ~= localVeh and dist < self:GetMaxCheckDist() ) then 
-		local entSpeed = GetEntitySpeed( veh )
-		local visible = HasEntityClearLosToEntity( localVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
-
-		if ( entSpeed > 0.1 and visible ) then 
-			local radius, size = self:GetDynamicRadius( veh )
-
-			local hit, relPos = self:GetLineHitsSphereAndDir( pos, radius, s, e )
-
-			if ( hit ) then 
-				UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, radius, { 255, 0, 0, 40 } )
-
-				return true, relPos, dist, entSpeed, size
-			end 
-		end
-	end 
-
-	return false, nil, nil, nil, nil
-end 
-
-function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
-	local t = {}
-	local hasData = false 
-
-	for _, veh in pairs( vehs ) do 
-		local hit, relativePos, distance, speed, size = self:ShootCustomRay( ownVeh, veh, s, e )
-
-		if ( hit ) then 
-			local d = {}
-			d.veh = veh 
-			d.relPos = relativePos
-			d.dist = UTIL:Round( distance, 2 )
-			d.speed = UTIL:Round( speed, 3 )
-			d.size = size
-
-			table.insert( t, d )
-
-			hasData = true 
-		end 
-	end 
-
-	if ( hasData ) then return t end
-end 
-
-function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
-	Citizen.CreateThread( function()
-		local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
-		local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
-
-		-- UTIL:DrawDebugLine( startP, endP )
-
-		local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
-
-		self:InsertCapturedVehicleData( hitVehs, rayType )
-
-		-- UTIL:DebugPrint( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
-		self:IncreaseRayTraceState()
-	end )
-end 
-
-function RADAR:CreateRayThreads( ownVeh, vehicles )
-	-- UTIL:DebugPrint( "Creating ray threads." )
-
-	for _, v in pairs( self.rayTraces ) do 
-		self:CreateRayThread( vehicles, ownVeh, v.startVec.x, v.endVec.x, v.endVec.y, v.rayType )
-	end 
-end 
-
+-- Num4 = 108 - INPUT_VEH_FLY_ROLL_LEFT_ONLY
+-- Num5 = 112 - INPUT_VEH_FLY_PITCH_DOWN_ONLY
+-- Num6 = 109 - INPUT_VEH_FLY_ROLL_RIGHT_ONLY
+-- Num7 = 117 - INPUT_VEH_FLY_SELECT_TARGET_LEFT
+-- Num8 = 111 - INPUT_VEH_FLY_PITCH_UP_ONLY
+-- Num9 = 118 - INPUT_VEH_FLY_SELECT_TARGET_RIGHT
 function RADAR:RunControlManager()
 	-- 'Z' key, toggles debug mode 
 	if ( IsDisabledControlJustPressed( 1, 20 ) ) then 
@@ -643,18 +628,23 @@ function RADAR:RunControlManager()
 	end 
 
 	-- 'X' key, change the sort mode 
-	if ( IsDisabledControlJustPressed( 1, 105 ) ) then 
+	--[[ if ( IsDisabledControlJustPressed( 1, 105 ) ) then 
 		self:ToggleSortMode()
+	end ]]
+
+	if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
+		self:TogglePower()
+		UTIL:Notify( "Radar power toggled." )
 	end 
 
-	-- 'Num7' key, toggles front antenna
-	if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
+	-- 'Num8' key, toggles front antenna
+	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
 		self:ToggleAntenna( "front" )
 		UTIL:Notify( "Front antenna toggled." )
 	end 
 
-	-- 'Num8' key, toggles rear antenna
-	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
+	-- 'Num5' key, toggles rear antenna
+	if ( IsDisabledControlJustPressed( 1, 112 ) ) then 
 		self:ToggleAntenna( "rear" )
 		UTIL:Notify( "Rear antenna toggled." )
 	end 
@@ -672,7 +662,7 @@ function RADAR:Main()
 	local plyVeh = GetVehiclePedIsIn( ped, false )
 
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
-	if ( DoesEntityExist( plyVeh ) and GetPedInVehicleSeat( plyVeh, -1 ) == ped and GetVehicleClass( plyVeh ) == 18 ) then 
+	if ( DoesEntityExist( plyVeh ) and GetPedInVehicleSeat( plyVeh, -1 ) == ped and GetVehicleClass( plyVeh ) == 18 and self:IsPowerOn() ) then 
 		local plyVehPos = GetEntityCoords( plyVeh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
@@ -706,6 +696,11 @@ function RADAR:Main()
 	end 
 end 
 
+-- This will be the main function that handles all of the radar's operation 
+function RADAR:Controller()
+
+end 
+
 -- Update the vehicle pool every 3 seconds
 Citizen.CreateThread( function() 
 	while ( true ) do
@@ -719,7 +714,7 @@ end )
 
 -- Main thread
 Citizen.CreateThread( function()
-	RADAR:CacheNumOfRays()
+	-- RADAR:CacheNumOfRays()
 
 	while ( true ) do
 		RADAR:Main()
@@ -737,6 +732,10 @@ Citizen.CreateThread( function()
 	end 
 end )
 
+
+
+
+------------------------------ DEBUG ------------------------------
 local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
 
 Citizen.CreateThread( function()
