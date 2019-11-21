@@ -601,7 +601,7 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 			d.relPos = relativePos
 			d.dist = UTIL:Round( distance, 2 )
 			d.speed = UTIL:Round( speed, 3 )
-			d.size = math.ceil( size )
+			d.size = size
 
 			table.insert( t, d )
 
