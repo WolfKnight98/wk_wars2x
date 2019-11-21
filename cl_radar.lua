@@ -34,6 +34,9 @@ end )
 ------------------------------------------------------------------------]]--
 RADAR.vars = 
 {
+	-- The radar's power
+	power = false, 
+
 	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
 	patrolSpeed = 0,
 
@@ -134,6 +137,18 @@ RADAR.sorting = {
 		func = function( a, b ) return a.size > b.size + 1.0 end
 	} 
 }
+
+
+--[[------------------------------------------------------------------------
+	Radar essentials functions  
+------------------------------------------------------------------------]]--
+function RADAR:IsPowerOn()
+	return self.vars.power 
+end 
+
+function RADAR:TogglePower()
+	self.vars.power = not self.vars.power 
+end
 
 
 --[[------------------------------------------------------------------------
