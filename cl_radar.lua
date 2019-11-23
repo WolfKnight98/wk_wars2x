@@ -37,6 +37,14 @@ RADAR.vars =
 	-- The radar's power
 	power = false, 
 
+	-- These are the settings that are used in the operator menu 
+	settings = {
+		fastDisplay = true, 
+		oppSensitivity = 5, 
+		sameSensitivity = 5, 
+		alert = true 
+	},
+
 	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
 	patrolSpeed = 0,
 
@@ -206,7 +214,6 @@ function RADAR:GetRayTraceState()
 end
 
 function RADAR:GetNumOfRays()
-	-- return self.vars.numberOfRays
 	return #self.rayTraces
 end
 
@@ -216,10 +223,6 @@ end
 
 function RADAR:ResetRayTraceState()
 	self.vars.rayTraceState = 0
-end 
-
-function RADAR:CacheNumOfRays()
-	self.vars.numberOfRays = #self.rayTraces
 end 
 
 function RADAR:GetIntersectedVehIsFrontOrRear( t )
@@ -714,8 +717,6 @@ end )
 
 -- Main thread
 Citizen.CreateThread( function()
-	-- RADAR:CacheNumOfRays()
-
 	while ( true ) do
 		RADAR:Main()
 
