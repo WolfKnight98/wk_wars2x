@@ -4,14 +4,15 @@
     </head>
 
 	<body onselectstart="return false;" ondragstart="return false;">
-		<div class="unit_frame" style="display: none;">
+		<!-- <div class="unit_frame" style="display: none;"> -->
+		<div class="unit_frame">
 			<div class="frame_border"></div>
 
 			<div class="radar_container"> 
 				<div class="panel_side panel_left"></div>
 
 				<div id="radar">
-					<div class="label labeltop">FRONT ANTENNA</div>
+					<div class="label label_top">FRONT ANTENNA</div>
 
 					<div class="pwr_button_container">
 						<div class="pwr_button">PWR</div>
@@ -104,10 +105,32 @@
 						<div class="speed_label">PATROL SPEED</div>
 					</div>
 
-					<div class="label labelbottom">REAR ANTENNA</div>
+					<div class="label label_bottom">REAR ANTENNA</div>
 				</div>
 
 				<div class="panel_side panel_right"></div>
+			</div>
+		</div>
+
+		<div id="rc">
+			<button class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
+
+			<p class="label">FRONT ANTENNA</p>
+
+			<div class="antenna_btns_container">
+				<div class="btns">
+					<button class="zone_btn top_left" id="frontOppBtn">OPP</button>
+					<button class="zone_btn top_middle" id="frontXmitBtn">XMIT</button>
+					<button class="zone_btn top_right" id="frontSameBtn">SAME</button>
+				</div>
+
+				<div class="breaker"></div>
+
+				<div class="btns">
+					<button class="zone_btn" id="rearOppBtn">OPP</button>
+					<button class="zone_btn" id="rearXmitBtn">XMIT</button>
+					<button class="zone_btn" id="rearSameBtn">SAME</button>
+				</div>
 			</div>
 		</div>
 
