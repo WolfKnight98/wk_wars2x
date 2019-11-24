@@ -352,11 +352,16 @@
     
         /* font-family: 'Heebo-Regular'; */
 
-        box-shadow: 1px 2px rgb( 100, 100, 100 );
+        box-shadow: 2px 3px rgb( 100, 100, 100 );
     }
 
     #rc button:hover {
         background-color: rgb( 230, 230, 230 );
+    }
+
+    #rc button:active {
+        box-shadow: none;
+        transform: translateX( 2px ) translateY( 3px );
     }
 
     #rc .rounded_btn {
@@ -393,8 +398,16 @@
         }
 
     #rc .xmit_wrap {
-        filter: drop-shadow( 1px 2px rgb( 100, 100, 100 ) );
+        filter: drop-shadow( 2px 3px rgb( 100, 100, 100 ) );
     }
+
+    #rc .xmit_wrap:active {
+        filter: drop-shadow( 0 0 rgba( 100, 100, 100, 0.0 ) );
+        transform: translateX( 2px ) translateY( 3px );
+    }
+        #rc .xmit_wrap button:active {
+            transform: none;
+        }
 
     #rc .xmit_btn .arrow {
         width: 40px;
