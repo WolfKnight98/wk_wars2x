@@ -321,8 +321,10 @@
     }
 
 #rc {
-    width: 275px;
-    height: 700px;
+    /* width: 275px;
+    height: 750px; */
+    width: 315px;
+    height: 800px;
    
     position: absolute;
     top: 0;
@@ -330,15 +332,19 @@
     left: 0;
     right: 0;
     margin: auto;
-    padding-top: 25px;
+    /* padding-top: 25px; */
+    padding: 65px 30px 50px 30px;
 
     display: grid;
-    grid-template-rows: 50px 30px 200px 30px 60px 130px 50px 80px auto;
+    grid-template-rows: 50px 30px 200px 30px 60px 130px 50px 80px;
     justify-items: center;
     align-items: center;
 
     color: white;
-    background-color: rgb( 50, 50, 50 );
+    /* background-color: rgb( 50, 50, 50 ); */
+    background-image: url( "rc_bg.png" );
+
+    /* clip-path: polygon( 5% 0, 95% 0, 100% 25%, 90% 100%, 10% 100%, 0 25% ); */
 
     z-index: 15;
 }
@@ -418,10 +424,6 @@
         clip-path: polygon( 50% 0, 100% 60%, 70% 60%, 70% 100%, 30% 100%, 30% 60%, 0 60% );
         background-color: rgb( 0, 0, 0 );
     }
-        #rc .xmit_btn .arrow_top {
-            /* margin: 10px auto 0 auto; */
-        }
-
         #rc .xmit_btn .arrow_bottom {
             transform: rotate( 180deg );
             bottom: 0;
@@ -441,7 +443,7 @@
     }
 
     #rc .antenna_btns_container {
-        width: 95%;
+        width: 90%;
         height: 100%;
         display: grid;
         grid-template-rows: 45% 10% 45%;
@@ -534,7 +536,7 @@
     #rc .light {
         width: 120px; 
         height: 30px;
-        font-size: 17px;
+        font-size: 15px;
     }
 
     #rc .logo {
