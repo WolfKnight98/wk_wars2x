@@ -322,7 +322,7 @@
 
 #rc {
     width: 275px;
-    height: 600px;
+    height: 700px;
    
     position: absolute;
     top: 0;
@@ -333,7 +333,7 @@
     padding-top: 25px;
 
     display: grid;
-    grid-template-rows: 40px 30px 200px auto;
+    grid-template-rows: 50px 30px 200px 30px 60px 130px 50px 80px auto;
     justify-items: center;
     align-items: center;
 
@@ -350,15 +350,21 @@
 
         background-color: rgb( 200, 200, 200 ); 
     
-        font-family: 'Heebo-Regular';
+        /* font-family: 'Heebo-Regular'; */
+
+        box-shadow: 1px 2px rgb( 100, 100, 100 );
     }
 
     #rc button:hover {
-        background-color: rgb( 220, 220, 220 );
+        background-color: rgb( 230, 230, 230 );
     }
 
     #rc .rounded_btn {
         border-radius: 30px;
+    }
+
+    #rc .circle_btn {
+        border-radius: 100%;
     }
 
     #rc .zone_btn {
@@ -370,6 +376,11 @@
         width: 65px; 
         height: 80px;
         position: relative;
+        background-color: rgb( 200, 200, 200 ); 
+    }
+
+    #rc .xmit_btn:hover {
+        background-color: rgb( 230, 230, 230 );
     }
         #rc .xmit_top {
             clip-path: polygon( 0 15px, 50% 0, 100% 15px, 100% 100%, 0 100% );
@@ -381,12 +392,8 @@
             border-radius: 7px 7px 0 0;
         }
 
-    #rc .xmit_btn {
-        background-color: rgb( 200, 200, 200 ); 
-    }
-
-    #rc .xmit_btn:hover {
-        background-color: rgb( 220, 220, 220 );
+    #rc .xmit_wrap {
+        filter: drop-shadow( 1px 2px rgb( 100, 100, 100 ) );
     }
 
     #rc .xmit_btn .arrow {
@@ -410,13 +417,14 @@
     /* Buttons and remote control elements */
     #rc .toggle_display {
         width: 130px;
-        height: 30px;
+        height: 40px;
     }
 
     #rc .label {
-        font-family: 'Heebo-Regular';
+        /* font-family: 'Heebo-Regular'; */
         font-size: 20px;
         letter-spacing: 1px;
+        /* margin: 5px 0; */
     }
 
     #rc .antenna_btns_container {
@@ -481,3 +489,49 @@
             margin: auto;
             background-color: white; 
         }
+    
+    #rc .menu {
+        width: 60px;
+        height: 60px;
+        font-size: 17px;
+        line-height: 62px;
+    }
+
+    #rc .vol_ps_container {
+        width: 90%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-items: center;
+    }
+        #rc .vol_ps_container .vol_and_test, 
+        #rc .vol_ps_container .ps_blank {
+            width: 80px;
+            height: 55px;
+            border-radius: 7px;
+        }
+
+        #rc .vol_ps_container .hold {
+            border-bottom: 2px solid rgb( 0, 0, 0 );
+        }
+
+        #rc .vol_ps_container .ps_blank {
+            padding: 0 10px;
+        }
+    
+    #rc .light {
+        width: 120px; 
+        height: 30px;
+        font-size: 17px;
+    }
+
+    #rc .logo {
+        font-size: 18px;
+        font-style: italic;
+    }
+        #rc .logo .large {
+            font-size: 25px;
+        }
+
+    #rc .blue {
+        background-color: rgb( 84, 210, 255 );
+    }
