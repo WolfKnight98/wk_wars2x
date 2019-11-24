@@ -320,21 +320,6 @@
         text-shadow: 0 0 8px rgba( 15, 244, 57, 0.65 );
     }
 
-button {
-    border: none;
-    margin: 0;
-    padding: 0;
-
-    /* Turn bg colour into a gradient */
-    background-color: rgb( 200, 200, 200 ); 
-
-    font-family: 'Heebo-Regular';
-}
-
-button:hover {
-    background-color: rgb( 220, 220, 220 );
-}
-
 #rc {
     width: 275px;
     height: 600px;
@@ -358,6 +343,20 @@ button:hover {
     z-index: 15;
 }
     /* Button template classes */
+    #rc button {
+        border: none;
+        margin: 0;
+        padding: 0;
+
+        background-color: rgb( 200, 200, 200 ); 
+    
+        font-family: 'Heebo-Regular';
+    }
+
+    #rc button:hover {
+        background-color: rgb( 220, 220, 220 );
+    }
+
     #rc .rounded_btn {
         border-radius: 30px;
     }
@@ -366,6 +365,47 @@ button:hover {
         width: 65px;
         height: 65px;
     }
+
+    #rc .xmit_btn {
+        width: 65px; 
+        height: 80px;
+        position: relative;
+    }
+        #rc .xmit_top {
+            clip-path: polygon( 0 15px, 50% 0, 100% 15px, 100% 100%, 0 100% );
+            border-radius: 0 0 7px 7px;
+        }
+
+        #rc .xmit_bottom {
+            clip-path: polygon( 0 65px, 0 0, 100% 0, 100% 65px, 50% 100% );
+            border-radius: 7px 7px 0 0;
+        }
+
+    #rc .xmit_btn {
+        background-color: rgb( 200, 200, 200 ); 
+    }
+
+    #rc .xmit_btn:hover {
+        background-color: rgb( 220, 220, 220 );
+    }
+
+    #rc .xmit_btn .arrow {
+        width: 40px;
+        height: 20px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        clip-path: polygon( 50% 0, 100% 60%, 70% 60%, 70% 100%, 30% 100%, 30% 60%, 0 60% );
+        background-color: rgb( 0, 0, 0 );
+    }
+        #rc .xmit_btn .arrow_top {
+            /* margin: 10px auto 0 auto; */
+        }
+
+        #rc .xmit_btn .arrow_bottom {
+            transform: rotate( 180deg );
+            bottom: 0;
+        }
 
     /* Buttons and remote control elements */
     #rc .toggle_display {
@@ -389,23 +429,55 @@ button:hover {
         #rc .antenna_btns_container .btns {
             display: flex; 
             justify-content: space-evenly;
-            align-items: flex-end;
         }
-            #rc .antenna_btns_container .btns .top_left {
-                border-radius: 35px 5px 5px 5px;
+            #rc .antenna_btns_container .btns_top {
+                align-items: flex-end;
             }
 
-            #rc .antenna_btns_container .btns .top_middle {
-                height: 80px;
-                clip-path: polygon( 0 15px, 50% 0, 100% 15px, 100% 100%, 0 100% );
+            #rc .antenna_btns_container .btns_bottom {
+                align-items: flex-start;
+            }
+
+            /* Style for the button inside the div, this is so the button still works */
+            #rc .antenna_btns_container .btns .xmit_btn button {
+                width: 100%; 
+                height: 100%; 
+                position: absolute; 
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                background-color: transparent;
+            }
+
+            #rc .antenna_btns_container .btns .top_left {
+                border-radius: 35px 7px 7px 7px;
+            }
+
+            #rc .antenna_btns_container .btns .xmit_btn .top_middle {
+                padding-top: 25px;
             }
 
             #rc .antenna_btns_container .btns .top_right {
-                border-radius: 5px 35px 5px 5px;
+                border-radius: 7px 35px 7px 7px;
+            }
+
+            #rc .antenna_btns_container .btns .bottom_left {
+                border-radius: 7px 7px 7px 35px;
+            }
+
+            #rc .antenna_btns_container .btns .xmit_btn .bottom_middle {
+                padding-bottom: 25px;
+            }
+
+            #rc .antenna_btns_container .btns .bottom_right {
+                border-radius: 7px 7px 35px 7px;
             }
 
         #rc .antenna_btns_container .breaker {
-            width: 100%;
+            width: 95%;
             height: 5px;
+            margin: auto;
             background-color: white; 
         }
