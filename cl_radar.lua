@@ -47,6 +47,8 @@ RADAR.vars =
 
 	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
 	patrolSpeed = 0,
+	patrolLocked = false, 
+	psBlank = false, 
 
 	-- The speed type, this is used when converting speeds to a readable format
 	-- Either "mph" or "kmh", can be toggle in-game 
@@ -680,7 +682,7 @@ function RADAR:Main()
 				self:IncreaseRadarStage()
 			end 
 		elseif ( self:GetRadarStage() == 1 ) then 
-			self:RemoveDuplicateCapturedVehicles()
+			-- self:RemoveDuplicateCapturedVehicles()
 			local caughtVehs = self:GetCapturedVehicles()
 
 			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
@@ -744,7 +746,7 @@ Citizen.CreateThread( function()
 		-- Caught veh debug printing 
 		local av = RADAR:GetActiveVehicles()
 
-		DrawRect( 0.500, 0.830, 0.400, 0.200, 0, 0, 0, 150 )
+		DrawRect( 0.500, 0.850, 0.400, 0.220, 0, 0, 0, 150 )
 
 		for i = 1, 4, 1 do 
 			UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.750, 0.60, true, types[i] )
@@ -754,16 +756,19 @@ Citizen.CreateThread( function()
 				local speed = RADAR:GetVehSpeedFormatted( GetEntitySpeed( av[i].veh ) )
 				local veh = av[i].veh
 				local rt = av[i].rayType
+				local dir = UTIL:IsEntityInMyHeading( GetEntityHeading( GetVehiclePedIsIn( PlayerPedId(), false ) ), GetEntityHeading( veh ), 100 )
+				if ( av[i].relPos == -1 and dir ~= nil ) then dir = not dir end 
+				if ( dir == true ) then dir = "Away" elseif ( dir == false ) then dir = "Closing" else dir = "nil" end
 
 				DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
 
 				if ( i % 2 == 0 ) then 
-					UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: ~r~" .. tostring( speed ) .. "~s~mph" .. "\nRay type: " .. tostring( rt ) )
+					UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: ~r~" .. tostring( speed ) .. "~s~mph" .. "\nRay type: " .. tostring( rt ) .. "\nDir: " .. tostring( dir ) )
 				else 
-					UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: " .. tostring( speed ) .. "mph" .. "\nRay type: " .. tostring( rt ) )
+					UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: " .. tostring( speed ) .. "mph" .. "\nRay type: " .. tostring( rt ) .. "\nDir: " .. tostring( dir ) )
 				end 
 			else 
-				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRay type: nil" )
+				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRay type: nil" .. "\nDir: nil" )
 			end 
 		end
 

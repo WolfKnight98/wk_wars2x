@@ -4,7 +4,7 @@
     </head>
 
 	<body onselectstart="return false;" ondragstart="return false;">
-		<div class="unit_frame" style="display: none;">
+		<div class="unit_frame" style="visibility: hidden;">
 		<!-- <div class="unit_frame"> -->
 			<div class="frame_border"></div>
 
@@ -112,14 +112,15 @@
 			</div>
 		</div>
 
-		<div id="rc">
+		<div id="rc" style="visibility: hidden;">
+		<!-- <div id="rc"> -->
 			<button class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
 
 			<p class="label">FRONT ANTENNA</p>
 
 			<div class="antenna_btns_container">
 				<div class="btns btns_top">
-					<button class="zone_btn top_left" id="frontOppBtn">OPP LK/REL</button>
+					<button class="zone_btn top_left">OPP LK/REL</button>
 
 					<div class="xmit_wrap">
 						<div class="xmit_btn xmit_top">
@@ -128,13 +129,13 @@
 						</div>
 					</div>
 
-					<button class="zone_btn top_right" id="frontSameBtn">SAME LK/REL</button>
+					<button class="zone_btn top_right">SAME LK/REL</button>
 				</div>
 
 				<div class="breaker"></div>
 
 				<div class="btns btns_bottom">
-					<button class="zone_btn bottom_left" id="rearOppBtn">LK/REL OPP</button>
+					<button class="zone_btn bottom_left">LK/REL OPP</button>
 
 					<div class="xmit_wrap">
 						<div class="xmit_btn xmit_bottom">
@@ -143,7 +144,7 @@
 						</div>
 					</div>	
 
-					<button class="zone_btn bottom_right" id="rearSameBtn">LK/REL SAME</button>
+					<button class="zone_btn bottom_right">LK/REL SAME</button>
 				</div>
 			</div>
 
