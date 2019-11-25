@@ -116,11 +116,11 @@ RADAR.activeVehicles = {}
 
 -- These vectors are used in the custom ray tracing system 
 RADAR.rayTraces = {
+	-- { startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,    y = 150.0 }, rayType = "same" },
+	-- { startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,   y = 150.0 }, rayType = "same" },
+	-- { startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,    y = 150.0 }, rayType = "same" },
 	{ startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,    y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,   y = 150.0 }, rayType = "same" },
-	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,    y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -10.0, y = 15.0 }, endVec = { x = -10.0,  y = 150.0 }, rayType = "opp" },
-	{ startVec = { x = -15.0, y = 15.0 }, endVec = { x = -15.0,  y = 150.0 }, rayType = "opp" }
+	{ startVec = { x = -10.0, y = 15.0 }, endVec = { x = -10.0,  y = 150.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, depending on what the 
@@ -160,6 +160,14 @@ end
 function RADAR:TogglePower()
 	self.vars.power = not self.vars.power 
 end
+
+function RADAR:IsFastDisplayEnabled()
+	return self.vars.settings.fastDisplay
+end 
+
+function RADAR:ToggleFastDisplay()
+	self.vars.settings.fastDisplay = not self.vars.settings.fastDisplay
+end 
 
 
 --[[------------------------------------------------------------------------
@@ -316,7 +324,7 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 end 
 
 function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
-	Citizen.CreateThread( function()
+	-- Citizen.CreateThread( function()
 		local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
 		local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
 
@@ -326,7 +334,7 @@ function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
 
 		-- UTIL:DebugPrint( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
 		self:IncreaseRayTraceState()
-	end )
+	-- end )
 end 
 
 function RADAR:CreateRayThreads( ownVeh, vehicles )
@@ -605,15 +613,17 @@ function RADAR:GetVehiclesForAntenna()
 				end 
 			end 
 
-			-- Get the 'fastest' vehicle for the antenna 
-			table.sort( vehs[ant], self:GetFastestSortFunc() )
+			if ( self:IsFastDisplayEnabled() ) then 
+				-- Get the 'fastest' vehicle for the antenna 
+				table.sort( vehs[ant], self:GetFastestSortFunc() )
 
-			for k, v in pairs( vehs[ant] ) do 
-				if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh ) then 
-					results[ant][2] = v 
-					break
+				for k, v in pairs( vehs[ant] ) do 
+					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh and v.size + 1.0 < results[ant][1].size ) then 
+						results[ant][2] = v 
+						break
+					end 
 				end 
-			end 
+			end
 		end 
 	end
 
@@ -640,6 +650,11 @@ function RADAR:RunControlManager()
 	if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
 		self:TogglePower()
 		UTIL:Notify( "Radar power toggled." )
+	end 
+
+	if ( IsDisabledControlJustPressed( 1, 118 ) ) then 
+		self:ToggleFastDisplay()
+		UTIL:Notify( "Fast display toggled." )
 	end 
 
 	-- 'Num8' key, toggles front antenna
@@ -722,7 +737,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:Main()
 
-		Citizen.Wait( 50 )
+		Citizen.Wait( 100 )
 	end
 end )
 
