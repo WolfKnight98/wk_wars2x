@@ -717,9 +717,8 @@ function RADAR:Main()
 			end 
 		elseif ( self:GetRadarStage() == 1 ) then 
 			-- self:RemoveDuplicateCapturedVehicles()
-			local caughtVehs = self:GetCapturedVehicles()
-
-			if ( not UTIL:IsTableEmpty( caughtVehs ) ) then 
+			
+			if ( not UTIL:IsTableEmpty( self:GetCapturedVehicles() ) ) then 
 				local vehsForDisplay = self:GetVehiclesForAntenna()
 
 				self:SetActiveVehicles( vehsForDisplay )
