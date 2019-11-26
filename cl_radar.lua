@@ -169,6 +169,10 @@ function RADAR:ToggleFastDisplay()
 	self.vars.settings.fastDisplay = not self.vars.settings.fastDisplay
 end 
 
+function RADAR:IsEitherAntennaOn()
+	return self:IsAntennaTransmitting( "front" ) or self:IsAntennaTransmitting( "rear" )
+end 
+
 
 --[[------------------------------------------------------------------------
 	Radar basics functions  
@@ -682,7 +686,7 @@ function RADAR:Main()
 	local plyVeh = GetVehiclePedIsIn( ped, false )
 
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
-	if ( DoesEntityExist( plyVeh ) and GetPedInVehicleSeat( plyVeh, -1 ) == ped and GetVehicleClass( plyVeh ) == 18 and self:IsPowerOn() ) then 
+	if ( DoesEntityExist( plyVeh ) and GetPedInVehicleSeat( plyVeh, -1 ) == ped and GetVehicleClass( plyVeh ) == 18 and ( self:IsPowerOn() and self:IsEitherAntennaOn() ) ) then 
 		local plyVehPos = GetEntityCoords( plyVeh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
