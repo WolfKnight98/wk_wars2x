@@ -114,50 +114,50 @@
 
 		<div id="rc">
 		<!-- <div id="rc"> -->
-			<button class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
+			<button id="toggleDisplay" class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
 
 			<p class="label">FRONT ANTENNA</p>
 
 			<div class="antenna_btns_container">
 				<div class="btns btns_top">
-					<button class="zone_btn top_left">OPP LK/REL</button>
+					<button id="frontOppMode" class="zone_btn top_left">OPP LK/REL</button>
 
 					<div class="xmit_wrap">
 						<div class="xmit_btn xmit_top">
 							<div class="arrow"></div>
-							<button class="top_middle">XMIT HOLD</button>
+							<button id="frontXmitToggle" class="top_middle">XMIT HOLD</button>
 						</div>
 					</div>
 
-					<button class="zone_btn top_right">SAME LK/REL</button>
+					<button id="frontSameMode" class="zone_btn top_right">SAME LK/REL</button>
 				</div>
 
 				<div class="breaker"></div>
 
 				<div class="btns btns_bottom">
-					<button class="zone_btn bottom_left">LK/REL OPP</button>
+					<button id="rearOppMode" class="zone_btn bottom_left">LK/REL OPP</button>
 
 					<div class="xmit_wrap">
 						<div class="xmit_btn xmit_bottom">
 							<div class="arrow arrow_bottom"></div>
-							<button class="bottom_middle">HOLD XMIT</button>
+							<button id="rearXmitToggle" class="bottom_middle">HOLD XMIT</button>
 						</div>
 					</div>	
 
-					<button class="zone_btn bottom_right">LK/REL SAME</button>
+					<button id="rearSameMode" class="zone_btn bottom_right">LK/REL SAME</button>
 				</div>
 			</div>
 
 			<p class="label">REAR ANTENNA</p>
 
-			<button class="circle_btn menu blue">MENU</button>
+			<button id="menuButton" class="circle_btn menu blue">MENU</button>
 
 			<div class="vol_ps_container">
-				<button class="vol_and_test blue">VOLUME <span class="hold">TEST</span></button>
-				<button class="ps_blank blue">PS BLANK</button>
+				<button id="volAndTest" class="vol_and_test blue">VOLUME <span class="hold">TEST</span></button>
+				<button id="psBlank" class="ps_blank blue">PS BLANK</button>
 			</div>
 
-			<button class="rounded_btn light blue">UI SETTINGS</button>
+			<button id="uiSettings" class="rounded_btn light blue">UI SETTINGS</button>
 
 			<p class="logo"><span class="large">Wraith</span> ARS 2X</p>
 		</div>

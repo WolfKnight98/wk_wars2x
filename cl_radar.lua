@@ -17,7 +17,7 @@ local pairs = pairs
 	Resource Rename Fix - for those muppets who rename the resource and 
 	complain that the NUI aspect doesn't work!
 ------------------------------------------------------------------------]]--
-Citizen.SetTimeout( 5000, function()
+Citizen.SetTimeout( 1000, function()
 	-- Get the name of the resource, for example the default name is 'wk_wrs2'
 	local name = GetCurrentResourceName()
 
@@ -621,7 +621,7 @@ function RADAR:GetVehiclesForAntenna()
 				table.sort( vehs[ant], self:GetFastestSortFunc() )
 
 				for k, v in pairs( vehs[ant] ) do 
-					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh and v.size + 1.0 < results[ant][1].size ) then 
+					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh and v.size + 0.5 < results[ant][1].size ) then 
 						results[ant][2] = v 
 						break
 					end 
@@ -723,21 +723,42 @@ function RADAR:Main()
 				local vehsForDisplay = self:GetVehiclesForAntenna()
 
 				self:SetActiveVehicles( vehsForDisplay )
+
+				if ( vehsForDisplay[1] ~= nil ) then 
+					local test = UTIL:FormatSpeed( UTIL:Round( self:GetVehSpeedFormatted( vehsForDisplay[1].speed ), 0 ) )
+					SendNUIMessage( { test1 = test } )
+				elseif ( vehsForDisplay[1] == nil ) then 
+					SendNUIMessage( { test1 = -1 } )
+				end 
+
+				if ( vehsForDisplay[2] ~= nil ) then 
+					local test = UTIL:FormatSpeed( UTIL:Round( self:GetVehSpeedFormatted( vehsForDisplay[2].speed ), 0 ) )
+					SendNUIMessage( { test2 = test } )
+				elseif ( vehsForDisplay[2] == nil ) then 
+					SendNUIMessage( { test2 = -1 } )
+				end 
+
+				if ( vehsForDisplay[3] ~= nil ) then 
+					local test = UTIL:FormatSpeed( UTIL:Round( self:GetVehSpeedFormatted( vehsForDisplay[3].speed ), 0 ) )
+					SendNUIMessage( { test3 = test } )
+				elseif ( vehsForDisplay[3] == nil ) then 
+					SendNUIMessage( { test3 = -1 } )
+				end 
+
+				if ( vehsForDisplay[4] ~= nil ) then 
+					local test = UTIL:FormatSpeed( UTIL:Round( self:GetVehSpeedFormatted( vehsForDisplay[4].speed ), 0 ) )
+					SendNUIMessage( { test4 = test } )
+				elseif ( vehsForDisplay[4] == nil ) then 
+					SendNUIMessage( { test4 = -1 } )
+				end 
 			else
 				self:SetActiveVehicles( { nil, nil, nil, nil } )
 			end
 
-			self:IncreaseRadarStage()
-		elseif ( self:GetRadarStage() == 2 ) then 
 			self:ResetRadarStage()
 			self:ResetRayTraceState()
 		end 
 	end 
-end 
-
--- This will be the main function that handles all of the radar's operation 
-function RADAR:Controller()
-
 end 
 
 -- Update the vehicle pool every 3 seconds
@@ -758,7 +779,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:Main()
 
-		Citizen.Wait( 100 )
+		Citizen.Wait( 50 )
 	end
 end )
 
@@ -777,7 +798,7 @@ end )
 ------------------------------ DEBUG ------------------------------
 local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
 
-Citizen.CreateThread( function()
+--[[ Citizen.CreateThread( function()
 	while ( true ) do
 		-- Caught veh debug printing 
 		local av = RADAR:GetActiveVehicles()
@@ -820,7 +841,7 @@ Citizen.CreateThread( function()
 
 		Citizen.Wait( 0 )
 	end 
-end )
+end ) ]]
 
 -- Commands for debugging 
 RegisterCommand( "rdr", function( src, args, raw )

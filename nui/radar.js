@@ -65,9 +65,37 @@ const elements =
     }
 }
 
+const remoteButtons = 
+{
+    toggleDisplay: $( "#toggleDisplay" ), 
+    menu: $( "#menuButton" ),
+    volAndTest: $( "#volAndTest" ), 
+    psBlank: $( "#psBlank" ), 
+    uiSettings: $( "#uiSettings" ), 
+
+    antennas: {
+        front: {
+            sameMode: $( "#frontSameMode" ),
+            oppMode: $( "#frontOppMode" ),
+            xmitToggle: $( "#frontXmitToggle" )
+        },
+
+        rear: {
+            sameMode: $( "#rearSameMode" ),
+            oppMode: $( "#rearOppMode" ),
+            xmitToggle: $( "#rearXmitToggle" )
+        }
+    }
+}
+
 // Hide the radar and remote, this way we can bypass setting a style of 'display: none;' in the HTML file
 elements.radar.hide(); 
 elements.remote.hide(); 
+
+// Create the onclick event for the toggle display button
+remoteButtons.toggleDisplay.click( function() {
+    elements.radar.fadeToggle();
+} )
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
@@ -96,5 +124,23 @@ window.addEventListener( "message", function( event ) {
         resourceName = item.pathName; 
     } else if ( item.activateRemote ) {
         $( "#rc" ).toggle(); 
+    } else if ( item.test1 ) {
+        elements.antennas.front.targetSpeed.html( item.test1 ); 
+    } else if ( item.test2 ) {
+        elements.antennas.front.fast.speed.html( item.test2 ); 
+    } else if ( item.test3 ) {
+        elements.antennas.rear.targetSpeed.html( item.test3 ); 
+    } else if ( item.test4 ) {
+        elements.antennas.rear.fast.speed.html( item.test4 ); 
+    }
+
+    if ( item.test1 == -1 ) {
+        elements.antennas.front.targetSpeed.html( "¦¦¦" ); 
+    } else if ( item.test2 == -1 ) {
+        elements.antennas.front.fast.speed.html( "¦¦¦" ); 
+    } else if ( item.test3 == -1 ) {
+        elements.antennas.rear.targetSpeed.html( "¦¦¦" ); 
+    } else if ( item.test4 == -1 ) {
+        elements.antennas.rear.fast.speed.html( "¦¦¦" ); 
     }
 } );

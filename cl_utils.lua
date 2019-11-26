@@ -15,6 +15,19 @@ end
 -- 	return string.format( "%03d", speed )
 -- end
 
+function UTIL:FormatSpeed( speed )
+	if ( speed < 0 or speed > 999 ) then return "Err" end 
+
+	local text = tostring( speed )
+	local pipes = ""
+
+	for i = 1, 3 - string.len( text ) do 
+	    pipes = pipes .. "¦"
+	end 
+	
+	return pipes .. text
+end 
+
 function UTIL:Clamp( val, min, max )
 	if ( val < min ) then 
 		return min 
