@@ -19,6 +19,9 @@
     box-sizing: border-box;
 }
 
+/* Removes the outline when buttons have been clicked */
+button:focus { outline: none; }
+
 .unit_frame {
     width: 715px;
     height: 230px;

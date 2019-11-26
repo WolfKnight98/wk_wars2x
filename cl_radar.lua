@@ -17,15 +17,14 @@ local pairs = pairs
 	Resource Rename Fix - for those muppets who rename the resource and 
 	complain that the NUI aspect doesn't work!
 ------------------------------------------------------------------------]]--
-Citizen.CreateThread( function()
-	-- Wait for a short period of time to give the resource time to load
-	Citizen.Wait( 10000 )
-
+Citizen.SetTimeout( 5000, function()
 	-- Get the name of the resource, for example the default name is 'wk_wrs2'
-	local resourceName = GetCurrentResourceName()
+	local name = GetCurrentResourceName()
+
+	print( "WK_WARS2X: Sending resource name (" .. name .. ") to JavaScript side." )
 
 	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
-	SendNUIMessage( { resourcename = resourceName } )
+	SendNUIMessage( { pathName = name } )
 end )
 
 
@@ -640,10 +639,16 @@ end
 -- Num7 = 117 - INPUT_VEH_FLY_SELECT_TARGET_LEFT
 -- Num8 = 111 - INPUT_VEH_FLY_PITCH_UP_ONLY
 -- Num9 = 118 - INPUT_VEH_FLY_SELECT_TARGET_RIGHT
+-- F5 = 166 - INPUT_SELECT_CHARACTER_MICHAEL
 function RADAR:RunControlManager()
 	-- 'Z' key, toggles debug mode 
 	if ( IsDisabledControlJustPressed( 1, 20 ) ) then 
 		self.config.debug_mode = not self.config.debug_mode
+	end
+	
+	if ( IsDisabledControlJustPressed( 1, 166 ) ) then 
+		SendNUIMessage( { activateRemote = true } )
+		SetNuiFocus( true, true )
 	end 
 
 	-- 'X' key, change the sort mode 
@@ -673,6 +678,16 @@ function RADAR:RunControlManager()
 		UTIL:Notify( "Rear antenna toggled." )
 	end 
 end 
+
+
+--[[------------------------------------------------------------------------
+	NUI callback
+------------------------------------------------------------------------]]--
+RegisterNUICallback( "remote", function( data, cb )
+	if ( data == "close" ) then 
+		SetNuiFocus( false, false )
+	end 
+end )
 
 
 --[[------------------------------------------------------------------------
@@ -738,6 +753,8 @@ end )
 
 -- Main thread
 Citizen.CreateThread( function()
+	SetNuiFocus( false, false )
+
 	while ( true ) do
 		RADAR:Main()
 
