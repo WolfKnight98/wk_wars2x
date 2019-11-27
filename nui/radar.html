@@ -113,14 +113,13 @@
 		</div>
 
 		<div id="rc">
-		<!-- <div id="rc"> -->
 			<button id="toggleDisplay" class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
 
 			<p class="label">FRONT ANTENNA</p>
 
 			<div class="antenna_btns_container">
 				<div class="btns btns_top">
-					<button id="frontOppMode" class="zone_btn top_left">OPP LK/REL</button>
+					<button id="frontOppMode" data-action="setAntennaMode" data-value="front" data-mode="2" class="zone_btn top_left">OPP LK/REL</button>
 
 					<div class="xmit_wrap">
 						<div class="xmit_btn xmit_top">
@@ -129,7 +128,7 @@
 						</div>
 					</div>
 
-					<button id="frontSameMode" class="zone_btn top_right">SAME LK/REL</button>
+					<button id="frontSameMode" data-action="setAntennaMode" data-value="front" data-mode="1" class="zone_btn top_right">SAME LK/REL</button>
 				</div>
 
 				<div class="breaker"></div>

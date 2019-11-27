@@ -88,6 +88,13 @@ const remoteButtons =
     }
 }
 
+const antennaModes = 
+{
+    same: 0, 
+    opp: 1, 
+    both: 2
+}
+
 // Hide the radar and remote, this way we can bypass setting a style of 'display: none;' in the HTML file
 elements.radar.hide(); 
 elements.remote.hide(); 
@@ -96,6 +103,13 @@ elements.remote.hide();
 remoteButtons.toggleDisplay.click( function() {
     elements.radar.fadeToggle();
 } )
+
+function toggleRemote() 
+{
+    elements.remote.toggle();
+}
+
+// function toggleLabel(  )
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
@@ -106,14 +120,32 @@ function sendData( name, data ) {
     } );
 }
 
+// This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
+function remoteInit()
+{
+    elements.remote.find( "button" ).each( function( i, obj ) {
+        if ( $( this ).attr( "data-action" ) && $( this ).attr( "data-value" ) ) {
+            $( this ).click( function() { 
+                let action = $( this ).data( "action" ); 
+                let value = $( this ).data( "value" ); 
+                let mode = $( this ).data( "mode" ); 
+
+                sendData( action, { value, mode } ); 
+            } )
+        }
+    } );
+}
+
 // Close the remote when the user presses the 'Escape' key 
 document.onkeyup = function ( event ) {
     if ( event.keyCode == 27 ) 
     {
-        sendData( "remote", "close" );
-        $( "#rc" ).toggle(); 
+        sendData( "closeRemote", null );
+        toggleRemote();
     }
 }
+
+remoteInit();
 
 // The main event listener, this is what the NUI messages sent by the LUA side arrive at, they are 
 // then handled properly via a switch/case that runs the relevant code
@@ -123,24 +155,6 @@ window.addEventListener( "message", function( event ) {
     if ( item.pathName ) {
         resourceName = item.pathName; 
     } else if ( item.activateRemote ) {
-        $( "#rc" ).toggle(); 
-    } else if ( item.test1 ) {
-        elements.antennas.front.targetSpeed.html( item.test1 ); 
-    } else if ( item.test2 ) {
-        elements.antennas.front.fast.speed.html( item.test2 ); 
-    } else if ( item.test3 ) {
-        elements.antennas.rear.targetSpeed.html( item.test3 ); 
-    } else if ( item.test4 ) {
-        elements.antennas.rear.fast.speed.html( item.test4 ); 
-    }
-
-    if ( item.test1 == -1 ) {
-        elements.antennas.front.targetSpeed.html( "¦¦¦" ); 
-    } else if ( item.test2 == -1 ) {
-        elements.antennas.front.fast.speed.html( "¦¦¦" ); 
-    } else if ( item.test3 == -1 ) {
-        elements.antennas.rear.targetSpeed.html( "¦¦¦" ); 
-    } else if ( item.test4 == -1 ) {
-        elements.antennas.rear.fast.speed.html( "¦¦¦" ); 
-    }
+        toggleRemote(); 
+    } 
 } );

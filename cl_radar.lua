@@ -58,7 +58,7 @@ RADAR.vars =
 		-- Variables for the front antenna 
 		[ "front" ] = {
 			xmit = false,		-- Whether the antenna is on or off
-			mode = 1,			-- Current antenna mode, 1 = same, 2 = opp, 3 = same and opp 
+			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
 			speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
 			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
@@ -69,7 +69,7 @@ RADAR.vars =
 
 		[ "rear" ] = {
 			xmit = false,		-- Whether the antenna is on or off
-			mode = 1,			-- Current antenna mode, 1 = same, 2 = opp, 3 = same and opp 
+			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
 			speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
 			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
@@ -367,7 +367,9 @@ end
 	Radar antenna functions 
 ------------------------------------------------------------------------]]--
 function RADAR:ToggleAntenna( ant )
-	self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
+	if ( self:IsPowerOn() ) then 
+		self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
+	end 
 end 
 
 function RADAR:IsAntennaTransmitting( ant )
@@ -442,36 +444,6 @@ end
 
 
 --[[------------------------------------------------------------------------
-	Radar sort mode functions
-------------------------------------------------------------------------]]--
---[[ function RADAR:GetSortModeText()
-	return self.sorting[self.vars.sortMode].name
-end 
-
-function RADAR:GetSortModeFunc()
-	return self.sorting[self.vars.sortMode].func
-end
-
-function RADAR:IsSortModeFastest()
-	if ( self.vars.sortMode == 2 ) then 
-		return true 
-	end 
-
-	return false 
-end 
-
-function RADAR:ToggleSortMode()
-	if ( self.vars.sortMode < #self.sorting ) then 
-		self.vars.sortMode = self.vars.sortMode + 1
-	else 
-		self.vars.sortMode = 1 
-	end 
-
-	UTIL:Notify( "Radar mode set to " .. self:GetSortModeText() )
-end ]]
-
-
---[[------------------------------------------------------------------------
 	Radar captured vehicle functions 
 ------------------------------------------------------------------------]]--
 function RADAR:GetCapturedVehicles()
@@ -491,7 +463,7 @@ function RADAR:InsertCapturedVehicleData( t, rt )
 	end 
 end 
 
-function RADAR:RemoveDuplicateCapturedVehicles()
+--[[ function RADAR:RemoveDuplicateCapturedVehicles()
 	for k, vehTable in pairs( self.capturedVehicles ) do 
 		local veh = vehTable.veh 
 		local rt = vehTable.rayType 
@@ -500,7 +472,7 @@ function RADAR:RemoveDuplicateCapturedVehicles()
 			if ( v.veh == veh and k ~= b and rt == v.rayType ) then table.remove( self.capturedVehicles, b ) end
 		end 
 	end
-end
+end ]]
 
 
 --[[------------------------------------------------------------------------
@@ -651,11 +623,6 @@ function RADAR:RunControlManager()
 		SetNuiFocus( true, true )
 	end 
 
-	-- 'X' key, change the sort mode 
-	--[[ if ( IsDisabledControlJustPressed( 1, 105 ) ) then 
-		self:ToggleSortMode()
-	end ]]
-
 	if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
 		self:TogglePower()
 		UTIL:Notify( "Radar power toggled." )
@@ -683,10 +650,14 @@ end
 --[[------------------------------------------------------------------------
 	NUI callback
 ------------------------------------------------------------------------]]--
-RegisterNUICallback( "remote", function( data, cb )
-	if ( data == "close" ) then 
-		SetNuiFocus( false, false )
-	end 
+RegisterNUICallback( "closeRemote", function( data )
+	SetNuiFocus( false, false )
+end )
+
+RegisterNUICallback( "setAntennaMode", function( data ) 
+	RADAR:SetAntennaMode( data.value, tostring( data.mode ) )
+
+	print( "Set antenna: " .. data.value .. " to mode " .. tostring( data.mode ) )
 end )
 
 
@@ -701,11 +672,11 @@ function RADAR:Main()
 	local plyVeh = GetVehiclePedIsIn( ped, false )
 
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
-	if ( DoesEntityExist( plyVeh ) and GetPedInVehicleSeat( plyVeh, -1 ) == ped and GetVehicleClass( plyVeh ) == 18 and ( self:IsPowerOn() and self:IsEitherAntennaOn() ) ) then 
+	if ( DoesEntityExist( plyVeh ) and GetPedInVehicleSeat( plyVeh, -1 ) == ped and GetVehicleClass( plyVeh ) == 18 and self:IsPowerOn() ) then 
 		local plyVehPos = GetEntityCoords( plyVeh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
-		if ( self:GetRadarStage() == 0 ) then 
+		if ( self:GetRadarStage() == 0 --[[ and self:IsEitherAntennaOn() ]] ) then 
 			if ( self:GetRayTraceState() == 0 ) then 
 				local vehs = self:GetVehiclePool()
 
@@ -717,41 +688,14 @@ function RADAR:Main()
 			end 
 		elseif ( self:GetRadarStage() == 1 ) then 
 			-- self:RemoveDuplicateCapturedVehicles()
-			
+
+			-- Only grab data to send if there have actually been vehicles captured by the radar
 			if ( not UTIL:IsTableEmpty( self:GetCapturedVehicles() ) ) then 
 				local vehsForDisplay = self:GetVehiclesForAntenna()
 
-				self:SetActiveVehicles( vehsForDisplay )
-
-				if ( vehsForDisplay[1] ~= nil ) then 
-					local test = UTIL:FormatSpeed( UTIL:Round( self:GetVehSpeedFormatted( vehsForDisplay[1].speed ), 0 ) )
-					SendNUIMessage( { test1 = test } )
-				elseif ( vehsForDisplay[1] == nil ) then 
-					SendNUIMessage( { test1 = -1 } )
-				end 
-
-				if ( vehsForDisplay[2] ~= nil ) then 
-					local test = UTIL:FormatSpeed( UTIL:Round( self:GetVehSpeedFormatted( vehsForDisplay[2].speed ), 0 ) )
-					SendNUIMessage( { test2 = test } )
-				elseif ( vehsForDisplay[2] == nil ) then 
-					SendNUIMessage( { test2 = -1 } )
-				end 
-
-				if ( vehsForDisplay[3] ~= nil ) then 
-					local test = UTIL:FormatSpeed( UTIL:Round( self:GetVehSpeedFormatted( vehsForDisplay[3].speed ), 0 ) )
-					SendNUIMessage( { test3 = test } )
-				elseif ( vehsForDisplay[3] == nil ) then 
-					SendNUIMessage( { test3 = -1 } )
-				end 
-
-				if ( vehsForDisplay[4] ~= nil ) then 
-					local test = UTIL:FormatSpeed( UTIL:Round( self:GetVehSpeedFormatted( vehsForDisplay[4].speed ), 0 ) )
-					SendNUIMessage( { test4 = test } )
-				elseif ( vehsForDisplay[4] == nil ) then 
-					SendNUIMessage( { test4 = -1 } )
-				end 
+				-- self:SetActiveVehicles( vehsForDisplay ) -- not really any point in setting this 
 			else
-				self:SetActiveVehicles( { nil, nil, nil, nil } )
+				-- self:SetActiveVehicles( { nil, nil, nil, nil } )
 			end
 
 			self:ResetRadarStage()
@@ -778,7 +722,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:Main()
 
-		Citizen.Wait( 50 )
+		Citizen.Wait( 100 )
 	end
 end )
 
