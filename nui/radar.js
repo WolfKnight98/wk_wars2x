@@ -128,6 +128,8 @@ function setAntennaXmit( ant, state )
     if ( !state ) {
         elements.antennas[ant].targetSpeed.html( "¦¦¦" );
         elements.antennas[ant].fast.speed.html( "HLd" ); 
+    } else {
+        elements.antennas[ant].fast.speed.html( "¦¦¦" ); 
     }
 }
 
@@ -142,6 +144,14 @@ function updateDisplays( ps, ants )
     if ( ants["front"].fast != null ) {
         elements.antennas["front"].fast.speed.html( ants["front"].fast );
     }    
+
+    if ( ants["rear"].speed != null ) {
+        elements.antennas["rear"].targetSpeed.html( ants["rear"].speed ); 
+    }
+
+    if ( ants["rear"].fast != null ) {
+        elements.antennas["rear"].fast.speed.html( ants["rear"].fast );
+    } 
 }
 
 // This function is used to send data back through to the LUA side 

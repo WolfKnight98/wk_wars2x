@@ -665,16 +665,12 @@ end )
 
 RegisterNUICallback( "setAntennaMode", function( data ) 
 	RADAR:SetAntennaMode( data.value, tonumber( data.mode ) )
-
-	print( "Set antenna: " .. data.value .. " to mode " .. tostring( data.mode ) )
 end )
 
 RegisterNUICallback( "toggleAntenna", function( data ) 
 	RADAR:ToggleAntenna( data.value )
 
 	SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
-
-	print( "Toggled " .. data.value .. " antenna" )
 end )
 
 
@@ -715,15 +711,36 @@ function RADAR:Main()
 			end
 
 			-- Work out what has to be sent 
+			-- need to find a way to automate this in a loop 
 			local av = self:GetActiveVehicles()
 			local test = { ["front"] = {}, ["rear"] = {} }
 
-			if ( av["front"][1] ~= nil ) then 
-				test["front"].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][1].speed ) ) 
+			if ( self:IsAntennaTransmitting( "front" ) ) then 
+				if ( av["front"][1] ~= nil ) then 
+					test["front"].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][1].speed ) ) 
+				else
+					test["front"].speed = "¦¦¦"
+				end 
+
+				if ( av["front"][2] ~= nil ) then 
+					test["front"].fast = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][2].speed ) ) 
+				else 
+					test["front"].fast = "¦¦¦"
+				end 
 			end 
 
-			if ( av["front"][2] ~= nil ) then 
-				test["front"].fast = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][2].speed ) ) 
+			if ( self:IsAntennaTransmitting( "rear" ) ) then 
+				if ( av["rear"][1] ~= nil ) then 
+					test["rear"].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["rear"][1].speed ) ) 
+				else 
+					test["rear"].speed = "¦¦¦"
+				end 
+
+				if ( av["rear"][2] ~= nil ) then 
+					test["rear"].fast = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["rear"][2].speed ) ) 
+				else 
+					test["rear"].fast = "¦¦¦"
+				end 
 			end
 
 			-- Send the update to the NUI side
