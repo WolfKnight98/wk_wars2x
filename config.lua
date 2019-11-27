@@ -23,4 +23,4 @@ RADAR.config.reset_key = 244
 RADAR.config.fast_lock_blips = true
 
 -- Debug mode
-RADAR.config.debug_mode = true 
+RADAR.config.debug_mode = false 

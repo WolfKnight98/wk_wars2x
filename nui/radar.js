@@ -90,13 +90,14 @@ const remoteButtons =
 
 const antennaModes = 
 {
-    same: 0, 
-    opp: 1, 
-    both: 2
+    off: 0, 
+    same: 1, 
+    opp: 2,
+    both: 3
 }
 
 // Hide the radar and remote, this way we can bypass setting a style of 'display: none;' in the HTML file
-elements.radar.hide(); 
+// elements.radar.hide(); 
 elements.remote.hide(); 
 
 // Create the onclick event for the toggle display button
@@ -109,7 +110,39 @@ function toggleRemote()
     elements.remote.toggle();
 }
 
-// function toggleLabel(  )
+function setLight( ant, cat, item, state )
+{
+    let obj = elements.antennas[ant][cat][item]; 
+
+    if ( state ) {
+        obj.addClass( "active" ); 
+    } else {
+        obj.removeClass( "active" );
+    }
+}
+
+function setAntennaXmit( ant, state )
+{
+    setLight( ant, "modes", "xmit", state ); 
+
+    if ( !state ) {
+        elements.antennas[ant].targetSpeed.html( "¦¦¦" );
+        elements.antennas[ant].fast.speed.html( "HLd" ); 
+    }
+}
+
+function updateDisplays( ps, ants )
+{
+    elements.patrolSpeed.html( ps );
+
+    if ( ants["front"].speed != null ) {
+        elements.antennas["front"].targetSpeed.html( ants["front"].speed ); 
+    }
+
+    if ( ants["front"].fast != null ) {
+        elements.antennas["front"].fast.speed.html( ants["front"].fast );
+    }    
+}
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
@@ -121,20 +154,17 @@ function sendData( name, data ) {
 }
 
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
-function remoteInit()
-{
-    elements.remote.find( "button" ).each( function( i, obj ) {
-        if ( $( this ).attr( "data-action" ) && $( this ).attr( "data-value" ) ) {
-            $( this ).click( function() { 
-                let action = $( this ).data( "action" ); 
-                let value = $( this ).data( "value" ); 
-                let mode = $( this ).data( "mode" ); 
+elements.remote.find( "button" ).each( function( i, obj ) {
+    if ( $( this ).attr( "data-nuitype" ) && $( this ).attr( "data-value" ) ) {
+        $( this ).click( function() { 
+            let type = $( this ).data( "nuitype" ); 
+            let value = $( this ).data( "value" ); 
+            let mode = $( this ).attr( "data-mode" ) ? $( this ).data( "mode" ) : null; 
 
-                sendData( action, { value, mode } ); 
-            } )
-        }
-    } );
-}
+            sendData( type, { value, mode } ); 
+        } )
+    }
+} );
 
 // Close the remote when the user presses the 'Escape' key 
 document.onkeyup = function ( event ) {
@@ -145,16 +175,26 @@ document.onkeyup = function ( event ) {
     }
 }
 
-remoteInit();
-
 // The main event listener, this is what the NUI messages sent by the LUA side arrive at, they are 
 // then handled properly via a switch/case that runs the relevant code
 window.addEventListener( "message", function( event ) {
-    var item = event.data;
+    var item = event.data; 
+    var type = event.data._type; 
 
-    if ( item.pathName ) {
-        resourceName = item.pathName; 
-    } else if ( item.activateRemote ) {
-        toggleRemote(); 
-    } 
+    switch ( type ) {
+        case "updatePathName":
+            resourceName = item.pathName
+            break;
+        case "openRemote":
+            toggleRemote();
+            break; 
+        case "update":
+            updateDisplays( item.speed, item.antennas );
+            break; 
+        case "antennaXmit":
+            setAntennaXmit( item.ant, item.on );
+            break; 
+        default:
+            break;
+    }
 } );

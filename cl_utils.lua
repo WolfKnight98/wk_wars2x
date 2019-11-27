@@ -66,7 +66,7 @@ function UTIL:OppositeAngle( ang )
 	return ( ang + 180 ) % 360
 end
 
-function UTIL:IsEntityInMyHeading( myAng, tarAng, angToCheck )
+function UTIL:GetEntityRelativeDirection( myAng, tarAng, angToCheck )
 	local rangeStartFront = myAng - ( angToCheck / 2 )
 	local rangeEndFront = myAng + ( angToCheck / 2 )
 
@@ -76,12 +76,12 @@ function UTIL:IsEntityInMyHeading( myAng, tarAng, angToCheck )
 	local rangeEndBack = opp + ( angToCheck / 2 )
 
 	if ( ( tarAng > rangeStartFront ) and ( tarAng < rangeEndFront ) ) then
-		return true
+		return 1
 	elseif ( ( tarAng > rangeStartBack ) and ( tarAng < rangeEndBack ) ) then
-		return false
-	else
-		return nil
+		return 2
 	end
+
+	return 0
 end
 
 function UTIL:Notify( text )

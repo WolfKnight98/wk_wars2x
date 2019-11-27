@@ -24,8 +24,17 @@ Citizen.SetTimeout( 1000, function()
 	print( "WK_WARS2X: Sending resource name (" .. name .. ") to JavaScript side." )
 
 	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
-	SendNUIMessage( { pathName = name } )
+	SendNUIMessage( { _type = "updatePathName", pathName = name } )
 end )
+
+
+--[[------------------------------------------------------------------------
+	Player info variables
+------------------------------------------------------------------------]]--
+PLY = {}
+PLY.ped = PlayerPedId()
+PLY.veh = nil 
+PLY.inDriverSeat = false 
 
 
 --[[------------------------------------------------------------------------
@@ -202,7 +211,7 @@ end
 
 function RADAR:SetPatrolSpeed( speed )
 	if ( type( speed ) == "number" ) then 
-		self.vars.patrolSpeed = speed
+		self.vars.patrolSpeed = self:GetVehSpeedFormatted( speed )
 	end
 end
 
@@ -214,7 +223,7 @@ end
 
 function RADAR:SetActiveVehicles( t )
 	if ( type( t ) == "table" ) then 
-		self.activeVehicles = t 
+		self.activeVehicles = t
 	end 
 end 
 
@@ -530,9 +539,9 @@ end
 ------------------------------------------------------------------------]]--
 function RADAR:GetVehSpeedFormatted( speed )
 	if ( self.vars.speedType == "mph" ) then 
-		return math.ceil( speed * 2.236936 )
+		return UTIL:Round( math.ceil( speed * 2.236936 ), 0 )
 	else 
-		return math.ceil( speed * 3.6 )
+		return UTIL:Round( math.ceil( speed * 3.6 ), 0 )
 	end 
 end 
  
@@ -583,7 +592,7 @@ function RADAR:GetVehiclesForAntenna()
 			-- Get the 'strongest' vehicle for the antenna 
 			for k, v in pairs( vehs[ant] ) do 
 				if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) ) then 
-					results[ant][1] = v 
+					results[ant][1] = v
 					break
 				end 
 			end 
@@ -602,7 +611,7 @@ function RADAR:GetVehiclesForAntenna()
 		end 
 	end
 
-	return { results["front"][1], results["front"][2], results["rear"][1], results["rear"][2] }
+	return { ["front"] = { results["front"][1], results["front"][2] }, ["rear"] = { results["rear"][1], results["rear"][2] } }
 end 
 
 -- Num4 = 108 - INPUT_VEH_FLY_ROLL_LEFT_ONLY
@@ -619,7 +628,7 @@ function RADAR:RunControlManager()
 	end
 	
 	if ( IsDisabledControlJustPressed( 1, 166 ) ) then 
-		SendNUIMessage( { activateRemote = true } )
+		SendNUIMessage( { _type = "openRemote" } )
 		SetNuiFocus( true, true )
 	end 
 
@@ -655,9 +664,17 @@ RegisterNUICallback( "closeRemote", function( data )
 end )
 
 RegisterNUICallback( "setAntennaMode", function( data ) 
-	RADAR:SetAntennaMode( data.value, tostring( data.mode ) )
+	RADAR:SetAntennaMode( data.value, tonumber( data.mode ) )
 
 	print( "Set antenna: " .. data.value .. " to mode " .. tostring( data.mode ) )
+end )
+
+RegisterNUICallback( "toggleAntenna", function( data ) 
+	RADAR:ToggleAntenna( data.value )
+
+	SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+
+	print( "Toggled " .. data.value .. " antenna" )
 end )
 
 
@@ -665,15 +682,9 @@ end )
 	Main function  
 ------------------------------------------------------------------------]]--
 function RADAR:Main()
-	-- Get the local player's ped and store it in a variable 
-	local ped = PlayerPedId()
-
-	-- Get the vehicle the player is sitting in 
-	local plyVeh = GetVehiclePedIsIn( ped, false )
-
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
-	if ( DoesEntityExist( plyVeh ) and GetPedInVehicleSeat( plyVeh, -1 ) == ped and GetVehicleClass( plyVeh ) == 18 and self:IsPowerOn() ) then 
-		local plyVehPos = GetEntityCoords( plyVeh )
+	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and GetVehicleClass( PLY.veh ) == 18 and self:IsPowerOn() ) then 
+		local plyVehPos = GetEntityCoords( PLY.veh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
 		if ( self:GetRadarStage() == 0 --[[ and self:IsEitherAntennaOn() ]] ) then 
@@ -682,27 +693,58 @@ function RADAR:Main()
 
 				self:ResetCapturedVehicles()
 				self:ResetRayTraceState()
-				self:CreateRayThreads( plyVeh, vehs )
+				self:CreateRayThreads( PLY.veh, vehs )
 			elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
 				self:IncreaseRadarStage()
 			end 
 		elseif ( self:GetRadarStage() == 1 ) then 
-			-- self:RemoveDuplicateCapturedVehicles()
+			local data = {} 
+
+			-- Get the player's vehicle speed
+			local speed = self:GetVehSpeedFormatted( GetEntitySpeed( PLY.veh ) )
+
+			data.patrolSpeed = UTIL:FormatSpeed( speed )
 
 			-- Only grab data to send if there have actually been vehicles captured by the radar
 			if ( not UTIL:IsTableEmpty( self:GetCapturedVehicles() ) ) then 
 				local vehsForDisplay = self:GetVehiclesForAntenna()
 
-				-- self:SetActiveVehicles( vehsForDisplay ) -- not really any point in setting this 
+				self:SetActiveVehicles( vehsForDisplay ) -- not really any point in setting this 
 			else
-				-- self:SetActiveVehicles( { nil, nil, nil, nil } )
+				self:SetActiveVehicles( { ["front"] = { nil, nil }, ["rear"] = { nil, nil } } )
 			end
+
+			-- Work out what has to be sent 
+			local av = self:GetActiveVehicles()
+			local test = { ["front"] = {}, ["rear"] = {} }
+
+			if ( av["front"][1] ~= nil ) then 
+				test["front"].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][1].speed ) ) 
+			end 
+
+			if ( av["front"][2] ~= nil ) then 
+				test["front"].fast = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][2].speed ) ) 
+			end
+
+			-- Send the update to the NUI side
+			SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = test } )
 
 			self:ResetRadarStage()
 			self:ResetRayTraceState()
 		end 
 	end 
 end 
+
+-- Updates the local player information 
+Citizen.CreateThread( function()
+	while ( true ) do 
+		PLY.ped = PlayerPedId()
+		PLY.veh = GetVehiclePedIsIn( PLY.ped, false )
+		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped 
+
+		Citizen.Wait( 250 )
+	end 
+end )
 
 -- Update the vehicle pool every 3 seconds
 Citizen.CreateThread( function() 
@@ -722,7 +764,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:Main()
 
-		Citizen.Wait( 100 )
+		Citizen.Wait( 50 )
 	end
 end )
 
@@ -739,9 +781,9 @@ end )
 
 
 ------------------------------ DEBUG ------------------------------
-local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
+--[[ local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
 
---[[ Citizen.CreateThread( function()
+Citizen.CreateThread( function()
 	while ( true ) do
 		-- Caught veh debug printing 
 		local av = RADAR:GetActiveVehicles()
@@ -756,9 +798,9 @@ local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
 				local speed = RADAR:GetVehSpeedFormatted( GetEntitySpeed( av[i].veh ) )
 				local veh = av[i].veh
 				local rt = av[i].rayType
-				local dir = UTIL:IsEntityInMyHeading( GetEntityHeading( GetVehiclePedIsIn( PlayerPedId(), false ) ), GetEntityHeading( veh ), 100 )
-				if ( av[i].relPos == -1 and dir ~= nil ) then dir = not dir end 
-				if ( dir == true ) then dir = "Away" elseif ( dir == false ) then dir = "Closing" else dir = "nil" end
+				local dir = UTIL:GetEntityRelativeDirection( GetEntityHeading( GetVehiclePedIsIn( PlayerPedId(), false ) ), GetEntityHeading( veh ), 100 )
+				
+				if ( dir == 1 ) then dir = "/\\" elseif ( dir == 2 ) then dir = "\\/" else dir = "none" end
 
 				DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
 

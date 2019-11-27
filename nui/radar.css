@@ -29,9 +29,9 @@ button:focus { outline: none; }
     position: absolute;
     margin: auto;
     /* top: 0; */
-    right: 0;
-    bottom: 15px;
-    left: 0;
+    right: 10px;
+    bottom: 10px;
+    /* left: 0; */
 
     background-image: url( "frame.png" );
 }
