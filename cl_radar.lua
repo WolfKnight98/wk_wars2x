@@ -127,8 +127,8 @@ RADAR.rayTraces = {
 	-- { startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,    y = 150.0 }, rayType = "same" },
 	-- { startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,   y = 150.0 }, rayType = "same" },
 	-- { startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,    y = 150.0 }, rayType = "same" },
-	{ startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,    y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -10.0, y = 15.0 }, endVec = { x = -10.0,  y = 150.0 }, rayType = "opp" }
+	{ startVec = { x = 0.0 }, endVec = { x = 0.0, y = 150.0 }, rayType = "same" },
+	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 150.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, depending on what the 
@@ -336,17 +336,14 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 end 
 
 function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
-	-- Citizen.CreateThread( function()
-		local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
-		local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
+	local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
+	local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
 
-		local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
+	local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
 
-		self:InsertCapturedVehicleData( hitVehs, rayType )
+	self:InsertCapturedVehicleData( hitVehs, rayType )
 
-		-- UTIL:DebugPrint( "Ray thread: increasing ray state from " .. tostring( self:GetRayTraceState() ) .. " to " .. tostring( self:GetRayTraceState() + 1 ) )
-		self:IncreaseRayTraceState()
-	-- end )
+	self:IncreaseRayTraceState()
 end 
 
 function RADAR:CreateRayThreads( ownVeh, vehicles )

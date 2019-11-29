@@ -156,9 +156,11 @@ function setLight( ant, cat, item, state )
     let obj = elements.antennas[ant][cat][item]; 
 
     if ( state ) {
-        if ( cat == "dirs" ) { obj.addClass( "active_arrow" ) } else { obj.addClass( "active" ) }; 
+        // if ( cat == "dirs" ) { obj.addClass( "active_arrow" ) } else { obj.addClass( "active" ) }; 
+        cat == "dirs" ? obj.addClass( "active_arrow" ) : obj.addClass( "active" ); 
     } else {
-        if ( cat == "dirs" ) { obj.removeClass( "active_arrow" ) } else { obj.removeClass( "active" ) }; 
+        // if ( cat == "dirs" ) { obj.removeClass( "active_arrow" ) } else { obj.removeClass( "active" ) }; 
+        cat == "dirs" ? obj.removeClass( "active_arrow" ) : obj.removeClass( "active" ); 
     }
 }
 
