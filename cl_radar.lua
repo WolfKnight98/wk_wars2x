@@ -112,7 +112,7 @@ RADAR.vars =
 	-- all of the ray trace threads have completed 
 	rayTraceState = 0,
 
-	-- Number of ray traces, automaticaally cached when the system first runs 
+	-- Number of ray traces, automatically cached when the system first runs 
 	numberOfRays = 0
 }
 
@@ -127,7 +127,8 @@ RADAR.rayTraces = {
 	-- { startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,    y = 150.0 }, rayType = "same" },
 	-- { startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,   y = 150.0 }, rayType = "same" },
 	-- { startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,    y = 150.0 }, rayType = "same" },
-	{ startVec = { x = 0.0 }, endVec = { x = 0.0, y = 150.0 }, rayType = "same" },
+	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 150.0 }, rayType = "same" },
+	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 150.0 }, rayType = "same" },
 	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 150.0 }, rayType = "opp" }
 }
 
@@ -235,8 +236,12 @@ function RADAR:GetRayTraceState()
 	return self.vars.rayTraceState
 end
 
+function RADAR:CacheNumRays()
+	self.vars.numberOfRays = #self.rayTraces
+end 
+
 function RADAR:GetNumOfRays()
-	return #self.rayTraces
+	return self.vars.numberOfRays
 end
 
 function RADAR:IncreaseRayTraceState()
@@ -686,7 +691,7 @@ function RADAR:Main()
 		local plyVehPos = GetEntityCoords( PLY.veh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
-		if ( self:GetRadarStage() == 0 --[[ and self:IsEitherAntennaOn() ]] ) then 
+		if ( self:GetRadarStage() == 0 ) then 
 			if ( self:GetRayTraceState() == 0 ) then 
 				local vehs = self:GetVehiclePool()
 
@@ -772,6 +777,8 @@ end )
 -- Main thread
 Citizen.CreateThread( function()
 	SetNuiFocus( false, false )
+
+	RADAR:CacheNumRays()
 
 	while ( true ) do
 		RADAR:Main()
