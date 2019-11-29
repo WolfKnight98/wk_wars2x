@@ -44,6 +44,7 @@ RADAR.vars =
 {
 	-- The radar's power
 	power = false, 
+	poweringUp = false, 
 
 	-- These are the settings that are used in the operator menu 
 	settings = {
@@ -129,7 +130,8 @@ RADAR.rayTraces = {
 	-- { startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,    y = 150.0 }, rayType = "same" },
 	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 150.0 }, rayType = "same" },
 	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 150.0 }, rayType = "opp" }
+	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 150.0 }, rayType = "opp" },
+	{ startVec = { x = -15.0 }, endVec = { x = -15.0, y = 150.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
@@ -147,8 +149,32 @@ function RADAR:IsPowerOn()
 	return self.vars.power 
 end 
 
+function RADAR:IsPoweringUp()
+	return self.vars.poweringUp
+end 
+
+function RADAR:SetPoweringUpState( state )
+	self.vars.poweringUp = state 
+end 
+
 function RADAR:TogglePower()
 	self.vars.power = not self.vars.power 
+
+	SendNUIMessage( { _type = "radarPower", state = self:IsPowerOn() } )
+
+	-- Power is now turned on 
+	if ( self:IsPowerOn() ) then 
+		self:SetPoweringUpState( true )
+
+		Citizen.SetTimeout( 2000, function()
+			self:SetPoweringUpState( false )
+
+			SendNUIMessage( { _type = "poweredUp" } )
+		end )
+	else 
+		self:ResetAntenna( "front" )
+		self:ResetAntenna( "rear" )
+	end
 end
 
 function RADAR:IsFastDisplayEnabled()
@@ -438,6 +464,14 @@ function RADAR:SetAntennaFastLock( ant, state )
 	end 
 end 
 
+function RADAR:ResetAntenna( ant )
+	-- Overwrite default behaviour, this is because when the system is turned off, the temporary memory is
+	-- technically reset, as the setter functions require either the radar power to be on or the antenna to 
+	-- be transmitting, this is the only way to reset the values
+	self.vars.antennas[ant].xmit = false 
+	self.vars.antennas[ant].mode = 0
+end 
+
 
 --[[------------------------------------------------------------------------
 	Radar captured vehicle functions 
@@ -499,7 +533,7 @@ function RADAR:GetDynamicRadius( veh )
 		local min, max = GetModelDimensions( mdl )
 		local size = max - min 
 		local numericSize = size.x + size.y + size.z 
-		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 10, 4.0, 10.0 )
+		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 10, 5.0, 11.0 )
 
 		self:InsertDynamicRadiusData( key, dynamicRadius, numericSize )
 
@@ -635,7 +669,11 @@ end
 --[[------------------------------------------------------------------------
 	NUI callback
 ------------------------------------------------------------------------]]--
-RegisterNUICallback( "closeRemote", function( data )
+RegisterNUICallback( "togglePower", function()
+	RADAR:TogglePower()
+end )
+
+RegisterNUICallback( "closeRemote", function()
 	SetNuiFocus( false, false )
 end )
 
@@ -657,7 +695,7 @@ end )
 ------------------------------------------------------------------------]]--
 function RADAR:Main()
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
-	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and GetVehicleClass( PLY.veh ) == 18 and self:IsPowerOn() ) then 
+	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and GetVehicleClass( PLY.veh ) == 18 and self:IsPowerOn() and not self:IsPoweringUp() ) then 
 		local plyVehPos = GetEntityCoords( PLY.veh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
