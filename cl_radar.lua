@@ -375,9 +375,11 @@ end
 --[[------------------------------------------------------------------------
 	Radar antenna functions 
 ------------------------------------------------------------------------]]--
-function RADAR:ToggleAntenna( ant )
+function RADAR:ToggleAntenna( ant, cb )
 	if ( self:IsPowerOn() ) then 
 		self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
+
+		if ( cb ) then cb() end 
 	end 
 end 
 
@@ -668,9 +670,9 @@ RegisterNUICallback( "setAntennaMode", function( data )
 end )
 
 RegisterNUICallback( "toggleAntenna", function( data ) 
-	RADAR:ToggleAntenna( data.value )
-
-	SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+	RADAR:ToggleAntenna( data.value, function()
+		SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+	end )
 end )
 
 
@@ -713,9 +715,24 @@ function RADAR:Main()
 			-- Work out what has to be sent 
 			-- need to find a way to automate this in a loop 
 			local av = self:GetActiveVehicles()
-			local test = { ["front"] = {}, ["rear"] = {} }
+			data.antennas = { ["front"] = nil, ["rear"] = nil }
 
-			if ( self:IsAntennaTransmitting( "front" ) ) then 
+			for ant in UTIL:Values( { "front", "rear" } ) do 
+				if ( self:IsAntennaTransmitting( ant ) ) then
+					data.antennas[ant] = {}
+					
+					for i = 1, 2 do 
+						data.antennas[ant][i] = { speed = "¦¦¦" }
+
+						-- The vehicle data exists for this slot 
+						if ( av[ant][i] ~= nil ) then 
+							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av[ant][i].speed ) )
+						end 
+					end 
+				end 
+			end 
+
+			--[[if ( self:IsAntennaTransmitting( "front" ) ) then 
 				if ( av["front"][1] ~= nil ) then 
 					test["front"].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][1].speed ) ) 
 				else
@@ -741,10 +758,10 @@ function RADAR:Main()
 				else 
 					test["rear"].fast = "¦¦¦"
 				end 
-			end
+			end]]
 
 			-- Send the update to the NUI side
-			SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = test } )
+			SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
 
 			self:ResetRadarStage()
 			self:ResetRayTraceState()
