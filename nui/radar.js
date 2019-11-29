@@ -23,6 +23,7 @@ const elements =
     antennas: {
         front: {
             targetSpeed: $( "#frontSpeed" ),
+            fastSpeed: $( "#frontFastSpeed" ),
 
             dirs: {
                 fwd: $( "#frontDirAway" ),
@@ -38,7 +39,6 @@ const elements =
             },
 
             fast: {
-                speed: $( "#frontFastSpeed" ),
                 fastLabel: $( "#frontFastLabel" ),
                 lockLabel: $( "#frontFastLockLabel" )
             }
@@ -46,6 +46,7 @@ const elements =
 
         rear: {
             targetSpeed: $( "#rearSpeed" ),
+            fastSpeed: $( "#rearFastSpeed" ),
 
             dirs: {
                 fwd: $( "#rearDirTowards" ),
@@ -61,7 +62,6 @@ const elements =
             },
 
             fast: {
-                speed: $( "#rearFastSpeed" ),
                 fastLabel: $( "#rearFastLabel" ),
                 lockLabel: $( "#rearFastLockLabel" )
             }
@@ -92,7 +92,7 @@ const remoteButtons =
     }
 }
 
-const antennaModes = 
+const modes = 
 {
     off: 0, 
     same: 1, 
@@ -113,12 +113,42 @@ elements.remote.hide();
 
 // Create the onclick event for the toggle display button
 remoteButtons.toggleDisplay.click( function() {
-    elements.radar.fadeToggle();
+    toggleRadar();
 } )
+
+function toggleRadar()
+{
+    elements.radar.fadeToggle();
+}
 
 function toggleRemote() 
 {
     elements.remote.toggle();
+}
+
+function clearModes( ant )
+{
+    for ( let i in elements.antennas[ant].modes )
+    {
+        elements.antennas[ant].modes[i].removeClass( "active" ); 
+    }
+}
+
+function clearDirs( ant )
+{
+    for ( let i in elements.antennas[ant].dirs )
+    {
+        elements.antennas[ant].dirs[i].removeClass( "active_arrow" ); 
+    }
+}
+
+function clearAntenna( ant )
+{
+    clearModes( ant );
+    clearDirs( ant );
+
+    elements.antennas[ant].targetSpeed.html( "¦¦¦" );
+    elements.antennas[ant].fastSpeed.html( "¦¦¦" );
 }
 
 function setLight( ant, cat, item, state )
@@ -132,16 +162,23 @@ function setLight( ant, cat, item, state )
     }
 }
 
-function setAntennaXmit( ant, state )
+function setAntennaXmit( ant, state, mode )
 {
     setLight( ant, "modes", "xmit", state ); 
 
     if ( !state ) {
-        elements.antennas[ant].targetSpeed.html( "¦¦¦" );
-        elements.antennas[ant].fast.speed.html( "HLd" ); 
+        clearAntenna( ant ); 
+        elements.antennas[ant].fastSpeed.html( "HLd" ); 
     } else {
-        elements.antennas[ant].fast.speed.html( "¦¦¦" ); 
+        elements.antennas[ant].fastSpeed.html( "¦¦¦" ); 
+        setAntennaMode( ant, mode );
     }
+}
+
+function setAntennaMode( ant, mode )
+{
+    setLight( ant, "modes", "same", mode == modes.same );
+    setLight( ant, "modes", "opp", mode == modes.opp );
 }
 
 function setAntennaDirs( ant, dir, fastDir )
@@ -160,8 +197,10 @@ function updateDisplays( ps, ants )
     for ( let ant in ants ) 
     {
         if ( ants[ant] != null ) {
-            elements.antennas[ant].targetSpeed.html( ants[ant][0].speed ); 
-            elements.antennas[ant].fast.speed.html( ants[ant][1].speed ); 
+            let e = elements.antennas[ant]; 
+
+            e.targetSpeed.html( ants[ant][0].speed ); 
+            e.fastSpeed.html( ants[ant][1].speed ); 
 
             setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
         }
@@ -216,7 +255,10 @@ window.addEventListener( "message", function( event ) {
             updateDisplays( item.speed, item.antennas );
             break; 
         case "antennaXmit":
-            setAntennaXmit( item.ant, item.on );
+            setAntennaXmit( item.ant, item.on, item.on ? item.mode : 0 );
+            break; 
+        case "antennaMode":
+            setAntennaMode( item.ant, item.mode ); 
             break; 
         default:
             break;

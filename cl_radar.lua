@@ -399,10 +399,12 @@ function RADAR:GetAntennaMode( ant )
 	return self.vars.antennas[ant].mode 
 end 
 
-function RADAR:SetAntennaMode( ant, mode )
+function RADAR:SetAntennaMode( ant, mode, cb )
 	if ( type( mode ) == "number" ) then 
-		if ( mode >= 0 and mode <= 3 ) then 
+		if ( mode >= 0 and mode <= 3 and self:IsAntennaTransmitting( ant ) ) then 
 			self.vars.antennas[ant].mode = mode 
+
+			if ( cb ) then cb() end 
 		end 
 	end 
 end 
@@ -645,7 +647,7 @@ function RADAR:RunControlManager()
 	end 
 
 	-- 'Num8' key, toggles front antenna
-	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
+	--[[ if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
 		self:ToggleAntenna( "front" )
 		UTIL:Notify( "Front antenna toggled." )
 	end 
@@ -654,7 +656,7 @@ function RADAR:RunControlManager()
 	if ( IsDisabledControlJustPressed( 1, 112 ) ) then 
 		self:ToggleAntenna( "rear" )
 		UTIL:Notify( "Rear antenna toggled." )
-	end 
+	end ]]
 end 
 
 
@@ -666,12 +668,14 @@ RegisterNUICallback( "closeRemote", function( data )
 end )
 
 RegisterNUICallback( "setAntennaMode", function( data ) 
-	RADAR:SetAntennaMode( data.value, tonumber( data.mode ) )
+	RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
+		SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+	end )
 end )
 
 RegisterNUICallback( "toggleAntenna", function( data ) 
 	RADAR:ToggleAntenna( data.value, function()
-		SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+		SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ), mode = RADAR:GetAntennaMode( data.value ) } )
 	end )
 end )
 
