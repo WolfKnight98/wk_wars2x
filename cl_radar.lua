@@ -478,17 +478,6 @@ function RADAR:InsertCapturedVehicleData( t, rt )
 	end 
 end 
 
---[[ function RADAR:RemoveDuplicateCapturedVehicles()
-	for k, vehTable in pairs( self.capturedVehicles ) do 
-		local veh = vehTable.veh 
-		local rt = vehTable.rayType 
-
-		for b, v in pairs( self.capturedVehicles ) do 
-			if ( v.veh == veh and k ~= b and rt == v.rayType ) then table.remove( self.capturedVehicles, b ) end
-		end 
-	end
-end ]]
-
 
 --[[------------------------------------------------------------------------
 	Radar dynamic sphere radius functions 
