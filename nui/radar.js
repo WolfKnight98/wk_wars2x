@@ -25,8 +25,10 @@ const elements =
             targetSpeed: $( "#frontSpeed" ),
 
             dirs: {
-                forward: $( "#frontDirAway" ),
-                backward: $( "#frontDirTowards" )
+                fwd: $( "#frontDirAway" ),
+                bwd: $( "#frontDirTowards" ),
+                fwdFast: $( "#frontFastDirAway" ), 
+                bwdFast: $( "#frontFastDirTowards" )
             },
 
             modes: {
@@ -46,8 +48,10 @@ const elements =
             targetSpeed: $( "#rearSpeed" ),
 
             dirs: {
-                forward: $( "#rearDirTowards" ),
-                backward: $( "#rearDirAway" )
+                fwd: $( "#rearDirTowards" ),
+                bwd: $( "#rearDirAway" ), 
+                fwdFast: $( "#rearFastDirTowards" ), 
+                bwdFast: $( "#rearFastDirAway" )
             },
 
             modes: {
@@ -96,6 +100,13 @@ const antennaModes =
     both: 3
 }
 
+const dirs = 
+{
+    none: 0, 
+    closing: 1,
+    away: 2
+}
+
 // Hide the radar and remote, this way we can bypass setting a style of 'display: none;' in the HTML file
 // elements.radar.hide(); 
 elements.remote.hide(); 
@@ -115,9 +126,9 @@ function setLight( ant, cat, item, state )
     let obj = elements.antennas[ant][cat][item]; 
 
     if ( state ) {
-        obj.addClass( "active" ); 
+        if ( cat == "dirs" ) { obj.addClass( "active_arrow" ) } else { obj.addClass( "active" ) }; 
     } else {
-        obj.removeClass( "active" );
+        if ( cat == "dirs" ) { obj.removeClass( "active_arrow" ) } else { obj.removeClass( "active" ) }; 
     }
 }
 
@@ -133,6 +144,15 @@ function setAntennaXmit( ant, state )
     }
 }
 
+function setAntennaDirs( ant, dir, fastDir )
+{
+    setLight( ant, "dirs", "fwd", dir == dirs.closing );
+    setLight( ant, "dirs", "bwd", dir == dirs.away );
+
+    setLight( ant, "dirs", "fwdFast", fastDir == dirs.closing );
+    setLight( ant, "dirs", "bwdFast", fastDir == dirs.away );
+}
+
 function updateDisplays( ps, ants )
 {
     elements.patrolSpeed.html( ps );
@@ -142,6 +162,8 @@ function updateDisplays( ps, ants )
         if ( ants[ant] != null ) {
             elements.antennas[ant].targetSpeed.html( ants[ant][0].speed ); 
             elements.antennas[ant].fast.speed.html( ants[ant][1].speed ); 
+
+            setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
         }
     }
 }

@@ -721,11 +721,17 @@ function RADAR:Main()
 					data.antennas[ant] = {}
 
 					for i = 1, 2 do 
-						data.antennas[ant][i] = { speed = "¦¦¦" }
+						data.antennas[ant][i] = { speed = "¦¦¦", dir = 0 }
 
 						-- The vehicle data exists for this slot 
 						if ( av[ant][i] ~= nil ) then 
+							-- We already have the vehicle speed as we needed it earlier on for filtering 
 							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av[ant][i].speed ) )
+
+							-- Work out if the vehicle is closing or away 
+							local ownH = GetEntityHeading( PLY.veh )
+							local tarH = GetEntityHeading( av[ant][i].veh )
+							data.antennas[ant][i].dir = UTIL:GetEntityRelativeDirection( ownH, tarH, 120 )
 						end 
 					end 
 				end 
