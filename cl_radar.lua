@@ -132,27 +132,8 @@ RADAR.rayTraces = {
 	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 150.0 }, rayType = "opp" }
 }
 
--- Each of these are used for sorting the captured vehicle data, depending on what the 
--- player has the mode set to, dictates what sorting function to use. The name is just the 
--- name of the mode that is used to let the user know what mode it is, and the func is the
--- function used in table.sort()
---
--- DO NOT TOUCH THESE UNLESS YOU KNOW WHAT YOU'RE DOING!
---[[ RADAR.sorting = {
-	[1] = { 
-		name = "CLOSEST", 
-		func = function( a, b ) return a.dist < b.dist end 
-	}, 
-	[2] = { 
-		name = "FASTEST", 
-		func = function( a, b ) return a.speed > b.speed end 
-	}, 
-	[3] = { 
-		name = "LARGEST", 
-		func = function( a, b ) return a.size > b.size + 1.0 end
-	} 
-} ]]
-
+-- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
+-- target window of each antenna, whereas the 'fastest' filter is used for the fast target window of each antenna
 RADAR.sorting = {
 	strongest = function( a, b ) return a.size > b.size end, 
 	fastest = function( a, b ) return a.speed > b.speed end
