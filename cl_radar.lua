@@ -713,14 +713,13 @@ function RADAR:Main()
 			end
 
 			-- Work out what has to be sent 
-			-- need to find a way to automate this in a loop 
 			local av = self:GetActiveVehicles()
 			data.antennas = { ["front"] = nil, ["rear"] = nil }
 
 			for ant in UTIL:Values( { "front", "rear" } ) do 
 				if ( self:IsAntennaTransmitting( ant ) ) then
 					data.antennas[ant] = {}
-					
+
 					for i = 1, 2 do 
 						data.antennas[ant][i] = { speed = "¦¦¦" }
 
@@ -731,34 +730,6 @@ function RADAR:Main()
 					end 
 				end 
 			end 
-
-			--[[if ( self:IsAntennaTransmitting( "front" ) ) then 
-				if ( av["front"][1] ~= nil ) then 
-					test["front"].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][1].speed ) ) 
-				else
-					test["front"].speed = "¦¦¦"
-				end 
-
-				if ( av["front"][2] ~= nil ) then 
-					test["front"].fast = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["front"][2].speed ) ) 
-				else 
-					test["front"].fast = "¦¦¦"
-				end 
-			end 
-
-			if ( self:IsAntennaTransmitting( "rear" ) ) then 
-				if ( av["rear"][1] ~= nil ) then 
-					test["rear"].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["rear"][1].speed ) ) 
-				else 
-					test["rear"].speed = "¦¦¦"
-				end 
-
-				if ( av["rear"][2] ~= nil ) then 
-					test["rear"].fast = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av["rear"][2].speed ) ) 
-				else 
-					test["rear"].fast = "¦¦¦"
-				end 
-			end]]
 
 			-- Send the update to the NUI side
 			SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
