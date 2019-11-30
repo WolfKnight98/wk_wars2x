@@ -612,7 +612,7 @@ function RADAR:GetVehiclesForAntenna()
 				table.sort( vehs[ant], self:GetFastestSortFunc() )
 
 				for k, v in pairs( vehs[ant] ) do 
-					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh and v.size + 0.5 < results[ant][1].size ) then 
+					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh and v.size + 0.75 < results[ant][1].size ) then 
 						results[ant][2] = v 
 						break
 					end 
@@ -713,9 +713,14 @@ function RADAR:Main()
 			local data = {} 
 
 			-- Get the player's vehicle speed
-			local speed = self:GetVehSpeedFormatted( GetEntitySpeed( PLY.veh ) )
+			local entSpeed = GetEntitySpeed( PLY.veh )
 
-			data.patrolSpeed = UTIL:FormatSpeed( speed )
+			if ( entSpeed == 0 ) then 
+				data.patrolSpeed = "¦[]"
+			else 
+				local speed = self:GetVehSpeedFormatted( entSpeed )
+				data.patrolSpeed = UTIL:FormatSpeed( speed )
+			end 
 
 			-- Only grab data to send if there have actually been vehicles captured by the radar
 			if ( not UTIL:IsTableEmpty( self:GetCapturedVehicles() ) ) then 
@@ -827,7 +832,12 @@ Citizen.CreateThread( function()
 				if ( av[ant] ~= nil and av[ant][i] ~= nil ) then 
 					local pos = GetEntityCoords( av[ant][i].veh )
 					local r = RADAR:GetDynamicRadius( av[ant][i].veh )
-					UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, r, { 255, 0, 0, 100 } )
+
+					if ( i == 1 ) then 
+						UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, r, { 255, 127, 0, 100 } )
+					else 
+						UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, r, { 255, 0, 0, 100 } )
+					end 
 				end 
 			end
 		end 

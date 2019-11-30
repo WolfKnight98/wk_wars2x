@@ -208,7 +208,7 @@ function setAntennaMode( ant, mode )
     setLight( ant, "modes", "opp", mode == modes.opp );
 }
 
-function setAntennaFastLabel( ant, state )
+function setAntennaFastMode( ant, state )
 {
     setLight( ant, "fast", "fastLabel", state );
 }
@@ -234,7 +234,7 @@ function updateDisplays( ps, ants )
             e.targetSpeed.html( ants[ant][0].speed ); 
             e.fastSpeed.html( ants[ant][1].speed ); 
 
-            setAntennaFastLabel( ant, ants[ant][1].speed == "¦¦¦" ? false : true );
+            // setAntennaFastLabel( ant, ants[ant][1].speed == "¦¦¦" ? false : true );
 
             setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
         }
@@ -267,8 +267,11 @@ function poweredUp()
 {
     clearEverything(); 
 
-    setAntennaXmit( "front", false );
-    setAntennaXmit( "rear", false );
+    for ( let ant of [ "front", "rear" ] )
+    {
+        setAntennaXmit( ant, false );
+        setAntennaFastMode( ant, true );    
+    }
 }
 
 function radarPower( state )
