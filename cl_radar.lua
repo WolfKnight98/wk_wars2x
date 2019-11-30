@@ -227,9 +227,9 @@ function RADAR:SetVehiclePool( pool )
 	end
 end 
 
-function RADAR:SetActiveVehicles( t )
-	if ( type( t ) == "table" ) then 
-		self.activeVehicles = t
+function RADAR:SetActiveVehicles( vehs )
+	if ( type( vehs ) == "table" ) then 
+		self.activeVehicles = vehs
 	end 
 end 
 
@@ -297,13 +297,13 @@ function RADAR:GetLineHitsSphereAndDir( centre, radius, rayStart, rayEnd )
 	return false, nil 
 end 
 
-function RADAR:ShootCustomRay( localVeh, veh, s, e )
+function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 	local pos = GetEntityCoords( veh )
 	local dist = #( pos - s )
 
-	if ( DoesEntityExist( veh ) and veh ~= localVeh and dist < self:GetMaxCheckDist() ) then 
+	if ( DoesEntityExist( veh ) and veh ~= plyVeh and dist < self:GetMaxCheckDist() ) then 
 		local entSpeed = GetEntitySpeed( veh )
-		local visible = HasEntityClearLosToEntity( localVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
+		local visible = HasEntityClearLosToEntity( plyVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
 
 		if ( entSpeed > 0.1 and visible ) then 
 			local radius, size = self:GetDynamicRadius( veh )
@@ -348,10 +348,10 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 end 
 
 function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
-	local startP = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
-	local endP = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
+	local startPoint = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
+	local endPoint = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
 
-	local hitVehs = self:GetVehsHitByRay( from, vehs, startP, endP )
+	local hitVehs = self:GetVehsHitByRay( from, vehs, startPoint, endPoint )
 
 	self:InsertCapturedVehicleData( hitVehs, rayType )
 
@@ -410,7 +410,7 @@ end
 
 function RADAR:SetAntennaMode( ant, mode, cb )
 	if ( type( mode ) == "number" ) then 
-		if ( mode >= 0 and mode <= 3 and self:IsAntennaTransmitting( ant ) ) then 
+		if ( mode >= 0 and mode <= 3 and self:IsPowerOn() ) then 
 			self.vars.antennas[ant].mode = mode 
 
 			if ( cb ) then cb() end 
@@ -533,7 +533,7 @@ function RADAR:GetDynamicRadius( veh )
 		local min, max = GetModelDimensions( mdl )
 		local size = max - min 
 		local numericSize = size.x + size.y + size.z 
-		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 10, 5.0, 11.0 )
+		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 12, 4.0, 10.0 )
 
 		self:InsertDynamicRadiusData( key, dynamicRadius, numericSize )
 
@@ -685,7 +685,7 @@ end )
 
 RegisterNUICallback( "toggleAntenna", function( data ) 
 	RADAR:ToggleAntenna( data.value, function()
-		SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ), mode = RADAR:GetAntennaMode( data.value ) } )
+		SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
 	end )
 end )
 
@@ -826,7 +826,8 @@ Citizen.CreateThread( function()
 			for i = 1, 2, 1 do 
 				if ( av[ant] ~= nil and av[ant][i] ~= nil ) then 
 					local pos = GetEntityCoords( av[ant][i].veh )
-					UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, 5.0, { 255, 0, 0, 100 } )
+					local r = RADAR:GetDynamicRadius( av[ant][i].veh )
+					UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, r, { 255, 0, 0, 100 } )
 				end 
 			end
 		end 

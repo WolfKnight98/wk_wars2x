@@ -189,16 +189,16 @@ function clearEverything()
     }
 }
 
-function setAntennaXmit( ant, state, mode )
+function setAntennaXmit( ant, state )
 {
     setLight( ant, "modes", "xmit", state ); 
 
     if ( !state ) {
-        clearAntenna( ant ); 
+        clearDirs( ant ); 
+        elements.antennas[ant].targetSpeed.html( "¦¦¦" );
         elements.antennas[ant].fastSpeed.html( "HLd" ); 
     } else {
         elements.antennas[ant].fastSpeed.html( "¦¦¦" ); 
-        setAntennaMode( ant, mode );
     }
 }
 
@@ -327,7 +327,8 @@ window.addEventListener( "message", function( event ) {
             updateDisplays( item.speed, item.antennas );
             break; 
         case "antennaXmit":
-            setAntennaXmit( item.ant, item.on, item.on ? item.mode : 0 );
+            // setAntennaXmit( item.ant, item.on, item.on ? item.mode : 0 );
+            setAntennaXmit( item.ant, item.on );
             break; 
         case "antennaMode":
             setAntennaMode( item.ant, item.mode ); 
