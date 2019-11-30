@@ -266,11 +266,7 @@ function poweredUp()
 
 function radarPower( state )
 {
-    if ( state ) {
-        poweringUp()
-    } else {
-        clearEverything();
-    }
+    state ? poweringUp() : clearEverything();
 }
 
 // This function is used to send data back through to the LUA side 
