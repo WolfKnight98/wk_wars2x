@@ -208,6 +208,11 @@ function setAntennaMode( ant, mode )
     setLight( ant, "modes", "opp", mode == modes.opp );
 }
 
+function setAntennaFastLabel( ant, state )
+{
+    setLight( ant, "fast", "fastLabel", state );
+}
+
 function setAntennaDirs( ant, dir, fastDir )
 {
     setLight( ant, "dirs", "fwd", dir == dirs.closing );
@@ -228,6 +233,8 @@ function updateDisplays( ps, ants )
 
             e.targetSpeed.html( ants[ant][0].speed ); 
             e.fastSpeed.html( ants[ant][1].speed ); 
+
+            setAntennaFastLabel( ant, ants[ant][1].speed == "¦¦¦" ? false : true );
 
             setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
         }
