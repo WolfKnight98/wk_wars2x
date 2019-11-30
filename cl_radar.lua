@@ -90,9 +90,6 @@ RADAR.vars =
 		}
 	}, 
 
-	-- Sort mode, defines the table position for RADAR.sorting   
-	-- sortMode = 1, 
-
 	-- The maximum distance that the radar system's ray traces can go 
 	maxCheckDist = 300.0,
 
