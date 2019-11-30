@@ -48,6 +48,7 @@ RADAR.vars =
 
 	-- These are the settings that are used in the operator menu 
 	settings = {
+		menuActive = false, 
 		fastDisplay = true, 
 		oppSensitivity = 5, 
 		sameSensitivity = 5, 
