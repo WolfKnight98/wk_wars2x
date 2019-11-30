@@ -129,7 +129,7 @@ RADAR.rayTraces = {
 	-- { startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,   y = 150.0 }, rayType = "same" },
 	-- { startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,    y = 150.0 }, rayType = "same" },
 	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 150.0 }, rayType = "same" },
+	{ startVec = { x = -2.0 }, endVec = { x = -2.0, y = 150.0 }, rayType = "same" },
 	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 150.0 }, rayType = "opp" },
 	{ startVec = { x = -15.0 }, endVec = { x = -15.0, y = 150.0 }, rayType = "opp" }
 }
@@ -808,6 +808,22 @@ end )
 
 
 ------------------------------ DEBUG ------------------------------
+Citizen.CreateThread( function()
+	while ( true ) do 
+		-- Ray line drawing
+		-- local veh = GetVehiclePedIsIn( PlayerPedId(), false )
+
+		for k, v in pairs( RADAR.rayTraces ) do 
+			local startP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.startVec.x, 0.0, 0.0 )
+			local endP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.endVec.x, v.endVec.y, 0.0 )
+
+			UTIL:DrawDebugLine( startP, endP )
+		end
+
+		Citizen.Wait( 0 )
+	end 
+end )
+
 --[[ local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
 
 Citizen.CreateThread( function()
