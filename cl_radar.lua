@@ -612,7 +612,7 @@ function RADAR:GetVehiclesForAntenna()
 				table.sort( vehs[ant], self:GetFastestSortFunc() )
 
 				for k, v in pairs( vehs[ant] ) do 
-					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh and v.size + 0.75 < results[ant][1].size ) then 
+					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh and v.size < results[ant][1].size and v.speed > results[ant][1].speed ) then 
 						results[ant][2] = v 
 						break
 					end 
