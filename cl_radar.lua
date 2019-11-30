@@ -311,7 +311,7 @@ function RADAR:ShootCustomRay( localVeh, veh, s, e )
 			local hit, relPos = self:GetLineHitsSphereAndDir( pos, radius, s, e )
 
 			if ( hit ) then 
-				UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, radius, { 255, 0, 0, 40 } )
+				-- UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, radius, { 255, 0, 0, 40 } )
 
 				return true, relPos, dist, entSpeed, size
 			end 
@@ -332,8 +332,10 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 			local d = {}
 			d.veh = veh 
 			d.relPos = relativePos
-			d.dist = UTIL:Round( distance, 2 ) -- Possibly remove 
-			d.speed = UTIL:Round( speed, 3 )
+			-- d.dist = UTIL:Round( distance, 2 ) -- Possibly remove 
+			-- d.speed = UTIL:Round( speed, 3 )
+			d.dist = distance
+			d.speed = speed
 			d.size = size
 
 			table.insert( t, d )
@@ -509,12 +511,12 @@ end
 
 function RADAR:InsertDynamicRadiusData( key, radius, actualSize )
 	if ( self:GetDynamicDataValue( key ) == nil ) then 
-		local tbl = {}
+		local t = {}
 
-		tbl.radius = radius 
-		tbl.actualSize = actualSize
+		t.radius = radius 
+		t.actualSize = actualSize
 
-		self:SetDynamicRadiusKey( key, tbl )
+		self:SetDynamicRadiusKey( key, t )
 	end 
 end 
 
@@ -817,6 +819,17 @@ Citizen.CreateThread( function()
 
 			UTIL:DrawDebugLine( startP, endP )
 		end
+
+		local av = RADAR:GetActiveVehicles()
+
+		for ant in UTIL:Values( { "front", "rear" } ) do 
+			for i = 1, 2, 1 do 
+				if ( av[ant] ~= nil and av[ant][i] ~= nil ) then 
+					local pos = GetEntityCoords( av[ant][i].veh )
+					UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, 5.0, { 255, 0, 0, 100 } )
+				end 
+			end
+		end 
 
 		Citizen.Wait( 0 )
 	end 
