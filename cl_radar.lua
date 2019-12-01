@@ -197,7 +197,7 @@ function RADAR:SetSettingValue( setting, value )
 	if ( value ~= nil ) then 
 		self.vars.settings[setting] = value 
 
-		if ( value == "same" or value == "opp" ) then 
+		if ( setting == "same" or setting == "opp" ) then 
 			self:UpdateRayEndCoords()
 		end 
 	end 
@@ -479,7 +479,7 @@ end
 
 function RADAR:UpdateRayEndCoords()
 	for k, v in pairs( self.rayTraces ) do 
-		local endY = ( self:GetSettingValue( v.rayType ) * 0.2 ) * v.endVec.y
+		local endY = ( self:GetSettingValue( v.rayType ) * 0.2 ) * v.endVec.baseY
 		v.endVec.y = endY
 	end 	
 end 
@@ -818,6 +818,7 @@ RegisterNUICallback( "setAntennaMode", function( data )
 	else
 		RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
 			SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+			SendNUIMessage( { _type = "audio", name = "beep" } )
 		end )
 	end 
 end )
@@ -828,6 +829,7 @@ RegisterNUICallback( "toggleAntenna", function( data )
 	else
 		RADAR:ToggleAntenna( data.value, function()
 			SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+			SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off" } )
 		end )
 	end 
 end )

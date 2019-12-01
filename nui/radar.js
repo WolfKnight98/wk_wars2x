@@ -11,6 +11,13 @@
 // Variables
 var resourceName; 
 
+const audioNames = 
+{
+    beep: "beep.ogg",
+    xmit_on: "xmit_on.ogg",
+    xmit_off: "xmit_off.ogg",
+}
+
 // Setup the main const element structure, this way we can easily access elements without having the mess
 // that was in the JS file for WraithRS
 const elements = 
@@ -299,6 +306,12 @@ function settingUpdate( ants, fast )
     }
 }
 
+function playAudio( name )
+{
+    let audio = new Audio( audioNames[name] );
+    audio.play();
+}
+
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
     $.post( "http://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
@@ -364,6 +377,9 @@ window.addEventListener( "message", function( event ) {
             break;
         case "settingUpdate":
             settingUpdate( item.antennaData, item.fast ); 
+            break; 
+        case "audio":
+            playAudio( item.name ); 
             break; 
         default:
             break;
