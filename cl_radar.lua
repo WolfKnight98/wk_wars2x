@@ -140,10 +140,10 @@ RADAR.rayTraces = {
 	-- { startVec = { x = 0.0 }, endVec = { x = 0.0, y = 200.0 }, rayType = "same" },
 	-- { startVec = { x = -5.0 }, endVec = { x = -5.0, y = 200.0 }, rayType = "same" },
 	-- { startVec = { x = 5.0 }, endVec = { x = 5.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 200.0 }, rayType = "opp" },
-	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 200.0 }, rayType = "opp" }
+	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 200.0, baseY = 200.0 }, rayType = "same" },
+	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 200.0, baseY = 200.0 }, rayType = "same" },
+	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 200.0, baseY = 200.0 }, rayType = "opp" },
+	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 200.0, baseY = 200.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
@@ -196,6 +196,10 @@ end
 function RADAR:SetSettingValue( setting, value )
 	if ( value ~= nil ) then 
 		self.vars.settings[setting] = value 
+
+		if ( value == "same" or value == "opp" ) then 
+			self:UpdateRayEndCoords()
+		end 
 	end 
 end 
 
@@ -469,9 +473,15 @@ end
 
 function RADAR:CreateRayThreads( ownVeh, vehicles )
 	for _, v in pairs( self.rayTraces ) do 
-		local endY = ( self:GetSettingValue( v.rayType ) * 0.2 ) * v.endVec.y
-		self:CreateRayThread( vehicles, ownVeh, v.startVec.x, v.endVec.x, endY, v.rayType )
+		self:CreateRayThread( vehicles, ownVeh, v.startVec.x, v.endVec.x, v.endVec.y, v.rayType )
 	end 
+end 
+
+function RADAR:UpdateRayEndCoords()
+	for k, v in pairs( self.rayTraces ) do 
+		local endY = ( self:GetSettingValue( v.rayType ) * 0.2 ) * v.endVec.y
+		v.endVec.y = endY
+	end 	
 end 
 
 
@@ -937,6 +947,7 @@ Citizen.CreateThread( function()
 	SetNuiFocus( false, false )
 
 	RADAR:CacheNumRays()
+	RADAR:UpdateRayEndCoords()
 
 	while ( true ) do
 		RADAR:Main()
