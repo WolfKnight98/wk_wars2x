@@ -55,15 +55,18 @@ RADAR.vars =
 		["same"] = 4, 
 		["opp"] = 3, 
 
-		["alert"] = true 
+		["alert"] = true,
+
+		["beep"] = 1.0
 	},
 
 	menuActive = false, 
 	currentOptionIndex = 1, 
 	menuOptions = {
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
-		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 1, 2, 3, 4, 5 }, optionIndex = 4, settingText = "same" },
-		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 1, 2, 3, 4, 5 }, optionIndex = 3, settingText = "opp" },
+		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "same" },
+		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
+		{ displayText = { "¦¦b", "EEP" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 5, settingText = "beep" }
 	},
 
 	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
@@ -479,7 +482,7 @@ end
 
 function RADAR:UpdateRayEndCoords()
 	for k, v in pairs( self.rayTraces ) do 
-		local endY = ( self:GetSettingValue( v.rayType ) * 0.2 ) * v.endVec.baseY
+		local endY = self:GetSettingValue( v.rayType ) * v.endVec.baseY
 		v.endVec.y = endY
 	end 	
 end 
@@ -821,7 +824,7 @@ RegisterNUICallback( "setAntennaMode", function( data )
 		end )
 	end 
 
-	SendNUIMessage( { _type = "audio", name = "beep" } )
+	SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 end )
 
 RegisterNUICallback( "toggleAntenna", function( data ) 
@@ -831,7 +834,7 @@ RegisterNUICallback( "toggleAntenna", function( data )
 	else
 		RADAR:ToggleAntenna( data.value, function()
 			SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
-			SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off" } )
+			SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
 		end )
 	end 
 end )
@@ -845,7 +848,7 @@ RegisterNUICallback( "menu", function()
 		RADAR:SendMenuUpdate()
 	end
 
-	SendNUIMessage( { _type = "audio", name = "beep" } )
+	SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 end )
 
 

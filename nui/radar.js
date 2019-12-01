@@ -306,9 +306,10 @@ function settingUpdate( ants, fast )
     }
 }
 
-function playAudio( name )
+function playAudio( name, vol )
 {
     let audio = new Audio( audioNames[name] );
+    audio.volume = vol; 
     audio.play();
 }
 
@@ -379,7 +380,7 @@ window.addEventListener( "message", function( event ) {
             settingUpdate( item.antennaData, item.fast ); 
             break; 
         case "audio":
-            playAudio( item.name ); 
+            playAudio( item.name, item.vol ); 
             break; 
         default:
             break;
