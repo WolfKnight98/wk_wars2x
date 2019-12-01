@@ -830,7 +830,7 @@ end )
 RegisterNUICallback( "toggleAntenna", function( data ) 
 	if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
 		RADAR:ChangeMenuOption( data.value )
-		SendNUIMessage( { _type = "audio", name = "beep" } )
+		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 	else
 		RADAR:ToggleAntenna( data.value, function()
 			SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
