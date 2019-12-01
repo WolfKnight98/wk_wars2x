@@ -115,21 +115,32 @@ RADAR.vars =
 	numberOfRays = 0
 }
 
--- Table to store entity IDs of captured vehicles 
+-- Table to store tables for hit entities of captured vehicles 
 RADAR.capturedVehicles = {}
+
+-- Table for temp id storage to stop unnecessary trace checks
+RADAR.tempVehicleIDs = {}
 
 -- The current vehicle data for display 
 RADAR.activeVehicles = {}
 
 -- These vectors are used in the custom ray tracing system 
 RADAR.rayTraces = {
-	-- { startVec = { x = 0.0,   y = 5.0  }, endVec = { x = 0.0,    y = 150.0 }, rayType = "same" },
-	-- { startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,   y = 150.0 }, rayType = "same" },
-	-- { startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,    y = 150.0 }, rayType = "same" },
-	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -2.0 }, endVec = { x = -2.0, y = 150.0 }, rayType = "same" },
-	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 150.0 }, rayType = "opp" },
-	{ startVec = { x = -15.0 }, endVec = { x = -15.0, y = 150.0 }, rayType = "opp" }
+	{ startVec = { x = 0.0 }, endVec = { x = 0.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = -5.0 }, endVec = { x = -5.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = 5.0 }, endVec = { x = 5.0, y = 200.0 }, rayType = "same" },
+	-- { startVec = { x = 3.0 }, endVec = { x = 3.0, y = 200.0 }, rayType = "same" },
+	-- { startVec = { x = -3.0 }, endVec = { x = -3.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 200.0 }, rayType = "opp" },
+	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 200.0 }, rayType = "opp" },
+
+	-- ultimate lag test
+	--[[{ startVec = { x = -6.0 }, endVec = { x = -6.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = 6.0 }, endVec = { x = 6.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = -7.0 }, endVec = { x = -7.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = 7.0 }, endVec = { x = 7.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = -8.0 }, endVec = { x = -8.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = 8.0 }, endVec = { x = 8.0, y = 200.0 }, rayType = "same" }]]
 }
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
@@ -301,7 +312,9 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 	local pos = GetEntityCoords( veh )
 	local dist = #( pos - s )
 
-	if ( DoesEntityExist( veh ) and veh ~= plyVeh and dist < self:GetMaxCheckDist() ) then 
+	local key = tostring( veh )
+
+	if ( DoesEntityExist( veh ) and veh ~= plyVeh and dist < self:GetMaxCheckDist() and not self:HasVehicleAlreadyBeenHit( key ) ) then 
 		local entSpeed = GetEntitySpeed( veh )
 		local visible = HasEntityClearLosToEntity( plyVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
 
@@ -312,6 +325,8 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 
 			if ( hit ) then 
 				-- UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, radius, { 255, 0, 0, 40 } )
+
+				self:SetVehicleHasBeenHit( key )
 
 				return true, relPos, dist, entSpeed, size
 			end 
@@ -493,6 +508,18 @@ function RADAR:InsertCapturedVehicleData( t, rt )
 	end 
 end 
 
+function RADAR:HasVehicleAlreadyBeenHit( key )
+	return self.tempVehicleIDs[key] == true 
+end 
+
+function RADAR:SetVehicleHasBeenHit( key )
+	self.tempVehicleIDs[key] = true 
+end 
+
+function RADAR:ResetTempVehicleIDs()
+	self.tempVehicleIDs = {}
+end 
+
 
 --[[------------------------------------------------------------------------
 	Radar dynamic sphere radius functions 
@@ -611,8 +638,10 @@ function RADAR:GetVehiclesForAntenna()
 				-- Get the 'fastest' vehicle for the antenna 
 				table.sort( vehs[ant], self:GetFastestSortFunc() )
 
+				local temp = results[ant][1]
+
 				for k, v in pairs( vehs[ant] ) do 
-					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= results[ant][1].veh and v.size < results[ant][1].size and v.speed > results[ant][1].speed ) then 
+					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= temp.veh and v.size < temp.size and v.speed > temp.speed ) then 
 						results[ant][2] = v 
 						break
 					end 
@@ -759,6 +788,7 @@ function RADAR:Main()
 			-- Send the update to the NUI side
 			SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
 
+			self:ResetTempVehicleIDs()
 			self:ResetRadarStage()
 			self:ResetRayTraceState()
 		end 
