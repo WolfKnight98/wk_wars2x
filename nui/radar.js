@@ -279,6 +279,26 @@ function radarPower( state )
     state ? poweringUp() : clearEverything();
 }
 
+function menu( optionText, option )
+{
+    clearEverything(); 
+
+    elements.antennas.front.targetSpeed.html( optionText[0] );
+    elements.antennas.front.fastSpeed.html( optionText[1] );
+
+    elements.patrolSpeed.html( option );
+}
+
+function settingUpdate( ants, fast )
+{
+    for ( let ant in ants )
+    {
+        setAntennaXmit( ant, ants[ant].xmit );
+        setAntennaMode( ant, ants[ant].mode ); 
+        setAntennaFastMode( ant, fast );   
+    }
+}
+
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
     $.post( "http://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
@@ -290,10 +310,10 @@ function sendData( name, data ) {
 
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
 elements.remote.find( "button" ).each( function( i, obj ) {
-    if ( $( this ).attr( "data-nuitype" ) && $( this ).attr( "data-value" ) ) {
+    if ( $( this ).attr( "data-nuitype" ) ) {
         $( this ).click( function() { 
             let type = $( this ).data( "nuitype" ); 
-            let value = $( this ).data( "value" ); 
+            let value = $( this ).attr( "data-value" ) ? $( this ).data( "value" ) : null; 
             let mode = $( this ).attr( "data-mode" ) ? $( this ).data( "mode" ) : null; 
 
             sendData( type, { value, mode } ); 
@@ -338,6 +358,12 @@ window.addEventListener( "message", function( event ) {
             break; 
         case "antennaMode":
             setAntennaMode( item.ant, item.mode ); 
+            break; 
+        case "menu":
+            menu( item.text, item.option ); 
+            break;
+        case "settingUpdate":
+            settingUpdate( item.antennaData, item.fast ); 
             break; 
         default:
             break;

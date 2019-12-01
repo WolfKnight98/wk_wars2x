@@ -35,6 +35,7 @@ PLY = {}
 PLY.ped = PlayerPedId()
 PLY.veh = nil 
 PLY.inDriverSeat = false 
+PLY.vehClassValid = false
 
 
 --[[------------------------------------------------------------------------
@@ -48,11 +49,21 @@ RADAR.vars =
 
 	-- These are the settings that are used in the operator menu 
 	settings = {
-		menuActive = false, 
-		fastDisplay = true, 
-		oppSensitivity = 5, 
-		sameSensitivity = 5, 
-		alert = true 
+		["fastDisplay"] = true, 
+
+		-- Sensitivty for each mode, 1-5
+		["same"] = 4, 
+		["opp"] = 3, 
+
+		["alert"] = true 
+	},
+
+	menuActive = false, 
+	currentOptionIndex = 1, 
+	menuOptions = {
+		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
+		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 1, 2, 3, 4, 5 }, optionIndex = 4, settingText = "same" },
+		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 1, 2, 3, 4, 5 }, optionIndex = 3, settingText = "opp" },
 	},
 
 	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
@@ -70,23 +81,23 @@ RADAR.vars =
 		[ "front" ] = {
 			xmit = false,		-- Whether the antenna is on or off
 			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
-			speed = 0,			-- Speed of the vehicle caught by the front antenna 
+			--[[ speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
 			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
 			fastSpeed = 0, 		-- Speed of the fastest vehicle caught by the front antenna
 			fastDir = nil, 		-- Direction the fastest vehicle is going, 0 = towards, 1 = away  
-			fastLocked = false	-- Whether the fast speed is locked or not 
+			fastLocked = false	-- Whether the fast speed is locked or not ]]
 		}, 
 
 		[ "rear" ] = {
 			xmit = false,		-- Whether the antenna is on or off
 			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
-			speed = 0,			-- Speed of the vehicle caught by the front antenna 
+			--[[ speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
 			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
 			fastSpeed = 0, 		-- Speed of the fastest vehicle caught by the front antenna
 			fastDir = nil, 		-- Direction the fastest vehicle is going, 0 = towards, 1 = away  
-			fastLocked = false	-- Whether the fast speed is locked or not 
+			fastLocked = false	-- Whether the fast speed is locked or not ]]
 		}
 	}, 
 
@@ -95,6 +106,15 @@ RADAR.vars =
 
 	-- Cached dynamic vehicle sphere sizes, automatically populated when the system is running 
 	sphereSizes = {}, 
+
+	-- Table to store tables for hit entities of captured vehicles 
+	capturedVehicles = {},
+
+	-- Table for temp id storage to stop unnecessary trace checks
+	tempVehicleIDs = {},
+
+	-- The current vehicle data for display 
+	activeVehicles = {},
 
 	-- Vehicle pool, automatically populated when the system is running, holds all of the current
 	-- vehicle IDs for the player using entity enumeration (see cl_utils.lua) 
@@ -115,32 +135,15 @@ RADAR.vars =
 	numberOfRays = 0
 }
 
--- Table to store tables for hit entities of captured vehicles 
-RADAR.capturedVehicles = {}
-
--- Table for temp id storage to stop unnecessary trace checks
-RADAR.tempVehicleIDs = {}
-
--- The current vehicle data for display 
-RADAR.activeVehicles = {}
-
 -- These vectors are used in the custom ray tracing system 
 RADAR.rayTraces = {
-	{ startVec = { x = 0.0 }, endVec = { x = 0.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = -5.0 }, endVec = { x = -5.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = 5.0 }, endVec = { x = 5.0, y = 200.0 }, rayType = "same" },
-	-- { startVec = { x = 3.0 }, endVec = { x = 3.0, y = 200.0 }, rayType = "same" },
-	-- { startVec = { x = -3.0 }, endVec = { x = -3.0, y = 200.0 }, rayType = "same" },
+	-- { startVec = { x = 0.0 }, endVec = { x = 0.0, y = 200.0 }, rayType = "same" },
+	-- { startVec = { x = -5.0 }, endVec = { x = -5.0, y = 200.0 }, rayType = "same" },
+	-- { startVec = { x = 5.0 }, endVec = { x = 5.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 200.0 }, rayType = "same" },
+	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 200.0 }, rayType = "same" },
 	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 200.0 }, rayType = "opp" },
-	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 200.0 }, rayType = "opp" },
-
-	-- ultimate lag test
-	--[[{ startVec = { x = -6.0 }, endVec = { x = -6.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = 6.0 }, endVec = { x = 6.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = -7.0 }, endVec = { x = -7.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = 7.0 }, endVec = { x = 7.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = -8.0 }, endVec = { x = -8.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = 8.0 }, endVec = { x = 8.0, y = 200.0 }, rayType = "same" }]]
+	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 200.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
@@ -190,12 +193,103 @@ function RADAR:IsFastDisplayEnabled()
 	return self.vars.settings.fastDisplay
 end 
 
-function RADAR:ToggleFastDisplay()
-	self.vars.settings.fastDisplay = not self.vars.settings.fastDisplay
+function RADAR:SetSettingValue( setting, value )
+	if ( value ~= nil ) then 
+		self.vars.settings[setting] = value 
+	end 
 end 
+
+function RADAR:GetSettingValue( setting )
+	return self.vars.settings[setting]
+end
 
 function RADAR:IsEitherAntennaOn()
 	return self:IsAntennaTransmitting( "front" ) or self:IsAntennaTransmitting( "rear" )
+end 
+
+function RADAR:SendSettingUpdate()
+	local antennas = self.vars.antennas 
+	local fast = self.vars.settings.fastDisplay
+
+	SendNUIMessage( { _type = "settingUpdate", antennaData = antennas, fast = fast } )
+end 
+
+
+--[[------------------------------------------------------------------------
+	Radar menu functions  
+------------------------------------------------------------------------]]--
+function RADAR:SetMenuState( state )
+	if ( self:IsPowerOn() ) then 
+		self.vars.menuActive = state
+
+		if ( state ) then 
+			self.vars.currentOptionIndex = 1
+		end
+	end
+end 
+
+function RADAR:IsMenuOpen()
+	return self.vars.menuActive
+end 
+
+function RADAR:ChangeMenuIndex()
+	local temp = self.vars.currentOptionIndex + 1
+
+	if ( temp > #self.vars.menuOptions ) then 
+		temp = 1 
+	end 
+
+	self.vars.currentOptionIndex = temp
+
+	self:SendMenuUpdate()
+end 
+
+function RADAR:GetMenuOptionTable()
+	return self.vars.menuOptions[self.vars.currentOptionIndex]
+end 
+
+function RADAR:SetMenuOptionIndex( index )
+	self.vars.menuOptions[self.vars.currentOptionIndex].optionIndex = index
+end 
+
+function RADAR:GetMenuOptionValue()
+	local opt = self:GetMenuOptionTable()
+	local index = opt.optionIndex
+
+	return opt.options[index]
+end 
+
+function RADAR:ChangeMenuOption( dir )
+	local opt = self:GetMenuOptionTable()
+	local index = opt.optionIndex
+
+	if ( dir == "front" ) then 
+		index = index + 1
+		if ( index > #opt.options ) then index = 1 end 
+	elseif ( dir == "rear" ) then 
+		index = index - 1
+		if ( index < 1 ) then index = #opt.options end 
+	end
+
+	self:SetMenuOptionIndex( index )
+
+	self:SetSettingValue( opt.settingText, self:GetMenuOptionValue() )
+
+	self:SendMenuUpdate()
+end 
+
+function RADAR:GetMenuOptionDisplayText()
+	return self:GetMenuOptionTable().displayText
+end 
+
+function RADAR:GetMenuOptionText()
+	local opt = self:GetMenuOptionTable()
+
+	return opt.optionsText[opt.optionIndex]
+end 
+
+function RADAR:SendMenuUpdate()
+	SendNUIMessage( { _type = "menu", text = self:GetMenuOptionDisplayText(), option = self:GetMenuOptionText() } )
 end 
 
 
@@ -215,7 +309,7 @@ function RADAR:GetMaxCheckDist()
 end 
 
 function RADAR:GetActiveVehicles()
-	return self.activeVehicles
+	return self.vars.activeVehicles
 end 
 
 function RADAR:GetStrongestSortFunc()
@@ -240,7 +334,7 @@ end
 
 function RADAR:SetActiveVehicles( vehs )
 	if ( type( vehs ) == "table" ) then 
-		self.activeVehicles = vehs
+		self.vars.activeVehicles = vehs
 	end 
 end 
 
@@ -375,7 +469,8 @@ end
 
 function RADAR:CreateRayThreads( ownVeh, vehicles )
 	for _, v in pairs( self.rayTraces ) do 
-		self:CreateRayThread( vehicles, ownVeh, v.startVec.x, v.endVec.x, v.endVec.y, v.rayType )
+		local endY = ( self:GetSettingValue( v.rayType ) * 0.2 ) * v.endVec.y
+		self:CreateRayThread( vehicles, ownVeh, v.startVec.x, v.endVec.x, endY, v.rayType )
 	end 
 end 
 
@@ -492,32 +587,32 @@ end
 	Radar captured vehicle functions 
 ------------------------------------------------------------------------]]--
 function RADAR:GetCapturedVehicles()
-	return self.capturedVehicles
+	return self.vars.capturedVehicles
 end
 
 function RADAR:ResetCapturedVehicles()
-	self.capturedVehicles = {}
+	self.vars.capturedVehicles = {}
 end
 
 function RADAR:InsertCapturedVehicleData( t, rt )
 	if ( type( t ) == "table" and not UTIL:IsTableEmpty( t ) ) then 
 		for _, v in pairs( t ) do
 			v.rayType = rt 
-			table.insert( self.capturedVehicles, v )
+			table.insert( self.vars.capturedVehicles, v )
 		end
 	end 
 end 
 
 function RADAR:HasVehicleAlreadyBeenHit( key )
-	return self.tempVehicleIDs[key] == true 
+	return self.vars.tempVehicleIDs[key] == true 
 end 
 
 function RADAR:SetVehicleHasBeenHit( key )
-	self.tempVehicleIDs[key] = true 
+	self.vars.tempVehicleIDs[key] = true 
 end 
 
 function RADAR:ResetTempVehicleIDs()
-	self.tempVehicleIDs = {}
+	self.vars.tempVehicleIDs = {}
 end 
 
 
@@ -707,15 +802,34 @@ RegisterNUICallback( "closeRemote", function()
 end )
 
 RegisterNUICallback( "setAntennaMode", function( data ) 
-	RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
-		SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
-	end )
+	if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
+		RADAR:SetMenuState( false )
+		RADAR:SendSettingUpdate()
+	else
+		RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
+			SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+		end )
+	end 
 end )
 
 RegisterNUICallback( "toggleAntenna", function( data ) 
-	RADAR:ToggleAntenna( data.value, function()
-		SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
-	end )
+	if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
+		RADAR:ChangeMenuOption( data.value )
+	else
+		RADAR:ToggleAntenna( data.value, function()
+			SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+		end )
+	end 
+end )
+
+RegisterNUICallback( "menu", function()
+	if ( RADAR:IsMenuOpen() ) then 
+		RADAR:ChangeMenuIndex()
+	else 
+		-- Set the menu state to open, which will prevent anything else from working
+		RADAR:SetMenuState( true )
+		RADAR:SendMenuUpdate()
+	end
 end )
 
 
@@ -724,7 +838,7 @@ end )
 ------------------------------------------------------------------------]]--
 function RADAR:Main()
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
-	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and GetVehicleClass( PLY.veh ) == 18 and self:IsPowerOn() and not self:IsPoweringUp() ) then 
+	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:IsPowerOn() and not self:IsPoweringUp() and not self:IsMenuOpen() ) then 
 		local plyVehPos = GetEntityCoords( PLY.veh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
@@ -801,8 +915,9 @@ Citizen.CreateThread( function()
 		PLY.ped = PlayerPedId()
 		PLY.veh = GetVehiclePedIsIn( PLY.ped, false )
 		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped 
+		PLY.vehClassValid = GetVehicleClass( PLY.veh ) == 18
 
-		Citizen.Wait( 250 )
+		Citizen.Wait( 500 )
 	end 
 end )
 
