@@ -818,13 +818,13 @@ RegisterNUICallback( "setAntennaMode", function( data )
 	if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
 		RADAR:SetMenuState( false )
 		RADAR:SendSettingUpdate()
+		SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
 	else
 		RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
 			SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+			SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 		end )
 	end 
-
-	SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 end )
 
 RegisterNUICallback( "toggleAntenna", function( data ) 

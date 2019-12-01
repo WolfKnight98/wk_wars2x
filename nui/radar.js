@@ -16,6 +16,7 @@ const audioNames =
     beep: "beep.ogg",
     xmit_on: "xmit_on.ogg",
     xmit_off: "xmit_off.ogg",
+    done: "done.ogg"
 }
 
 // Setup the main const element structure, this way we can easily access elements without having the mess
