@@ -57,7 +57,7 @@ RADAR.vars =
 
 		["alert"] = true,
 
-		["beep"] = 1.0
+		["beep"] = 0.6
 	},
 
 	menuActive = false, 
@@ -66,7 +66,7 @@ RADAR.vars =
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
-		{ displayText = { "¦¦b", "EEP" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 5, settingText = "beep" }
+		{ displayText = { "¦¦b", "EEP" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" }
 	},
 
 	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
