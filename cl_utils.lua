@@ -62,24 +62,14 @@ function UTIL:GetVehicleInDirection( entFrom, coordFrom, coordTo )
 	return vehicle
 end
 
-function UTIL:OppositeAngle( ang )
-	return ( ang + 180 ) % 360
-end
+function UTIL:GetEntityRelativeDirection( myAng, tarAng )
+	local angleDiff = math.abs( ( myAng - tarAng + 180 ) % 360 - 180 )
 
-function UTIL:GetEntityRelativeDirection( myAng, tarAng, angToCheck )
-	local rangeStartFront = myAng - ( angToCheck / 2 )
-	local rangeEndFront = myAng + ( angToCheck / 2 )
-
-	local opp = self:OppositeAngle( myAng )
-
-	local rangeStartBack = opp - ( angToCheck / 2 )
-	local rangeEndBack = opp + ( angToCheck / 2 )
-
-	if ( ( tarAng > rangeStartFront ) and ( tarAng < rangeEndFront ) ) then
+	if ( angleDiff < 45 ) then 
 		return 1
-	elseif ( ( tarAng > rangeStartBack ) and ( tarAng < rangeEndBack ) ) then
+	elseif ( angleDiff > 135 ) then 
 		return 2
-	end
+	end 
 
 	return 0
 end

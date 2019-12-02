@@ -84,6 +84,8 @@ RADAR.vars =
 		[ "front" ] = {
 			xmit = false,		-- Whether the antenna is on or off
 			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
+			speedLocked = false, 
+			lockedSpeed = 0, 
 			--[[ speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
 			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
@@ -95,6 +97,8 @@ RADAR.vars =
 		[ "rear" ] = {
 			xmit = false,		-- Whether the antenna is on or off
 			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
+			speedLocked = false, 
+			lockedSpeed = 0, 
 			--[[ speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
 			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
@@ -541,7 +545,15 @@ function RADAR:SetAntennaMode( ant, mode, cb )
 	end 
 end 
 
-function RADAR:SetAntennaSpeed( ant, speed ) 
+function RADAR:SetAntennaLockedSpeed( ant, speed )
+	if ( type( speed ) == "number" ) then 
+		if ( speed >= 0 and speed <= 999 ) then 
+
+		end 
+	end 
+end 
+
+--[[ function RADAR:SetAntennaSpeed( ant, speed ) 
 	if ( type( speed ) == "number" ) then 
 		if ( speed >= 0 and speed <= 999 ) then 
 			self.vars.antennas[ant].speed = speed
@@ -585,7 +597,7 @@ function RADAR:SetAntennaFastLock( ant, state )
 	if ( type( state ) == "boolean" ) then 
 		self.vars.antennas[ant].fastLocked = state 
 	end 
-end 
+end ]]
 
 function RADAR:ResetAntenna( ant )
 	-- Overwrite default behaviour, this is because when the system is turned off, the temporary memory is
@@ -668,7 +680,7 @@ function RADAR:GetDynamicRadius( veh )
 		local min, max = GetModelDimensions( mdl )
 		local size = max - min 
 		local numericSize = size.x + size.y + size.z 
-		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 12, 4.0, 10.0 )
+		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 12, 5.0, 10.0 )
 
 		self:InsertDynamicRadiusData( key, dynamicRadius, numericSize )
 
@@ -910,9 +922,9 @@ function RADAR:Main()
 							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av[ant][i].speed ) )
 
 							-- Work out if the vehicle is closing or away 
-							local ownH = GetEntityHeading( PLY.veh )
-							local tarH = GetEntityHeading( av[ant][i].veh )
-							data.antennas[ant][i].dir = UTIL:GetEntityRelativeDirection( ownH, tarH, 120 )
+							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
+							local tarH = UTIL:Round( GetEntityHeading( av[ant][i].veh ), 0 )
+							data.antennas[ant][i].dir = UTIL:GetEntityRelativeDirection( ownH, tarH )
 						end 
 					end 
 				end 
@@ -1006,6 +1018,8 @@ Citizen.CreateThread( function()
 				end 
 			end
 		end 
+
+		UTIL:DrawDebugText( 0.5, 0.2, 0.6, true, tostring( GetEntityHeading( PLY.veh ) ) )
 
 		Citizen.Wait( 0 )
 	end 
