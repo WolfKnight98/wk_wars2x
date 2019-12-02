@@ -597,6 +597,8 @@ function RADAR:SetAntennaSpeedLock( ant, speed, dir )
 		self.vars.antennas[ant].lockedDir = dir 
 		
 		self:SetAntennaSpeedIsLocked( ant, true )
+
+		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 	end
 end 
 
@@ -633,6 +635,8 @@ function RADAR:ResetAntenna( ant )
 	-- be transmitting, this is the only way to reset the values
 	self.vars.antennas[ant].xmit = false 
 	self.vars.antennas[ant].mode = 0
+
+	self:ResetAntennaSpeedLock( ant )
 end 
 
 
@@ -830,12 +834,12 @@ function RADAR:RunControlManager()
 	end 
 
 	-- 'Num8' key, locks speed from front antenna
-	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
+	if ( IsDisabledControlJustReleased( 1, 111 ) ) then 
 		self:LockAntennaSpeed( "front" )
 	end 
 
 	-- 'Num5' key, locks speed from rear antenna
-	if ( IsDisabledControlJustPressed( 1, 112 ) ) then 
+	if ( IsDisabledControlJustReleased( 1, 112 ) ) then 
 		self:LockAntennaSpeed( "rear" )
 	end 
 end 
@@ -899,7 +903,7 @@ function RADAR:Main()
 		local plyVehPos = GetEntityCoords( PLY.veh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
-		if ( self:GetRadarStage() == 0 ) then 
+		--if ( self:GetRadarStage() == 0 ) then 
 			if ( self:GetRayTraceState() == 0 ) then 
 				local vehs = self:GetVehiclePool()
 
@@ -908,8 +912,8 @@ function RADAR:Main()
 				self:CreateRayThreads( PLY.veh, vehs )
 			elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
 				self:IncreaseRadarStage()
-			end 
-		elseif ( self:GetRadarStage() == 1 ) then 
+			--end 
+		--elseif ( self:GetRadarStage() == 1 ) then 
 			local data = {} 
 
 			-- Get the player's vehicle speed
@@ -926,7 +930,7 @@ function RADAR:Main()
 			if ( not UTIL:IsTableEmpty( self:GetCapturedVehicles() ) ) then 
 				local vehsForDisplay = self:GetVehiclesForAntenna()
 
-				self:SetActiveVehicles( vehsForDisplay ) -- not really any point in setting this 
+				self:SetActiveVehicles( vehsForDisplay ) 
 			else
 				self:SetActiveVehicles( { ["front"] = { nil, nil }, ["rear"] = { nil, nil } } )
 			end
@@ -1037,7 +1041,7 @@ end )
 
 
 ------------------------------ DEBUG ------------------------------
-Citizen.CreateThread( function()
+--[[ Citizen.CreateThread( function()
 	while ( true ) do 
 		-- Ray line drawing
 		-- local veh = GetVehiclePedIsIn( PlayerPedId(), false )
@@ -1068,4 +1072,4 @@ Citizen.CreateThread( function()
 
 		Citizen.Wait( 0 )
 	end 
-end )
+end ) ]]
