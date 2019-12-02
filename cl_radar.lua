@@ -52,7 +52,7 @@ RADAR.vars =
 		["fastDisplay"] = true, 
 
 		-- Sensitivty for each mode, 1-5
-		["same"] = 4, 
+		["same"] = 3, 
 		["opp"] = 3, 
 
 		["alert"] = true,
@@ -64,7 +64,7 @@ RADAR.vars =
 	currentOptionIndex = 1, 
 	menuOptions = {
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
-		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "same" },
+		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
 		{ displayText = { "¦¦b", "EEP" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" }
 	},
@@ -147,10 +147,10 @@ RADAR.rayTraces = {
 	-- { startVec = { x = 0.0 }, endVec = { x = 0.0, y = 200.0 }, rayType = "same" },
 	-- { startVec = { x = -5.0 }, endVec = { x = -5.0, y = 200.0 }, rayType = "same" },
 	-- { startVec = { x = 5.0 }, endVec = { x = 5.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 200.0, baseY = 200.0 }, rayType = "same" },
-	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 200.0, baseY = 200.0 }, rayType = "same" },
-	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 200.0, baseY = 200.0 }, rayType = "opp" },
-	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 200.0, baseY = 200.0 }, rayType = "opp" }
+	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 0.0, baseY = 300.0 }, rayType = "same" },
+	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 0.0, baseY = 300.0 }, rayType = "same" },
+	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 0.0, baseY = 300.0 }, rayType = "opp" },
+	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 0.0, baseY = 300.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
