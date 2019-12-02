@@ -221,6 +221,11 @@ function setAntennaFastMode( ant, state )
     setLight( ant, "fast", "fastLabel", state );
 }
 
+function setAntennaLock( ant, state )
+{
+    setLight( ant, "fast", "lockLabel", state ); 
+}
+
 function setAntennaDirs( ant, dir, fastDir )
 {
     setLight( ant, "dirs", "fwd", dir == dirs.closing );
@@ -304,6 +309,7 @@ function settingUpdate( ants, fast )
         setAntennaXmit( ant, ants[ant].xmit );
         setAntennaMode( ant, ants[ant].mode ); 
         setAntennaFastMode( ant, fast );   
+        setAntennaLock( ant, ants[ant].speedLocked );
     }
 }
 
@@ -373,6 +379,9 @@ window.addEventListener( "message", function( event ) {
             break; 
         case "antennaMode":
             setAntennaMode( item.ant, item.mode ); 
+            break; 
+        case "antennaLock":
+            setAntennaLock( item.ant, item.state );
             break; 
         case "menu":
             menu( item.text, item.option ); 

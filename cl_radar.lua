@@ -84,27 +84,25 @@ RADAR.vars =
 		[ "front" ] = {
 			xmit = false,		-- Whether the antenna is on or off
 			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
-			speedLocked = false, 
-			lockedSpeed = 0, 
-			--[[ speed = 0,			-- Speed of the vehicle caught by the front antenna 
+			speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
-			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
 			fastSpeed = 0, 		-- Speed of the fastest vehicle caught by the front antenna
 			fastDir = nil, 		-- Direction the fastest vehicle is going, 0 = towards, 1 = away  
-			fastLocked = false	-- Whether the fast speed is locked or not ]]
+			speedLocked = false,
+			lockedSpeed = 0,
+			lockedDir = 0
 		}, 
 
 		[ "rear" ] = {
 			xmit = false,		-- Whether the antenna is on or off
 			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
-			speedLocked = false, 
-			lockedSpeed = 0, 
-			--[[ speed = 0,			-- Speed of the vehicle caught by the front antenna 
+			speed = 0,			-- Speed of the vehicle caught by the front antenna 
 			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
-			fastMode = 1, 		-- Current fast mode, 1 = polling, 2 = lock on at first fast vehicle 
 			fastSpeed = 0, 		-- Speed of the fastest vehicle caught by the front antenna
 			fastDir = nil, 		-- Direction the fastest vehicle is going, 0 = towards, 1 = away  
-			fastLocked = false	-- Whether the fast speed is locked or not ]]
+			speedLocked = false,
+			lockedSpeed = 0,
+			lockedDir = 0
 		}
 	}, 
 
@@ -196,10 +194,6 @@ function RADAR:TogglePower()
 	end
 end
 
-function RADAR:IsFastDisplayEnabled()
-	return self.vars.settings.fastDisplay
-end 
-
 function RADAR:SetSettingValue( setting, value )
 	if ( value ~= nil ) then 
 		self.vars.settings[setting] = value 
@@ -214,13 +208,17 @@ function RADAR:GetSettingValue( setting )
 	return self.vars.settings[setting]
 end
 
+function RADAR:IsFastDisplayEnabled()
+	return self.vars.settings["fastDisplay"]
+end 
+
 function RADAR:IsEitherAntennaOn()
 	return self:IsAntennaTransmitting( "front" ) or self:IsAntennaTransmitting( "rear" )
 end 
 
 function RADAR:SendSettingUpdate()
 	local antennas = self.vars.antennas 
-	local fast = self.vars.settings.fastDisplay
+	local fast = self:IsFastDisplayEnabled()
 
 	SendNUIMessage( { _type = "settingUpdate", antennaData = antennas, fast = fast } )
 end 
@@ -545,59 +543,89 @@ function RADAR:SetAntennaMode( ant, mode, cb )
 	end 
 end 
 
-function RADAR:SetAntennaLockedSpeed( ant, speed )
-	if ( type( speed ) == "number" ) then 
-		if ( speed >= 0 and speed <= 999 ) then 
-
-		end 
-	end 
+function RADAR:GetAntennaSpeed( ant )
+	return self.vars.antennas[ant].speed 
 end 
 
---[[ function RADAR:SetAntennaSpeed( ant, speed ) 
-	if ( type( speed ) == "number" ) then 
-		if ( speed >= 0 and speed <= 999 ) then 
-			self.vars.antennas[ant].speed = speed
-		end 
-	end 
+function RADAR:SetAntennaSpeed( ant, speed ) 
+	self.vars.antennas[ant].speed = speed
+end 
+
+function RADAR:GetAntennaDir( ant )
+	return self.vars.antennas[ant].dir 
 end 
 
 function RADAR:SetAntennaDir( ant, dir )
-	if ( type( dir ) == "number" ) then 
-		if ( dir == 0 or dir == 1 ) then 
-			self.vars.antennas[ant].dir = dir 
-		end 
-	end 
-end 
+	self.vars.antennas[ant].dir = dir 
+end  
 
-function RADAR:SetAntennaFastMode( ant, mode )
-	if ( type( mode ) == "number" ) then 
-		if ( mode == 1 or mode == 2 ) then 
-			self.vars.antennas[ant].fastMode = mode 
-		end 
-	end 
+function RADAR:GetAntennaFastSpeed( ant )
+	return self.vars.antennas[ant].fastSpeed 
 end 
 
 function RADAR:SetAntennaFastSpeed( ant, speed ) 
-	if ( type( speed ) == "number" ) then 
-		if ( speed >= 0 and speed <= 999 ) then 
-			self.vars.antennas[ant].fastSpeed = speed
-		end 
-	end 
+	self.vars.antennas[ant].fastSpeed = speed
+end 
+
+function RADAR:GetAntennaFastDir( ant )
+	return self.vars.antennas[ant].fastDir
 end 
 
 function RADAR:SetAntennaFastDir( ant, dir )
-	if ( type( dir ) == "number" ) then 
-		if ( dir == 0 or dir == 1 ) then 
-			self.vars.antennas[ant].fastDir = dir 
-		end 
-	end 
+	self.vars.antennas[ant].fastDir = dir 
 end 
 
-function RADAR:SetAntennaFastLock( ant, state )
-	if ( type( state ) == "boolean" ) then 
-		self.vars.antennas[ant].fastLocked = state 
+function RADAR:DoesAntennaHaveValidData( ant )
+	return self:GetAntennaSpeed( ant ) ~= nil 
+end 
+
+function RADAR:DoesAntennaHaveValidFastData( ant )
+	return self:GetAntennaFastSpeed( ant ) ~= nil 
+end 
+
+function RADAR:IsAntennaSpeedLocked( ant )
+	return self.vars.antennas[ant].speedLocked
+end
+
+function RADAR:SetAntennaSpeedIsLocked( ant, state )
+	self.vars.antennas[ant].speedLocked = state
+end 
+
+function RADAR:SetAntennaSpeedLock( ant, speed, dir )
+	if ( speed ~= nil and dir ~= nil ) then 
+		self.vars.antennas[ant].lockedSpeed = speed 
+		self.vars.antennas[ant].lockedDir = dir 
+		
+		self:SetAntennaSpeedIsLocked( ant, true )
+	end
+end 
+
+function RADAR:ResetAntennaSpeedLock( ant )
+	self.vars.antennas[ant].lockedSpeed = nil 
+	self.vars.antennas[ant].lockedDir = nil  
+	
+	self:SetAntennaSpeedIsLocked( ant, false )
+end
+
+function RADAR:LockAntennaSpeed( ant )
+	if ( self:IsAntennaSpeedLocked( ant ) ) then 
+		self:ResetAntennaSpeedLock( ant )
+	else 
+		local data = { nil, nil }
+
+		if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then 
+			data[1] = self:GetAntennaFastSpeed( ant )
+			data[2] = self:GetAntennaFastDir( ant )
+		elseif ( not self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidData( ant ) ) then 
+			data[1] = self:GetAntennaSpeed( ant )
+			data[2] = self:GetAntennaDir( ant )
+		end 
+
+		self:SetAntennaSpeedLock( ant, data[1], data[2] )
 	end 
-end ]]
+
+	SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )
+end 
 
 function RADAR:ResetAntenna( ant )
 	-- Overwrite default behaviour, this is because when the system is turned off, the temporary memory is
@@ -801,17 +829,15 @@ function RADAR:RunControlManager()
 		UTIL:Notify( "Fast display toggled." )
 	end 
 
-	-- 'Num8' key, toggles front antenna
-	--[[ if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
-		self:ToggleAntenna( "front" )
-		UTIL:Notify( "Front antenna toggled." )
+	-- 'Num8' key, locks speed from front antenna
+	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
+		self:LockAntennaSpeed( "front" )
 	end 
 
-	-- 'Num5' key, toggles rear antenna
+	-- 'Num5' key, locks speed from rear antenna
 	if ( IsDisabledControlJustPressed( 1, 112 ) ) then 
-		self:ToggleAntenna( "rear" )
-		UTIL:Notify( "Rear antenna toggled." )
-	end ]]
+		self:LockAntennaSpeed( "rear" )
+	end 
 end 
 
 
@@ -916,15 +942,38 @@ function RADAR:Main()
 					for i = 1, 2 do 
 						data.antennas[ant][i] = { speed = "¦¦¦", dir = 0 }
 
-						-- The vehicle data exists for this slot 
-						if ( av[ant][i] ~= nil ) then 
-							-- We already have the vehicle speed as we needed it earlier on for filtering 
-							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av[ant][i].speed ) )
+						if ( i == 2 and self:IsAntennaSpeedLocked( ant ) ) then 
+							data.antennas[ant][i].speed = self.vars.antennas[ant].lockedSpeed
+							data.antennas[ant][i].dir = self.vars.antennas[ant].lockedDir
+						else 
+							-- The vehicle data exists for this slot 
+							if ( av[ant][i] ~= nil ) then 
+								-- We already have the vehicle speed as we needed it earlier on for filtering 
+								data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av[ant][i].speed ) )
 
-							-- Work out if the vehicle is closing or away 
-							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
-							local tarH = UTIL:Round( GetEntityHeading( av[ant][i].veh ), 0 )
-							data.antennas[ant][i].dir = UTIL:GetEntityRelativeDirection( ownH, tarH )
+								-- Work out if the vehicle is closing or away 
+								local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
+								local tarH = UTIL:Round( GetEntityHeading( av[ant][i].veh ), 0 )
+								data.antennas[ant][i].dir = UTIL:GetEntityRelativeDirection( ownH, tarH )
+
+								-- Set the internal antenna data as this actual dataset is valid 
+								if ( i % 2 == 0 ) then 
+									self:SetAntennaFastSpeed( ant, data.antennas[ant][i].speed )
+									self:SetAntennaFastDir( ant, data.antennas[ant][i].dir )
+								else 
+									self:SetAntennaSpeed( ant, data.antennas[ant][i].speed )
+									self:SetAntennaDir( ant, data.antennas[ant][i].dir )
+								end 
+							else 
+								-- If the active vehicle is not valid, we reset the internal data
+								if ( i % 2 == 0 ) then 
+									self:SetAntennaFastSpeed( ant, nil )
+									self:SetAntennaFastDir( ant, nil )
+								else 
+									self:SetAntennaSpeed( ant, nil )
+									self:SetAntennaDir( ant, nil )
+								end
+							end 
 						end 
 					end 
 				end 
