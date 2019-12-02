@@ -987,8 +987,6 @@ Citizen.CreateThread( function()
 end )
 
 
-
-
 ------------------------------ DEBUG ------------------------------
 Citizen.CreateThread( function()
 	while ( true ) do 
@@ -1022,61 +1020,3 @@ Citizen.CreateThread( function()
 		Citizen.Wait( 0 )
 	end 
 end )
-
---[[ local types = { "FRONT", "FRONT FAST", "REAR", "REAR FAST" }
-
-Citizen.CreateThread( function()
-	while ( true ) do
-		-- Caught veh debug printing 
-		local av = RADAR:GetActiveVehicles()
-
-		DrawRect( 0.500, 0.850, 0.400, 0.220, 0, 0, 0, 150 )
-
-		for i = 1, 4, 1 do 
-			UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.750, 0.60, true, types[i] )
-
-			if ( av[i] ~= nil ) then 
-				local pos = GetEntityCoords( av[i].veh )
-				local speed = RADAR:GetVehSpeedFormatted( GetEntitySpeed( av[i].veh ) )
-				local veh = av[i].veh
-				local rt = av[i].rayType
-				local dir = UTIL:GetEntityRelativeDirection( GetEntityHeading( GetVehiclePedIsIn( PlayerPedId(), false ) ), GetEntityHeading( veh ), 100 )
-				
-				if ( dir == 1 ) then dir = "/\\" elseif ( dir == 2 ) then dir = "\\/" else dir = "none" end
-
-				DrawMarker( 2, pos.x, pos.y, pos.z + 3, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 255, 0, 70, false, true, 2, nil, nil, false )
-
-				if ( i % 2 == 0 ) then 
-					UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: ~r~" .. tostring( speed ) .. "~s~mph" .. "\nRay type: " .. tostring( rt ) .. "\nDir: " .. tostring( dir ) )
-				else 
-					UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: " .. tostring( veh ) .. "\nSpeed: " .. tostring( speed ) .. "mph" .. "\nRay type: " .. tostring( rt ) .. "\nDir: " .. tostring( dir ) )
-				end 
-			else 
-				UTIL:DrawDebugText( 0.250 + ( 0.100 * i ), 0.800, 0.60, true, "Ent: nil" .. "\nSpeed: nil" .. "\nRay type: nil" .. "\nDir: nil" )
-			end 
-		end
-
-		-- Ray line drawing
-		local veh = GetVehiclePedIsIn( PlayerPedId(), false )
-
-		for k, v in pairs( RADAR.rayTraces ) do 
-			local startP = GetOffsetFromEntityInWorldCoords( veh, v.startVec.x, 0.0, 0.0 )
-			local endP = GetOffsetFromEntityInWorldCoords( veh, v.endVec.x, v.endVec.y, 0.0 )
-
-			UTIL:DrawDebugLine( startP, endP )
-		end 
-
-		Citizen.Wait( 0 )
-	end 
-end ) ]]
-
--- Commands for debugging 
-RegisterCommand( "rdr", function( src, args, raw )
-	if ( args[1] == "setlimit" ) then 
-		RADAR:SetFastLimit( tonumber( args[2] ) ) 
-	elseif ( args[1] == "setmode" ) then 
-		if ( args[2] == "front" or args[2] == "rear" ) then 
-			RADAR:SetAntennaMode( args[2], tonumber( args[3] ) )
-		end 
-	end 
-end, false )
