@@ -1019,8 +1019,6 @@ Citizen.CreateThread( function()
 			end
 		end 
 
-		UTIL:DrawDebugText( 0.5, 0.2, 0.6, true, tostring( GetEntityHeading( PLY.veh ) ) )
-
 		Citizen.Wait( 0 )
 	end 
 end )
