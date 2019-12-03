@@ -57,7 +57,9 @@ RADAR.vars =
 
 		["alert"] = true,
 
-		["beep"] = 0.6
+		["beep"] = 0.6,
+
+		["speedType"] = "mph"
 	},
 
 	menuActive = false, 
@@ -66,17 +68,14 @@ RADAR.vars =
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
-		{ displayText = { "¦¦b", "EEP" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" }
+		{ displayText = { "BEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" },
+		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = 1, settingText = "speedType" }
 	},
 
 	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
 	patrolSpeed = 0,
 	patrolLocked = false, 
 	psBlank = false, 
-
-	-- The speed type, this is used when converting speeds to a readable format
-	-- Either "mph" or "kmh", can be toggle in-game 
-	speedType = "mph",
 
 	-- Antennas, this table contains all of the data needed for operation of the front and rear antennas 
 	antennas = {
@@ -107,7 +106,7 @@ RADAR.vars =
 	}, 
 
 	-- The maximum distance that the radar system's ray traces can go 
-	maxCheckDist = 300.0,
+	maxCheckDist = 400.0,
 
 	-- Cached dynamic vehicle sphere sizes, automatically populated when the system is running 
 	sphereSizes = {}, 
@@ -137,7 +136,9 @@ RADAR.vars =
 	rayTraceState = 0,
 
 	-- Number of ray traces, automatically cached when the system first runs 
-	numberOfRays = 0
+	numberOfRays = 0,
+
+	threadWaitTime = 500 
 }
 
 -- These vectors are used in the custom ray tracing system 
@@ -145,10 +146,10 @@ RADAR.rayTraces = {
 	-- { startVec = { x = 0.0 }, endVec = { x = 0.0, y = 200.0 }, rayType = "same" },
 	-- { startVec = { x = -5.0 }, endVec = { x = -5.0, y = 200.0 }, rayType = "same" },
 	-- { startVec = { x = 5.0 }, endVec = { x = 5.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 0.0, baseY = 300.0 }, rayType = "same" },
-	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 0.0, baseY = 300.0 }, rayType = "same" },
-	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 0.0, baseY = 300.0 }, rayType = "opp" },
-	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 0.0, baseY = 300.0 }, rayType = "opp" }
+	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
+	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
+	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 0.0, baseY = 400.0 }, rayType = "opp" },
+	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 0.0, baseY = 400.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
@@ -221,6 +222,18 @@ function RADAR:SendSettingUpdate()
 	local fast = self:IsFastDisplayEnabled()
 
 	SendNUIMessage( { _type = "settingUpdate", antennaData = antennas, fast = fast } )
+end 
+
+function RADAR:CanPerformMainTask()
+	return self:IsPowerOn() and not self:IsPoweringUp() and not self:IsMenuOpen()
+end 
+
+function RADAR:GetThreadWaitTime()
+	return self.vars.threadWaitTime
+end 
+
+function RADAR:SetThreadWaitTime( time )
+	self.vars.threadWaitTime = time 
 end 
 
 
@@ -372,9 +385,9 @@ function RADAR:ResetRayTraceState()
 end 
 
 function RADAR:GetIntersectedVehIsFrontOrRear( t )
-	if ( t > 10.0 ) then 
+	if ( t > 8.0 ) then 
 		return 1 -- vehicle is in front 
-	elseif ( t < -10.0 ) then 
+	elseif ( t < -8.0 ) then 
 		return -1 -- vehicle is behind
 	end 
 
@@ -661,7 +674,7 @@ function RADAR:InsertCapturedVehicleData( t, rt )
 end 
 
 function RADAR:HasVehicleAlreadyBeenHit( key )
-	return self.vars.tempVehicleIDs[key] == true 
+	return self.vars.tempVehicleIDs[key]
 end 
 
 function RADAR:SetVehicleHasBeenHit( key )
@@ -727,10 +740,12 @@ end
 	Radar functions 
 ------------------------------------------------------------------------]]--
 function RADAR:GetVehSpeedFormatted( speed )
-	if ( self.vars.speedType == "mph" ) then 
-		return UTIL:Round( math.ceil( speed * 2.236936 ), 0 )
+	if ( self:GetSettingValue( "speedType" ) == "mph" ) then 
+		-- return UTIL:Round( math.ceil( speed * 2.236936 ), 0 )
+		return UTIL:Round( speed * 2.236936, 0 )
 	else 
-		return UTIL:Round( math.ceil( speed * 3.6 ), 0 )
+		-- return UTIL:Round( math.ceil( speed * 3.6 ), 0 )
+		return UTIL:Round( speed * 3.6, 0 )
 	end 
 end 
  
@@ -828,18 +843,18 @@ function RADAR:RunControlManager()
 		UTIL:Notify( "Radar power toggled." )
 	end 
 
-	if ( IsDisabledControlJustPressed( 1, 118 ) ) then 
+	--[[ if ( IsDisabledControlJustPressed( 1, 118 ) ) then 
 		self:ToggleFastDisplay()
 		UTIL:Notify( "Fast display toggled." )
-	end 
+	end ]]
 
 	-- 'Num8' key, locks speed from front antenna
-	if ( IsDisabledControlJustReleased( 1, 111 ) ) then 
+	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
 		self:LockAntennaSpeed( "front" )
 	end 
 
 	-- 'Num5' key, locks speed from rear antenna
-	if ( IsDisabledControlJustReleased( 1, 112 ) ) then 
+	if ( IsDisabledControlJustPressed( 1, 112 ) ) then 
 		self:LockAntennaSpeed( "rear" )
 	end 
 end 
@@ -897,27 +912,71 @@ end )
 --[[------------------------------------------------------------------------
 	Main function  
 ------------------------------------------------------------------------]]--
+function RADAR:RunDynamicThreadWaitCheck()
+	local speed = self:GetPatrolSpeed()
+
+	if ( speed < 0.1 ) then 
+		self:SetThreadWaitTime( 200 )
+	else 
+		self:SetThreadWaitTime( 500 )
+	end 
+end 
+
+Citizen.CreateThread( function()
+	while ( true ) do 
+		RADAR:RunDynamicThreadWaitCheck()
+
+		Citizen.Wait( 2500 )
+	end 
+end )
+
+function RADAR:RunThreads()
+	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() ) then 
+		if ( self:GetRayTraceState() == 0 ) then 
+			local vehs = self:GetVehiclePool()
+
+			self:ResetCapturedVehicles()
+			self:ResetRayTraceState()
+			self:CreateRayThreads( PLY.veh, vehs )
+
+			Citizen.Wait( self:GetThreadWaitTime() )
+		elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
+			-- self:IncreaseRadarStage()
+			self:ResetRayTraceState()
+		end
+	end 
+end 
+
+Citizen.CreateThread( function()
+	while ( true ) do 
+		RADAR:RunThreads()
+
+		Citizen.Wait( 0 )
+	end 
+end )
+
 function RADAR:Main()
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
-	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:IsPowerOn() and not self:IsPoweringUp() and not self:IsMenuOpen() ) then 
-		local plyVehPos = GetEntityCoords( PLY.veh )
+	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() ) then 
+		-- local plyVehPos = GetEntityCoords( PLY.veh )
 
 		-- First stage of the radar - get all of the vehicles hit by the radar
 		--if ( self:GetRadarStage() == 0 ) then 
-			if ( self:GetRayTraceState() == 0 ) then 
+			--[[if ( self:GetRayTraceState() == 0 ) then 
 				local vehs = self:GetVehiclePool()
 
 				self:ResetCapturedVehicles()
 				self:ResetRayTraceState()
 				self:CreateRayThreads( PLY.veh, vehs )
 			elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
-				self:IncreaseRadarStage()
+				self:IncreaseRadarStage()]]
 			--end 
 		--elseif ( self:GetRadarStage() == 1 ) then 
 			local data = {} 
 
 			-- Get the player's vehicle speed
 			local entSpeed = GetEntitySpeed( PLY.veh )
+			self:SetPatrolSpeed( entSpeed )
 
 			if ( entSpeed == 0 ) then 
 				data.patrolSpeed = "¦[]"
@@ -953,7 +1012,8 @@ function RADAR:Main()
 							-- The vehicle data exists for this slot 
 							if ( av[ant][i] ~= nil ) then 
 								-- We already have the vehicle speed as we needed it earlier on for filtering 
-								data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( av[ant][i].speed ) )
+								local uSpeed = GetEntitySpeed( av[ant][i].veh )
+								data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( uSpeed ) )
 
 								-- Work out if the vehicle is closing or away 
 								local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
@@ -989,7 +1049,7 @@ function RADAR:Main()
 			self:ResetTempVehicleIDs()
 			self:ResetRadarStage()
 			self:ResetRayTraceState()
-		end 
+		--end 
 	end 
 end 
 
@@ -1046,28 +1106,32 @@ end )
 		-- Ray line drawing
 		-- local veh = GetVehiclePedIsIn( PlayerPedId(), false )
 
-		for k, v in pairs( RADAR.rayTraces ) do 
-			local startP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.startVec.x, 0.0, 0.0 )
-			local endP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.endVec.x, v.endVec.y, 0.0 )
+		UTIL:DrawDebugText( 0.50, 0.20, 0.75, true, "Current thread iteration: " .. tostring( currentThreadIteration ) )
 
-			UTIL:DrawDebugLine( startP, endP )
-		end
+		if ( RADAR.config.debug_mode ) then 
+			for k, v in pairs( RADAR.rayTraces ) do 
+				local startP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.startVec.x, 0.0, 0.0 )
+				local endP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.endVec.x, v.endVec.y, 0.0 )
 
-		local av = RADAR:GetActiveVehicles()
-
-		for ant in UTIL:Values( { "front", "rear" } ) do 
-			for i = 1, 2, 1 do 
-				if ( av[ant] ~= nil and av[ant][i] ~= nil ) then 
-					local pos = GetEntityCoords( av[ant][i].veh )
-					local r = RADAR:GetDynamicRadius( av[ant][i].veh )
-
-					if ( i == 1 ) then 
-						UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, r, { 255, 127, 0, 100 } )
-					else 
-						UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, r, { 255, 0, 0, 100 } )
-					end 
-				end 
+				UTIL:DrawDebugLine( startP, endP )
 			end
+
+			local av = RADAR:GetActiveVehicles()
+
+			for ant in UTIL:Values( { "front", "rear" } ) do 
+				for i = 1, 2, 1 do 
+					if ( av[ant] ~= nil and av[ant][i] ~= nil ) then 
+						local pos = GetEntityCoords( av[ant][i].veh )
+						local r = RADAR:GetDynamicRadius( av[ant][i].veh )
+
+						if ( i == 1 ) then 
+							UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, r, { 255, 127, 0, 100 } )
+						else 
+							UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, r, { 255, 0, 0, 100 } )
+						end 
+					end 
+				end
+			end 
 		end 
 
 		Citizen.Wait( 0 )
