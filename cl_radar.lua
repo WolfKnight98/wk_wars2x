@@ -124,13 +124,6 @@ RADAR.vars =
 	-- vehicle IDs for the player using entity enumeration (see cl_utils.lua) 
 	vehiclePool = {}, 
 
-	-- Radar stage, this is used to tell the system what it should currently be doing, the stages are:
-	--    - 0 = Gathering vehicles hit by the rays 
-	--    - 1 = Filtering the vehicles caught (removing duplicates, etc) and calculating what needs to be shown 
-	--	        to the user based on modes and settings
-	--    - 2 = Sending all required data across to the NUI system for display 
-	radarStage = 0,
-
 	-- Ray trace state, this is used so the radar stage doesn't progress to the next stage unless 
 	-- all of the ray trace threads have completed 
 	rayTraceState = 0,
@@ -501,22 +494,6 @@ function RADAR:UpdateRayEndCoords()
 		v.endVec.y = endY
 	end 	
 end 
-
-
---[[------------------------------------------------------------------------
-	Radar stage functions 
-------------------------------------------------------------------------]]--
-function RADAR:GetRadarStage()
-	return self.vars.radarStage
-end
-
-function RADAR:IncreaseRadarStage()
-	self.vars.radarStage = self.vars.radarStage + 1
-end 
-
-function RADAR:ResetRadarStage()
-	self.vars.radarStage = 0
-end
 
 
 --[[------------------------------------------------------------------------
@@ -931,7 +908,7 @@ Citizen.CreateThread( function()
 end )
 
 function RADAR:RunThreads()
-	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() ) then 
+	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
 		if ( self:GetRayTraceState() == 0 ) then 
 			local vehs = self:GetVehiclePool()
 
@@ -941,7 +918,6 @@ function RADAR:RunThreads()
 
 			Citizen.Wait( self:GetThreadWaitTime() )
 		elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
-			-- self:IncreaseRadarStage()
 			self:ResetRayTraceState()
 		end
 	end 
@@ -1033,7 +1009,6 @@ function RADAR:Main()
 		SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
 
 		self:ResetTempVehicleIDs()
-		self:ResetRadarStage()
 		self:ResetRayTraceState()
 	end 
 end 
