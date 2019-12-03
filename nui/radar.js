@@ -25,6 +25,7 @@ const elements =
 {
     radar: $( "#radarFrame" ),
     remote: $( "#rc" ), 
+    toggleDisplay: $( "#toggleDisplay" ), 
     pwrBtn: $( "#pwrBtn" ), 
 
     patrolSpeed: $( "#patrolSpeed" ),
@@ -78,29 +79,6 @@ const elements =
     }
 }
 
-const remoteButtons = 
-{
-    toggleDisplay: $( "#toggleDisplay" ), 
-    menu: $( "#menuButton" ),
-    volAndTest: $( "#volAndTest" ), 
-    psBlank: $( "#psBlank" ), 
-    uiSettings: $( "#uiSettings" ), 
-
-    antennas: {
-        front: {
-            sameMode: $( "#frontSameMode" ),
-            oppMode: $( "#frontOppMode" ),
-            xmitToggle: $( "#frontXmitToggle" )
-        },
-
-        rear: {
-            sameMode: $( "#rearSameMode" ),
-            oppMode: $( "#rearOppMode" ),
-            xmitToggle: $( "#rearXmitToggle" )
-        }
-    }
-}
-
 const modes = 
 {
     off: 0, 
@@ -121,7 +99,7 @@ const dirs =
 elements.remote.hide(); 
 
 // Create the onclick event for the toggle display button
-remoteButtons.toggleDisplay.click( function() {
+elements.toggleDisplay.click( function() {
     toggleRadar();
 } )
 
