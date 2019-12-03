@@ -136,13 +136,13 @@ RADAR.vars =
 
 -- These vectors are used in the custom ray tracing system 
 RADAR.rayTraces = {
-	-- { startVec = { x = 0.0 }, endVec = { x = 0.0, y = 200.0 }, rayType = "same" },
-	-- { startVec = { x = -5.0 }, endVec = { x = -5.0, y = 200.0 }, rayType = "same" },
-	-- { startVec = { x = 5.0 }, endVec = { x = 5.0, y = 200.0 }, rayType = "same" },
-	{ startVec = { x = 3.0 }, endVec = { x = 3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
-	{ startVec = { x = -3.0 }, endVec = { x = -3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
-	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 0.0, baseY = 400.0 }, rayType = "opp" },
-	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 0.0, baseY = 400.0 }, rayType = "opp" }
+	{ startVec = { x = 0.0 }, endVec = { x = 0.0, y = 0.0 }, rayType = "same" },
+	{ startVec = { x = -5.0 }, endVec = { x = -5.0, y = 0.0 }, rayType = "same" },
+	{ startVec = { x = 5.0 }, endVec = { x = 5.0, y = 0.0 }, rayType = "same" },
+	-- { startVec = { x = 3.0 }, endVec = { x = 3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
+	-- { startVec = { x = -3.0 }, endVec = { x = -3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
+	{ startVec = { x = -9.0 }, endVec = { x = -10.0, y = 0.0 }, rayType = "opp" },
+	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 0.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
@@ -490,7 +490,7 @@ end
 
 function RADAR:UpdateRayEndCoords()
 	for k, v in pairs( self.rayTraces ) do 
-		local endY = self:GetSettingValue( v.rayType ) * v.endVec.baseY
+		local endY = self:GetSettingValue( v.rayType ) * self:GetMaxCheckDist()
 		v.endVec.y = endY
 	end 	
 end 
