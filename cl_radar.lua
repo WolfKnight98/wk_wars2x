@@ -926,7 +926,7 @@ Citizen.CreateThread( function()
 	while ( true ) do 
 		RADAR:RunDynamicThreadWaitCheck()
 
-		Citizen.Wait( 2500 )
+		Citizen.Wait( 2000 )
 	end 
 end )
 
@@ -958,98 +958,83 @@ end )
 function RADAR:Main()
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
 	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() ) then 
-		-- local plyVehPos = GetEntityCoords( PLY.veh )
+		local data = {} 
 
-		-- First stage of the radar - get all of the vehicles hit by the radar
-		--if ( self:GetRadarStage() == 0 ) then 
-			--[[if ( self:GetRayTraceState() == 0 ) then 
-				local vehs = self:GetVehiclePool()
+		-- Get the player's vehicle speed
+		local entSpeed = GetEntitySpeed( PLY.veh )
+		self:SetPatrolSpeed( entSpeed )
 
-				self:ResetCapturedVehicles()
-				self:ResetRayTraceState()
-				self:CreateRayThreads( PLY.veh, vehs )
-			elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
-				self:IncreaseRadarStage()]]
-			--end 
-		--elseif ( self:GetRadarStage() == 1 ) then 
-			local data = {} 
+		if ( entSpeed == 0 ) then 
+			data.patrolSpeed = "¦[]"
+		else 
+			local speed = self:GetVehSpeedFormatted( entSpeed )
+			data.patrolSpeed = UTIL:FormatSpeed( speed )
+		end 
 
-			-- Get the player's vehicle speed
-			local entSpeed = GetEntitySpeed( PLY.veh )
-			self:SetPatrolSpeed( entSpeed )
+		-- Only grab data to send if there have actually been vehicles captured by the radar
+		if ( not UTIL:IsTableEmpty( self:GetCapturedVehicles() ) ) then 
+			local vehsForDisplay = self:GetVehiclesForAntenna()
 
-			if ( entSpeed == 0 ) then 
-				data.patrolSpeed = "¦[]"
-			else 
-				local speed = self:GetVehSpeedFormatted( entSpeed )
-				data.patrolSpeed = UTIL:FormatSpeed( speed )
-			end 
+			self:SetActiveVehicles( vehsForDisplay ) 
+		else
+			self:SetActiveVehicles( { ["front"] = { nil, nil }, ["rear"] = { nil, nil } } )
+		end
 
-			-- Only grab data to send if there have actually been vehicles captured by the radar
-			if ( not UTIL:IsTableEmpty( self:GetCapturedVehicles() ) ) then 
-				local vehsForDisplay = self:GetVehiclesForAntenna()
+		-- Work out what has to be sent 
+		local av = self:GetActiveVehicles()
+		data.antennas = { ["front"] = nil, ["rear"] = nil }
 
-				self:SetActiveVehicles( vehsForDisplay ) 
-			else
-				self:SetActiveVehicles( { ["front"] = { nil, nil }, ["rear"] = { nil, nil } } )
-			end
+		for ant in UTIL:Values( { "front", "rear" } ) do 
+			if ( self:IsAntennaTransmitting( ant ) ) then
+				data.antennas[ant] = {}
 
-			-- Work out what has to be sent 
-			local av = self:GetActiveVehicles()
-			data.antennas = { ["front"] = nil, ["rear"] = nil }
+				for i = 1, 2 do 
+					data.antennas[ant][i] = { speed = "¦¦¦", dir = 0 }
 
-			for ant in UTIL:Values( { "front", "rear" } ) do 
-				if ( self:IsAntennaTransmitting( ant ) ) then
-					data.antennas[ant] = {}
+					if ( i == 2 and self:IsAntennaSpeedLocked( ant ) ) then 
+						data.antennas[ant][i].speed = self.vars.antennas[ant].lockedSpeed
+						data.antennas[ant][i].dir = self.vars.antennas[ant].lockedDir
+					else 
+						-- The vehicle data exists for this slot 
+						if ( av[ant][i] ~= nil ) then 
+							-- We already have the vehicle speed as we needed it earlier on for filtering 
+							local uSpeed = GetEntitySpeed( av[ant][i].veh )
+							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( uSpeed ) )
 
-					for i = 1, 2 do 
-						data.antennas[ant][i] = { speed = "¦¦¦", dir = 0 }
+							-- Work out if the vehicle is closing or away 
+							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
+							local tarH = UTIL:Round( GetEntityHeading( av[ant][i].veh ), 0 )
+							data.antennas[ant][i].dir = UTIL:GetEntityRelativeDirection( ownH, tarH )
 
-						if ( i == 2 and self:IsAntennaSpeedLocked( ant ) ) then 
-							data.antennas[ant][i].speed = self.vars.antennas[ant].lockedSpeed
-							data.antennas[ant][i].dir = self.vars.antennas[ant].lockedDir
-						else 
-							-- The vehicle data exists for this slot 
-							if ( av[ant][i] ~= nil ) then 
-								-- We already have the vehicle speed as we needed it earlier on for filtering 
-								local uSpeed = GetEntitySpeed( av[ant][i].veh )
-								data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( uSpeed ) )
-
-								-- Work out if the vehicle is closing or away 
-								local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
-								local tarH = UTIL:Round( GetEntityHeading( av[ant][i].veh ), 0 )
-								data.antennas[ant][i].dir = UTIL:GetEntityRelativeDirection( ownH, tarH )
-
-								-- Set the internal antenna data as this actual dataset is valid 
-								if ( i % 2 == 0 ) then 
-									self:SetAntennaFastSpeed( ant, data.antennas[ant][i].speed )
-									self:SetAntennaFastDir( ant, data.antennas[ant][i].dir )
-								else 
-									self:SetAntennaSpeed( ant, data.antennas[ant][i].speed )
-									self:SetAntennaDir( ant, data.antennas[ant][i].dir )
-								end 
+							-- Set the internal antenna data as this actual dataset is valid 
+							if ( i % 2 == 0 ) then 
+								self:SetAntennaFastSpeed( ant, data.antennas[ant][i].speed )
+								self:SetAntennaFastDir( ant, data.antennas[ant][i].dir )
 							else 
-								-- If the active vehicle is not valid, we reset the internal data
-								if ( i % 2 == 0 ) then 
-									self:SetAntennaFastSpeed( ant, nil )
-									self:SetAntennaFastDir( ant, nil )
-								else 
-									self:SetAntennaSpeed( ant, nil )
-									self:SetAntennaDir( ant, nil )
-								end
+								self:SetAntennaSpeed( ant, data.antennas[ant][i].speed )
+								self:SetAntennaDir( ant, data.antennas[ant][i].dir )
 							end 
+						else 
+							-- If the active vehicle is not valid, we reset the internal data
+							if ( i % 2 == 0 ) then 
+								self:SetAntennaFastSpeed( ant, nil )
+								self:SetAntennaFastDir( ant, nil )
+							else 
+								self:SetAntennaSpeed( ant, nil )
+								self:SetAntennaDir( ant, nil )
+							end
 						end 
 					end 
 				end 
 			end 
+		end 
 
-			-- Send the update to the NUI side
-			SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
+		-- Send the update to the NUI side
+		SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
 
-			self:ResetTempVehicleIDs()
-			self:ResetRadarStage()
-			self:ResetRayTraceState()
-		--end 
+		self:ResetTempVehicleIDs()
+		self:ResetRadarStage()
+		self:ResetRayTraceState()
 	end 
 end 
 
