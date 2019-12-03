@@ -607,11 +607,11 @@ function RADAR:LockAntennaSpeed( ant )
 
 		if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then 
 			data[1] = self:GetAntennaFastSpeed( ant )
-			data[2] = self:GetAntennaFastDir( ant )
-		elseif ( not self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidData( ant ) ) then 
+			data[2] = self:GetAntennaFastDir( ant )	
+		else 
 			data[1] = self:GetAntennaSpeed( ant )
 			data[2] = self:GetAntennaDir( ant )
-		end 
+		end
 
 		self:SetAntennaSpeedLock( ant, data[1], data[2] )
 	end 
@@ -1028,11 +1028,14 @@ end )
 -- Update the vehicle pool every 3 seconds
 Citizen.CreateThread( function() 
 	while ( true ) do
-		local vehs = RADAR:GetAllVehicles()
+		if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and RADAR:CanPerformMainTask() and RADAR:IsEitherAntennaOn() ) then 
+			local vehs = RADAR:GetAllVehicles()
+			RADAR:SetVehiclePool( vehs )
 
-		RADAR:SetVehiclePool( vehs )
+			Citizen.Wait( 3000 )
+		end 
 
-		Citizen.Wait( 3000 )
+		Citizen.Wait( 0 )
 	end 
 end )
 
