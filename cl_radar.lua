@@ -43,9 +43,15 @@ PLY.vehClassValid = false
 ------------------------------------------------------------------------]]--
 RADAR.vars = 
 {
+	-- The display state
+	displayed = false,
+
 	-- The radar's power
 	power = false, 
 	poweringUp = false, 
+
+	-- Whether the radar is hidden or not
+	hidden = false,
 
 	-- These are the settings that are used in the operator menu 
 	settings = {
@@ -188,6 +194,15 @@ function RADAR:TogglePower()
 	end
 end
 
+function RADAR:ToggleDisplayState()
+	self.vars.displayed = not self.vars.displayed 
+	SendNUIMessage( { _type = "toggleDisplay" } )
+end 
+
+function RADAR:GetDisplayState()
+	return self.vars.displayed
+end 
+
 function RADAR:SetSettingValue( setting, value )
 	if ( value ~= nil ) then 
 		self.vars.settings[setting] = value 
@@ -227,6 +242,21 @@ end
 
 function RADAR:SetThreadWaitTime( time )
 	self.vars.threadWaitTime = time 
+end 
+
+function RADAR:SetDisplayHidden( state )
+	self.vars.hidden = state 
+end 
+
+function RADAR:GetDisplayHidden()
+	return self.vars.hidden 
+end
+
+function RADAR:OpenRemote()
+	if ( not IsPauseMenuActive() ) then 
+		SendNUIMessage( { _type = "openRemote" } )
+		SetNuiFocus( true, true )
+	end
 end 
 
 
@@ -811,8 +841,7 @@ function RADAR:RunControlManager()
 	end
 	
 	if ( IsDisabledControlJustPressed( 1, 166 ) ) then 
-		SendNUIMessage( { _type = "openRemote" } )
-		SetNuiFocus( true, true )
+		self:OpenRemote()
 	end 
 
 	if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
@@ -840,6 +869,10 @@ end
 --[[------------------------------------------------------------------------
 	NUI callback
 ------------------------------------------------------------------------]]--
+RegisterNUICallback( "toggleDisplay", function()
+	RADAR:ToggleDisplayState()
+end )
+
 RegisterNUICallback( "togglePower", function()
 	RADAR:TogglePower()
 end )
@@ -887,7 +920,7 @@ end )
 
 
 --[[------------------------------------------------------------------------
-	Main function  
+	Main threads   
 ------------------------------------------------------------------------]]--
 function RADAR:RunDynamicThreadWaitCheck()
 	local speed = self:GetPatrolSpeed()
@@ -1021,7 +1054,30 @@ Citizen.CreateThread( function()
 		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped 
 		PLY.vehClassValid = GetVehicleClass( PLY.veh ) == 18
 
+		print( tostring( PLY.ped ) )
+		print( tostring( PLY.veh ) )
+		print( tostring( PLY.inDriverSeat ) )
+		print( tostring( PLY.vehClassValid ) )
+
 		Citizen.Wait( 500 )
+	end 
+end )
+
+function RADAR:RunDisplayValidationCheck()
+	if ( ( ( PLY.veh == 0 or ( PLY.veh ~= 0 and not PLY.vehClassValid ) ) and self:GetDisplayState() and not self:GetDisplayHidden() ) or IsPauseMenuActive() and self:GetDisplayState() ) then
+		self:SetDisplayHidden( true ) 
+		SendNUIMessage( { _type = "hideDisplay", state = true } )
+	elseif ( PLY.veh ~= 0 and PLY.vehClassValid and self:GetDisplayState() and self:GetDisplayHidden() ) then 
+		self:SetDisplayHidden( false ) 
+		SendNUIMessage( { _type = "hideDisplay", state = false } )
+	end 
+end
+
+Citizen.CreateThread( function() 
+	while ( true ) do 
+		RADAR:RunDisplayValidationCheck()
+
+		Citizen.Wait( 0 )
 	end 
 end )
 

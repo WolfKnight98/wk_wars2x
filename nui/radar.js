@@ -95,21 +95,17 @@ const dirs =
 }
 
 // Hide the radar and remote, this way we can bypass setting a style of 'display: none;' in the HTML file
-// elements.radar.hide(); 
+elements.radar.hide(); 
 elements.remote.hide(); 
-
-// Create the onclick event for the toggle display button
-elements.toggleDisplay.click( function() {
-    toggleRadar();
-} )
 
 elements.pwrBtn.click( function() {
     togglePower();
 } )
 
-function toggleRadar()
+function toggleRadar( state )
 {
-    elements.radar.fadeToggle();
+    // state ? elements.radar.fadeIn() : elements.radar.fadeOut();
+    elements.radar.fadeToggle(); 
 }
 
 function toggleRemote() 
@@ -127,10 +123,8 @@ function setLight( ant, cat, item, state )
     let obj = elements.antennas[ant][cat][item]; 
 
     if ( state ) {
-        // if ( cat == "dirs" ) { obj.addClass( "active_arrow" ) } else { obj.addClass( "active" ) }; 
         cat == "dirs" ? obj.addClass( "active_arrow" ) : obj.addClass( "active" ); 
     } else {
-        // if ( cat == "dirs" ) { obj.removeClass( "active_arrow" ) } else { obj.removeClass( "active" ) }; 
         cat == "dirs" ? obj.removeClass( "active_arrow" ) : obj.removeClass( "active" ); 
     }
 }
@@ -348,6 +342,12 @@ window.addEventListener( "message", function( event ) {
             break;
         case "openRemote":
             toggleRemote();
+            break; 
+        case "toggleDisplay":
+            toggleRadar( item.state );
+            break; 
+        case "hideDisplay":
+            item.state ? elements.radar.fadeOut() : elements.radar.fadeIn();
             break; 
         case "radarPower":
             radarPower( item.state );
