@@ -320,13 +320,20 @@ elements.remote.find( "button" ).each( function( i, obj ) {
     }
 } );
 
-// Close the remote when the user presses the 'Escape' key 
-document.onkeyup = function ( event ) {
+// Close the remote when the user presses the 'Escape' key or the right mouse button 
+document.onkeyup = function( event ) 
+{
     if ( event.keyCode == 27 ) 
     {
         sendData( "closeRemote", null );
         toggleRemote();
     }
+}
+
+window.oncontextmenu = function()
+{
+    sendData( "closeRemote", null );
+    toggleRemote();
 }
 
 // The main event listener, this is what the NUI messages sent by the LUA side arrive at, they are 
