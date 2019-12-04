@@ -31,11 +31,23 @@ end )
 --[[------------------------------------------------------------------------
 	Player info variables
 ------------------------------------------------------------------------]]--
-PLY = {}
+local PLY = {}
 PLY.ped = PlayerPedId()
 PLY.veh = nil 
 PLY.inDriverSeat = false 
 PLY.vehClassValid = false
+
+-- Updates the local player information 
+Citizen.CreateThread( function()
+	while ( true ) do 
+		PLY.ped = PlayerPedId()
+		PLY.veh = GetVehiclePedIsIn( PLY.ped, false )
+		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped 
+		PLY.vehClassValid = GetVehicleClass( PLY.veh ) == 18
+
+		Citizen.Wait( 500 )
+	end 
+end )
 
 
 --[[------------------------------------------------------------------------
@@ -253,7 +265,7 @@ function RADAR:GetDisplayHidden()
 end
 
 function RADAR:OpenRemote()
-	if ( not IsPauseMenuActive() ) then 
+	if ( not IsPauseMenuActive() and PLY.veh > 0 ) then 
 		SendNUIMessage( { _type = "openRemote" } )
 		SetNuiFocus( true, true )
 	end
@@ -827,44 +839,6 @@ function RADAR:GetVehiclesForAntenna()
 	return { ["front"] = { results["front"][1], results["front"][2] }, ["rear"] = { results["rear"][1], results["rear"][2] } }
 end 
 
--- Num4 = 108 - INPUT_VEH_FLY_ROLL_LEFT_ONLY
--- Num5 = 112 - INPUT_VEH_FLY_PITCH_DOWN_ONLY
--- Num6 = 109 - INPUT_VEH_FLY_ROLL_RIGHT_ONLY
--- Num7 = 117 - INPUT_VEH_FLY_SELECT_TARGET_LEFT
--- Num8 = 111 - INPUT_VEH_FLY_PITCH_UP_ONLY
--- Num9 = 118 - INPUT_VEH_FLY_SELECT_TARGET_RIGHT
--- F5 = 166 - INPUT_SELECT_CHARACTER_MICHAEL
-function RADAR:RunControlManager()
-	-- 'Z' key, toggles debug mode 
-	if ( IsDisabledControlJustPressed( 1, 20 ) ) then 
-		self.config.debug_mode = not self.config.debug_mode
-	end
-	
-	if ( IsDisabledControlJustPressed( 1, 166 ) ) then 
-		self:OpenRemote()
-	end 
-
-	if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
-		self:TogglePower()
-		UTIL:Notify( "Radar power toggled." )
-	end 
-
-	--[[ if ( IsDisabledControlJustPressed( 1, 118 ) ) then 
-		self:ToggleFastDisplay()
-		UTIL:Notify( "Fast display toggled." )
-	end ]]
-
-	-- 'Num8' key, locks speed from front antenna
-	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
-		self:LockAntennaSpeed( "front" )
-	end 
-
-	-- 'Num5' key, locks speed from rear antenna
-	if ( IsDisabledControlJustPressed( 1, 112 ) ) then 
-		self:LockAntennaSpeed( "rear" )
-	end 
-end 
-
 
 --[[------------------------------------------------------------------------
 	NUI callback
@@ -1046,55 +1020,6 @@ function RADAR:Main()
 	end 
 end 
 
--- Updates the local player information 
-Citizen.CreateThread( function()
-	while ( true ) do 
-		PLY.ped = PlayerPedId()
-		PLY.veh = GetVehiclePedIsIn( PLY.ped, false )
-		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped 
-		PLY.vehClassValid = GetVehicleClass( PLY.veh ) == 18
-
-		print( tostring( PLY.ped ) )
-		print( tostring( PLY.veh ) )
-		print( tostring( PLY.inDriverSeat ) )
-		print( tostring( PLY.vehClassValid ) )
-
-		Citizen.Wait( 500 )
-	end 
-end )
-
-function RADAR:RunDisplayValidationCheck()
-	if ( ( ( PLY.veh == 0 or ( PLY.veh ~= 0 and not PLY.vehClassValid ) ) and self:GetDisplayState() and not self:GetDisplayHidden() ) or IsPauseMenuActive() and self:GetDisplayState() ) then
-		self:SetDisplayHidden( true ) 
-		SendNUIMessage( { _type = "hideDisplay", state = true } )
-	elseif ( PLY.veh ~= 0 and PLY.vehClassValid and self:GetDisplayState() and self:GetDisplayHidden() ) then 
-		self:SetDisplayHidden( false ) 
-		SendNUIMessage( { _type = "hideDisplay", state = false } )
-	end 
-end
-
-Citizen.CreateThread( function() 
-	while ( true ) do 
-		RADAR:RunDisplayValidationCheck()
-
-		Citizen.Wait( 0 )
-	end 
-end )
-
--- Update the vehicle pool every 3 seconds
-Citizen.CreateThread( function() 
-	while ( true ) do
-		if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and RADAR:CanPerformMainTask() and RADAR:IsEitherAntennaOn() ) then 
-			local vehs = RADAR:GetAllVehicles()
-			RADAR:SetVehiclePool( vehs )
-
-			Citizen.Wait( 3000 )
-		end 
-
-		Citizen.Wait( 0 )
-	end 
-end )
-
 -- Main thread
 Citizen.CreateThread( function()
 	SetNuiFocus( false, false )
@@ -1109,6 +1034,82 @@ Citizen.CreateThread( function()
 	end
 end )
 
+function RADAR:RunDisplayValidationCheck()
+	if ( ( ( PLY.veh == 0 or ( PLY.veh > 0 and not PLY.vehClassValid ) ) and self:GetDisplayState() and not self:GetDisplayHidden() ) or IsPauseMenuActive() and self:GetDisplayState() ) then
+		self:SetDisplayHidden( true ) 
+		SendNUIMessage( { _type = "hideDisplay", state = true } )
+	elseif ( PLY.veh > 0 and PLY.vehClassValid and self:GetDisplayState() and self:GetDisplayHidden() ) then 
+		self:SetDisplayHidden( false ) 
+		SendNUIMessage( { _type = "hideDisplay", state = false } )
+	end 
+end
+
+Citizen.CreateThread( function() 
+	Citizen.Wait( 100 )
+
+	while ( true ) do 
+		RADAR:RunDisplayValidationCheck()
+
+		Citizen.Wait( 100 )
+	end 
+end )
+
+-- Update the vehicle pool every 3 seconds
+function RADAR:UpdateVehiclePool()
+	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
+		local vehs = self:GetAllVehicles()
+		self:SetVehiclePool( vehs )
+
+		Citizen.Wait( 3000 )
+	end 
+end 
+
+Citizen.CreateThread( function() 
+	while ( true ) do
+		RADAR:UpdateVehiclePool()
+
+		Citizen.Wait( 0 )
+	end 
+end )
+
+-- Num4 = 108 - INPUT_VEH_FLY_ROLL_LEFT_ONLY
+-- Num5 = 112 - INPUT_VEH_FLY_PITCH_DOWN_ONLY
+-- Num6 = 109 - INPUT_VEH_FLY_ROLL_RIGHT_ONLY
+-- Num7 = 117 - INPUT_VEH_FLY_SELECT_TARGET_LEFT
+-- Num8 = 111 - INPUT_VEH_FLY_PITCH_UP_ONLY
+-- Num9 = 118 - INPUT_VEH_FLY_SELECT_TARGET_RIGHT
+-- F5 = 166 - INPUT_SELECT_CHARACTER_MICHAEL
+function RADAR:RunControlManager()
+	-- 'Z' key, toggles debug mode 
+	if ( IsDisabledControlJustPressed( 1, 20 ) ) then 
+		self.config.debug_mode = not self.config.debug_mode
+	end
+	
+	if ( IsDisabledControlJustPressed( 1, 166 ) ) then 
+		self:OpenRemote()
+	end 
+
+	--[[ if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
+		self:TogglePower()
+		UTIL:Notify( "Radar power toggled." )
+	end ]]
+
+	--[[ if ( IsDisabledControlJustPressed( 1, 118 ) ) then 
+		self:ToggleFastDisplay()
+		UTIL:Notify( "Fast display toggled." )
+	end ]]
+
+	-- 'Num8' key, locks speed from front antenna
+	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
+		self:LockAntennaSpeed( "front" )
+	end 
+
+	-- 'Num5' key, locks speed from rear antenna
+	if ( IsDisabledControlJustPressed( 1, 112 ) ) then 
+		self:LockAntennaSpeed( "rear" )
+	end 
+end 
+
 -- Control manager 
 Citizen.CreateThread( function()
 	while ( true ) do 
@@ -1120,19 +1121,16 @@ end )
 
 
 ------------------------------ DEBUG ------------------------------
---[[ Citizen.CreateThread( function()
+Citizen.CreateThread( function()
 	while ( true ) do 
-		-- Ray line drawing
-		-- local veh = GetVehiclePedIsIn( PlayerPedId(), false )
-
-		UTIL:DrawDebugText( 0.50, 0.20, 0.75, true, "Current thread iteration: " .. tostring( currentThreadIteration ) )
-
 		if ( RADAR.config.debug_mode ) then 
 			for k, v in pairs( RADAR.rayTraces ) do 
-				local startP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.startVec.x, 0.0, 0.0 )
-				local endP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.endVec.x, v.endVec.y, 0.0 )
+				for i = -1, 1, 2 do 
+					local startP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.startVec.x, 0.0, 0.0 )
+					local endP = GetOffsetFromEntityInWorldCoords( PLY.veh, v.endVec.x, v.endVec.y * i, 0.0 )
 
-				UTIL:DrawDebugLine( startP, endP )
+					UTIL:DrawDebugLine( startP, endP )
+				end
 			end
 
 			local av = RADAR:GetActiveVehicles()
@@ -1151,8 +1149,10 @@ end )
 					end 
 				end
 			end 
-		end 
 
-		Citizen.Wait( 0 )
+			Citizen.Wait( 0 )
+		else
+			Citizen.Wait( 500 )
+		end 
 	end 
-end ) ]]
+end ) 
