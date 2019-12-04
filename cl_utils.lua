@@ -11,10 +11,6 @@ function UTIL:Round( num, numDecimalPlaces )
 	return tonumber( string.format( "%." .. ( numDecimalPlaces or 0 ) .. "f", num ) )
 end 
 
--- function UTIL:FormatSpeed( speed )
--- 	return string.format( "%03d", speed )
--- end
-
 function UTIL:FormatSpeed( speed )
 	if ( speed < 0 or speed > 999 ) then return "Err" end 
 
