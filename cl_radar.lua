@@ -1059,8 +1059,6 @@ function RADAR:UpdateVehiclePool()
 	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
 		local vehs = self:GetAllVehicles()
 		self:SetVehiclePool( vehs )
-
-		Citizen.Wait( 3000 )
 	end 
 end 
 
@@ -1068,7 +1066,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:UpdateVehiclePool()
 
-		Citizen.Wait( 0 )
+		Citizen.Wait( 3000 )
 	end 
 end )
 
