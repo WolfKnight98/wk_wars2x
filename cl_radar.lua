@@ -1083,27 +1083,18 @@ function RADAR:RunControlManager()
 		self.config.debug_mode = not self.config.debug_mode
 	end
 	
-	if ( IsDisabledControlJustPressed( 1, 166 ) ) then 
+	-- Opens the remote control 
+	if ( IsDisabledControlJustPressed( 1, self.config.remote_control_key ) ) then 
 		self:OpenRemote()
 	end 
 
-	--[[ if ( IsDisabledControlJustPressed( 1, 117 ) ) then 
-		self:TogglePower()
-		UTIL:Notify( "Radar power toggled." )
-	end ]]
-
-	--[[ if ( IsDisabledControlJustPressed( 1, 118 ) ) then 
-		self:ToggleFastDisplay()
-		UTIL:Notify( "Fast display toggled." )
-	end ]]
-
-	-- 'Num8' key, locks speed from front antenna
-	if ( IsDisabledControlJustPressed( 1, 111 ) ) then 
+	-- Locks speed from front antenna
+	if ( IsDisabledControlJustPressed( 1, self.config.front_lock_key ) ) then 
 		self:LockAntennaSpeed( "front" )
 	end 
 
-	-- 'Num5' key, locks speed from rear antenna
-	if ( IsDisabledControlJustPressed( 1, 112 ) ) then 
+	-- Locks speed from rear antenna
+	if ( IsDisabledControlJustPressed( 1, self.config.rear_lock_key ) ) then 
 		self:LockAntennaSpeed( "rear" )
 	end 
 end 
