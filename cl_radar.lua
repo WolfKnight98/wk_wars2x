@@ -124,7 +124,7 @@ RADAR.vars =
 	}, 
 
 	-- The maximum distance that the radar system's ray traces can go 
-	maxCheckDist = 400.0,
+	maxCheckDist = 300.0,
 
 	-- Cached dynamic vehicle sphere sizes, automatically populated when the system is running 
 	sphereSizes = {}, 
@@ -744,7 +744,7 @@ function RADAR:GetDynamicRadius( veh )
 		local min, max = GetModelDimensions( mdl )
 		local size = max - min 
 		local numericSize = size.x + size.y + size.z 
-		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 12, 5.0, 10.0 )
+		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 12, 6.0, 10.0 )
 
 		self:InsertDynamicRadiusData( key, dynamicRadius, numericSize )
 
