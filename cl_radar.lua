@@ -159,8 +159,8 @@ RADAR.rayTraces = {
 	{ startVec = { x = 5.0 }, endVec = { x = 5.0, y = 0.0 }, rayType = "same" },
 	-- { startVec = { x = 3.0 }, endVec = { x = 3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
 	-- { startVec = { x = -3.0 }, endVec = { x = -3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
-	{ startVec = { x = -9.0 }, endVec = { x = -10.0, y = 0.0 }, rayType = "opp" },
-	{ startVec = { x = -16.0 }, endVec = { x = -16.0, y = 0.0 }, rayType = "opp" }
+	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 0.0 }, rayType = "opp" },
+	{ startVec = { x = -17.0 }, endVec = { x = -17.0, y = 0.0 }, rayType = "opp" }
 }
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
@@ -465,7 +465,7 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 
 	local key = tostring( veh )
 
-	if ( DoesEntityExist( veh ) and veh ~= plyVeh and dist < self:GetMaxCheckDist() and not self:HasVehicleAlreadyBeenHit( key ) ) then 
+	if ( DoesEntityExist( veh ) and veh ~= plyVeh and dist < self:GetMaxCheckDist() --[[ and not self:HasVehicleAlreadyBeenHit( key ) ]] ) then 
 		local entSpeed = GetEntitySpeed( veh )
 		local visible = HasEntityClearLosToEntity( plyVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
 
@@ -813,7 +813,9 @@ function RADAR:GetVehiclesForAntenna()
 	for ant in UTIL:Values( { "front", "rear" } ) do 
 		if ( not UTIL:IsTableEmpty( vehs[ant] ) ) then
 			-- Get the 'strongest' vehicle for the antenna 
+			print( "=============== start ===============")
 			for k, v in pairs( vehs[ant] ) do 
+				print( tostring( v.veh ) .. " - " .. tostring( v.size ) .. " - " .. v.rayType )
 				if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) ) then 
 					results[ant][1] = v
 					break
