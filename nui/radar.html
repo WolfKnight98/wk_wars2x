@@ -4,7 +4,8 @@
     </head>
 
 	<body onselectstart="return false;" ondragstart="return false;">
-		<div id="radarFrame" class="unit_frame">
+		<!-- <div id="radarFrame" class="unit_frame"> -->
+		<div id="radarFrame" class="bottom_right">
 			<div class="frame_border"></div>
 
 			<div class="radar_container"> 
@@ -175,15 +176,47 @@
 				<p class="title">Radar Position</p>
 
 				<div class="alignment">
-					<div class="aligner"><div class="arrow top_left"></div><button></button></div>
-					<div class="aligner"><div class="arrow"></div><button></button></div>
-					<div class="aligner"><div class="arrow top_right"></div><button></button></div>
-					<div class="aligner"><div class="arrow left"></div><button></button></div>
+					<div class="aligner">
+						<div class="arrow top_left"></div>
+						<button data-value="top_left"></button>
+					</div>
+					
+					<div class="aligner">
+						<div class="arrow"></div>
+						<button data-value="top_middle"></button>
+					</div>
+
+					<div class="aligner">
+						<div class="arrow top_right"></div>
+						<button data-value="top_right"></button>
+					</div>
+
+					<div class="aligner">
+						<div class="arrow left"></div>
+						<button data-value="middle_left"></button>
+					</div>
+
 					<div class="holo"></div>
-					<div class="aligner"><div class="arrow right"></div><button></button></div>
-					<div class="aligner"><div class="arrow bottom_left"></div><button></button></div>
-					<div class="aligner"><div class="arrow bottom"></div><button></button></div>
-					<div class="aligner"><div class="arrow bottom_right"></div><button></button></div>
+
+					<div class="aligner">
+						<div class="arrow right"></div>
+						<button data-value="middle_right"></button>
+					</div>
+
+					<div class="aligner">
+						<div class="arrow bottom_left"></div>
+						<button data-value="bottom_left"></button>
+					</div>
+
+					<div class="aligner">
+						<div class="arrow bottom"></div>
+						<button data-value="bottom_middle"></button>
+					</div>
+
+					<div class="aligner">
+						<div class="arrow bottom_right"></div>
+						<button data-value="bottom_right"></button>
+					</div>
 				</div>
 			</div>
 

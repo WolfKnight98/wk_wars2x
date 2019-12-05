@@ -22,16 +22,22 @@
 /* Removes the outline when buttons have been clicked */
 button:focus { outline: none; }
 
-.unit_frame {
+/* The alignment classes for the dynamic repositioning system */
+#radarFrame.top_left { top: 10px; left: 10px; }
+#radarFrame.top_middle { top: 10px; left: 0; right: 0; }
+#radarFrame.top_right { top: 10px; right: 10px; }
+#radarFrame.middle_right { top: 0; bottom: 0; right: 10px; }
+#radarFrame.middle_left { top: 0; bottom: 0; left: 10px; }
+#radarFrame.bottom_left { bottom: 10px; left: 10px; }
+#radarFrame.bottom_middle { bottom: 10px; left: 0; right: 0; }
+#radarFrame.bottom_right { bottom: 10px; right: 10px; }
+
+#radarFrame {
     width: 715px;
     height: 230px;
 
     position: absolute;
     margin: auto;
-    /* top: 0; */
-    right: 10px;
-    bottom: 10px;
-    /* left: 0; */
 
     background-image: url( "frame.png" );
 

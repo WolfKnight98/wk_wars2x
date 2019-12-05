@@ -311,6 +311,10 @@ function sendData( name, data ) {
 }
 
 // UI stuff
+elements.closeUiBtn.click( function() {
+    toggleUISettings();
+} )
+
 function toggleUISettings()
 {
     elements.uiSettingsBox.fadeToggle(); 
@@ -322,6 +326,15 @@ function hideUISettings()
         elements.uiSettingsBox.hide(); 
     }
 }
+
+elements.uiSettingsBox.find( "button" ).each( function( i, obj ) {
+    if ( $( this ).attr( "data-value" ) ) {
+        $( this ).click( function() { 
+            let align = $( this ).data( "value" ); 
+            elements.radar.removeClass().addClass( align );
+        } )
+    }
+} );
 
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
 elements.remote.find( "button" ).each( function( i, obj ) {
