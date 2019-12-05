@@ -28,6 +28,10 @@ const elements =
     toggleDisplay: $( "#toggleDisplay" ), 
     pwrBtn: $( "#pwrBtn" ), 
 
+    uiSettingsBtn: $( "#uiSettings" ), 
+    uiSettingsBox: $( "#uiSettingsBox" ), 
+    closeUiBtn: $( "#closeUiSettings" ),
+
     patrolSpeed: $( "#patrolSpeed" ),
 
     antennas: {
@@ -97,6 +101,11 @@ const dirs =
 // Hide the radar and remote, this way we can bypass setting a style of 'display: none;' in the HTML file
 elements.radar.hide(); 
 elements.remote.hide(); 
+elements.uiSettingsBox.hide(); 
+
+elements.uiSettingsBtn.click( function() {
+    toggleUISettings();
+} )
 
 elements.pwrBtn.click( function() {
     togglePower();
@@ -301,6 +310,19 @@ function sendData( name, data ) {
     } );
 }
 
+// UI stuff
+function toggleUISettings()
+{
+    elements.uiSettingsBox.fadeToggle(); 
+}
+
+function hideUISettings()
+{
+    if ( !elements.uiSettingsBox.is( ":hidden" ) ) {
+        elements.uiSettingsBox.hide(); 
+    }
+}
+
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
 elements.remote.find( "button" ).each( function( i, obj ) {
     if ( $( this ).attr( "data-nuitype" ) ) {
@@ -321,6 +343,7 @@ document.onkeyup = function( event )
     {
         sendData( "closeRemote", null );
         toggleRemote();
+        hideUISettings();
     }
 }
 
@@ -328,6 +351,7 @@ window.oncontextmenu = function()
 {
     sendData( "closeRemote", null );
     toggleRemote();
+    hideUISettings();
 }
 
 // The main event listener, this is what the NUI messages sent by the LUA side arrive at, they are 
