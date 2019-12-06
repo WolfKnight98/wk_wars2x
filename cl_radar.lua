@@ -813,9 +813,7 @@ function RADAR:GetVehiclesForAntenna()
 	for ant in UTIL:Values( { "front", "rear" } ) do 
 		if ( not UTIL:IsTableEmpty( vehs[ant] ) ) then
 			-- Get the 'strongest' vehicle for the antenna 
-			print( "=============== start ===============")
 			for k, v in pairs( vehs[ant] ) do 
-				print( tostring( v.veh ) .. " - " .. tostring( v.size ) .. " - " .. v.rayType )
 				if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) ) then 
 					results[ant][1] = v
 					break
