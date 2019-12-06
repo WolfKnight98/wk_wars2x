@@ -173,51 +173,62 @@
 			</div> -->
 
 			<div class="radar_settings">
-				<p class="title">Radar Position</p>
+				<p class="title">Radar UI Settings</p>
 
 				<div class="alignment">
 					<div class="aligner">
 						<div class="arrow top_left"></div>
-						<button data-value="top_left"></button>
+						<button data-value="top_left" data-scale="top left"></button>
 					</div>
 					
 					<div class="aligner">
 						<div class="arrow"></div>
-						<button data-value="top_middle"></button>
+						<button data-value="top_middle" data-scale="top center"></button>
 					</div>
 
 					<div class="aligner">
 						<div class="arrow top_right"></div>
-						<button data-value="top_right"></button>
+						<button data-value="top_right" data-scale="top right"></button>
 					</div>
 
 					<div class="aligner">
 						<div class="arrow left"></div>
-						<button data-value="middle_left"></button>
+						<button data-value="middle_left" data-scale="center left"></button>
 					</div>
 
 					<div class="holo"></div>
 
 					<div class="aligner">
 						<div class="arrow right"></div>
-						<button data-value="middle_right"></button>
+						<button data-value="middle_right" data-scale="center right"></button>
 					</div>
 
 					<div class="aligner">
 						<div class="arrow bottom_left"></div>
-						<button data-value="bottom_left"></button>
+						<button data-value="bottom_left" data-scale="bottom left"></button>
 					</div>
 
 					<div class="aligner">
 						<div class="arrow bottom"></div>
-						<button data-value="bottom_middle"></button>
+						<button data-value="bottom_middle" data-scale="bottom center"></button>
 					</div>
 
 					<div class="aligner">
 						<div class="arrow bottom_right"></div>
-						<button data-value="bottom_right"></button>
+						<button data-value="bottom_right" data-scale="bottom right"></button>
 					</div>
 				</div>
+			</div>
+
+			<div class="scaling">
+				<div id="decreaseScale" class="symbol minus"></div>
+
+				<div class="info">
+					<p>Scale</p>
+					<p id="scaleDisplay" class="multiplier">1.00x</p>
+				</div>
+
+				<div id="increaseScale" class="symbol plus"></div>
 			</div>
 
 			<button id="closeUiSettings" class="close">CLOSE</button>

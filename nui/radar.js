@@ -32,6 +32,12 @@ const elements =
     uiSettingsBox: $( "#uiSettingsBox" ), 
     closeUiBtn: $( "#closeUiSettings" ),
 
+    scale: {
+        increase: $( "#increaseScale" ),
+        decrease: $( "#decreaseScale" ),
+        display: $( "#scaleDisplay" )
+    }, 
+
     patrolSpeed: $( "#patrolSpeed" ),
 
     antennas: {
@@ -104,22 +110,22 @@ elements.remote.hide();
 elements.uiSettingsBox.hide(); 
 
 elements.uiSettingsBtn.click( function() {
-    toggleUISettings();
+    setUISettingsVisible( true, true );
 } )
 
 elements.pwrBtn.click( function() {
     togglePower();
 } )
 
-function toggleRadar( state )
+function setRadarVisible( state )
 {
-    // state ? elements.radar.fadeIn() : elements.radar.fadeOut();
-    elements.radar.fadeToggle(); 
+    state ? elements.radar.fadeIn() : elements.radar.fadeOut();
 }
 
-function toggleRemote() 
+function setRemoteVisible( state ) 
 {
-    elements.remote.toggle();
+    // elements.remote.toggle();
+    state ? elements.remote.fadeIn() : elements.remote.fadeOut();
 }
 
 function togglePower()
@@ -311,13 +317,24 @@ function sendData( name, data ) {
 }
 
 // UI stuff
+var scale = 1.0 
+
 elements.closeUiBtn.click( function() {
-    toggleUISettings();
+    setUISettingsVisible( false, true );
 } )
 
-function toggleUISettings()
+elements.scale.increase.click( function() {
+    changeScale( 0.05 );
+} )
+
+elements.scale.decrease.click( function() {
+    changeScale( -0.05 );
+} )
+
+function setUISettingsVisible( state, remote )
 {
-    elements.uiSettingsBox.fadeToggle(); 
+    state ? elements.uiSettingsBox.fadeIn() : elements.uiSettingsBox.fadeOut(); 
+    if ( remote ) { setRemoteVisible( !state ); }
 }
 
 function hideUISettings()
@@ -327,11 +344,26 @@ function hideUISettings()
     }
 }
 
+function changeScale( amount )
+{
+    scale = clamp( scale + amount, 0.25, 2.5 ); 
+    elements.radar.css( "transform", "scale(" + scale + ")" );
+    elements.scale.display.html( scale.toFixed( 2 ) + "x" ); 
+}
+
+function clamp( num, min, max )
+{
+    return num < min ? min : num > max ? max : num;
+}
+
 elements.uiSettingsBox.find( "button" ).each( function( i, obj ) {
-    if ( $( this ).attr( "data-value" ) ) {
+    if ( $( this ).attr( "data-value" ) && $( this ).attr( "data-scale" ) ) {
         $( this ).click( function() { 
             let align = $( this ).data( "value" ); 
+            let origin = $( this ).data( "scale" );
+
             elements.radar.removeClass().addClass( align );
+            elements.radar.css( "transform-origin", origin );
         } )
     }
 } );
@@ -355,16 +387,16 @@ document.onkeyup = function( event )
     if ( event.keyCode == 27 ) 
     {
         sendData( "closeRemote", null );
-        toggleRemote();
-        hideUISettings();
+        setRemoteVisible( false );
+        setUISettingsVisible( false, false );
     }
 }
 
 window.oncontextmenu = function()
 {
     sendData( "closeRemote", null );
-    toggleRemote();
-    hideUISettings();
+    setRemoteVisible( false );
+    setUISettingsVisible( false, false );
 }
 
 // The main event listener, this is what the NUI messages sent by the LUA side arrive at, they are 
@@ -378,13 +410,10 @@ window.addEventListener( "message", function( event ) {
             resourceName = item.pathName
             break;
         case "openRemote":
-            toggleRemote();
+            setRemoteVisible( true );
             break; 
         case "toggleDisplay":
-            toggleRadar( item.state );
-            break; 
-        case "hideDisplay":
-            item.state ? elements.radar.fadeOut() : elements.radar.fadeIn();
+            setRadarVisible( item.state );
             break; 
         case "radarPower":
             radarPower( item.state );
@@ -396,7 +425,6 @@ window.addEventListener( "message", function( event ) {
             updateDisplays( item.speed, item.antennas );
             break; 
         case "antennaXmit":
-            // setAntennaXmit( item.ant, item.on, item.on ? item.mode : 0 );
             setAntennaXmit( item.ant, item.on );
             break; 
         case "antennaMode":

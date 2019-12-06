@@ -19,6 +19,10 @@
     box-sizing: border-box;
 }
 
+body {
+    overflow: hidden;
+}
+
 /* Removes the outline when buttons have been clicked */
 button:focus { outline: none; }
 
@@ -40,6 +44,10 @@ button:focus { outline: none; }
     margin: auto;
 
     background-image: url( "frame.png" );
+
+    /* Settings for scaling */
+    transform: scale( 1.0 );
+    transform-origin: bottom right;
 
     z-index: 1;
 }
@@ -572,7 +580,7 @@ button:focus { outline: none; }
 
 #uiSettingsBox {
     width: 200px;
-    height: 300px;
+    height: 350px;
 
     position: absolute;
     margin: auto;
@@ -617,7 +625,7 @@ button:focus { outline: none; }
             }
 
     #uiSettingsBox .radar_settings {
-        /* background-color: rgb( 50, 54, 45 ); */
+        width: 100%;
     }
         #uiSettingsBox .radar_settings .alignment {
             height: 200px;
@@ -647,6 +655,10 @@ button:focus { outline: none; }
                 background-color: rgb( 255, 255, 255 );
 
                 position: relative;
+            }
+
+            #uiSettingsBox .radar_settings .alignment .aligner:active {
+                background-color: rgb( 190, 190, 190 );
             }
                 #uiSettingsBox .radar_settings .alignment .aligner .arrow {
                     width: 45px; 
@@ -694,6 +706,45 @@ button:focus { outline: none; }
                 height: 55px;
                 background-color: transparent;
             }
+    
+    #uiSettingsBox .scaling {
+        height: 70px;
+
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+        #uiSettingsBox .scaling p {
+            font-size: 18px;
+            margin: 0 auto;
+            text-align: center;
+            color: rgb( 255, 255, 255 );
+        }
+            #uiSettingsBox .scaling .multiplier {
+                font-size: 16px;
+            }
+
+        #uiSettingsBox .scaling .symbol {
+            width: 45px; 
+            height: 45px;
+
+            background-color: rgb( 225, 225, 225 );
+        }
+            #uiSettingsBox .scaling .symbol:hover {
+                background-color: rgb( 255, 255, 255 );
+            }
+
+            #uiSettingsBox .scaling .symbol:active {
+                background-color: rgb( 190, 190, 190 );
+            }
+
+        #uiSettingsBox .scaling .minus {
+            clip-path: polygon( 0 35%, 100% 35%, 100% 65%, 0 65% );
+        }
+
+        #uiSettingsBox .scaling .plus {
+            clip-path: polygon( 0 35%, 35% 35%, 35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65% );
+        }
 
     #uiSettingsBox .close {
         width: 80px;
@@ -701,7 +752,7 @@ button:focus { outline: none; }
 
         display: block;
 
-        margin: 20px auto;
+        margin: 5px auto;
 
         border-radius: 10px;
         border: none;
