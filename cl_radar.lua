@@ -208,7 +208,7 @@ end
 
 function RADAR:ToggleDisplayState()
 	self.vars.displayed = not self.vars.displayed 
-	SendNUIMessage( { _type = "toggleDisplay" } )
+	SendNUIMessage( { _type = "toggleDisplay", state = self:GetDisplayState() } )
 end 
 
 function RADAR:GetDisplayState()
@@ -1039,10 +1039,10 @@ end )
 function RADAR:RunDisplayValidationCheck()
 	if ( ( ( PLY.veh == 0 or ( PLY.veh > 0 and not PLY.vehClassValid ) ) and self:GetDisplayState() and not self:GetDisplayHidden() ) or IsPauseMenuActive() and self:GetDisplayState() ) then
 		self:SetDisplayHidden( true ) 
-		SendNUIMessage( { _type = "hideDisplay", state = true } )
+		SendNUIMessage( { _type = "toggleDisplay", state = false } )
 	elseif ( PLY.veh > 0 and PLY.vehClassValid and self:GetDisplayState() and self:GetDisplayHidden() ) then 
 		self:SetDisplayHidden( false ) 
-		SendNUIMessage( { _type = "hideDisplay", state = false } )
+		SendNUIMessage( { _type = "toggleDisplay", state = true } )
 	end 
 end
 
