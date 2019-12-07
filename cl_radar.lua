@@ -331,40 +331,55 @@ end
 --[[----------------------------------------------------------------------------------
 	Radar menu functions  
 ----------------------------------------------------------------------------------]]--
+-- Sets the menu state to the given state
 function RADAR:SetMenuState( state )
+	-- Make sure that the radar's power is on 
 	if ( self:IsPowerOn() ) then 
+		-- Set the menuActive variable to the given state 
 		self.vars.menuActive = state
 
+		-- If we are opening the menu, make sure the first item is displayed
 		if ( state ) then 
 			self.vars.currentOptionIndex = 1
 		end
 	end
 end 
 
+-- Returns if the operator menu is open 
 function RADAR:IsMenuOpen()
 	return self.vars.menuActive
 end 
 
+-- This function changes the menu index variable so the user can iterate through the options in the operator menu 
 function RADAR:ChangeMenuIndex()
+	-- Create a temporary variable of the current menu index plus 1
 	local temp = self.vars.currentOptionIndex + 1
 
+	-- If the temporary value is larger than how many options there are, set it to 1, this way the menu
+	-- loops back round to the start of the menu 
 	if ( temp > #self.vars.menuOptions ) then 
 		temp = 1 
 	end 
 
+	-- Set the menu index variable to the temporary value we created
 	self.vars.currentOptionIndex = temp
 
+	-- Call the function to send an update to the NUI side
 	self:SendMenuUpdate()
 end 
 
+-- Returns the option table of the current menu index
 function RADAR:GetMenuOptionTable()
 	return self.vars.menuOptions[self.vars.currentOptionIndex]
 end 
 
+-- Changes the index for an individual option 
+-- E.g. { "On" "Off" }, index = 2 would be "Off"
 function RADAR:SetMenuOptionIndex( index )
 	self.vars.menuOptions[self.vars.currentOptionIndex].optionIndex = index
 end 
 
+-- Returns the option value for the current option 
 function RADAR:GetMenuOptionValue()
 	local opt = self:GetMenuOptionTable()
 	local index = opt.optionIndex
@@ -372,22 +387,33 @@ function RADAR:GetMenuOptionValue()
 	return opt.options[index]
 end 
 
+-- This function is similar to RADAR:ChangeMenuIndex() but allows for iterating forward and backward through options
 function RADAR:ChangeMenuOption( dir )
+	-- Get the option table of the currently selected option 
 	local opt = self:GetMenuOptionTable()
+
+	-- Get the current option index of the selected option 
 	local index = opt.optionIndex
 
+	-- Cache the size of this setting's options table 
+	local size = #opt.options
+
+	-- As the XMIT/HOLD buttons are used for changing the option values, we have to check which button is being pressed
 	if ( dir == "front" ) then 
 		index = index + 1
-		if ( index > #opt.options ) then index = 1 end 
+		if ( index > size ) then index = 1 end 
 	elseif ( dir == "rear" ) then 
 		index = index - 1
-		if ( index < 1 ) then index = #opt.options end 
+		if ( index < 1 ) then index = size end 
 	end
 
+	-- Update the option's index 
 	self:SetMenuOptionIndex( index )
 
+	-- Change the value of the setting in the main RADAR.vars.settings table 
 	self:SetSettingValue( opt.settingText, self:GetMenuOptionValue() )
 
+	-- Call the function to send an update to the NUI side
 	self:SendMenuUpdate()
 end 
 
