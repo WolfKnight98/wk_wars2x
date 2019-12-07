@@ -1,10 +1,11 @@
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 
 	Wraith ARS 2X - v1.0.0
 	Created by WolfKnight
 
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 
+-- Cache some of the main Lua functions and libraries 
 local next = next 
 local dot = dot 
 local table = table 
@@ -13,14 +14,15 @@ local tostring = tostring
 local math = math 
 local pairs = pairs 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Resource Rename Fix - for those muppets who rename the resource and 
 	complain that the NUI aspect doesn't work!
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 Citizen.SetTimeout( 1000, function()
 	-- Get the name of the resource, for example the default name is 'wk_wrs2'
 	local name = GetCurrentResourceName()
 
+	-- Print a little message in the client's console
 	print( "WK_WARS2X: Sending resource name (" .. name .. ") to JavaScript side." )
 
 	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
@@ -28,16 +30,22 @@ Citizen.SetTimeout( 1000, function()
 end )
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Player info variables
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 local PLY = {}
 PLY.ped = PlayerPedId()
 PLY.veh = nil 
 PLY.inDriverSeat = false 
 PLY.vehClassValid = false
 
--- Updates the local player information 
+function PLY:VehicleStateValid()
+	return DoesEntityExist( self.veh ) and self.veh > 0 and self.inDriverSeat and self.vehClassValid
+end 
+
+-- The main purpose of this thread is to update the information about the local player, including their
+-- ped id, the vehicle id (if they're in one), whether they're in a driver seat, and if the vehicle's class
+-- is valid or not 
 Citizen.CreateThread( function()
 	while ( true ) do 
 		PLY.ped = PlayerPedId()
@@ -50,36 +58,47 @@ Citizen.CreateThread( function()
 end )
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar variables
-------------------------------------------------------------------------]]--
+
+	NOTE - This is not a config, do not touch anything unless you know what
+	you are actually doing. 
+----------------------------------------------------------------------------------]]--
 RADAR.vars = 
 {
-	-- The display state
+	-- Whether or not the radar's UI is visible 
 	displayed = false,
 
-	-- The radar's power
+	-- The radar's power, the system simulates the radar unit powering up when the user clicks the 
+	-- power button on the interface
 	power = false, 
 	poweringUp = false, 
 
-	-- Whether the radar is hidden or not
+	-- Whether or not the radar should be hidden, e.g. the display is active but the player then steps
+	-- out of their vehicle
 	hidden = false,
 
 	-- These are the settings that are used in the operator menu 
 	settings = {
+		-- Should the system calculate and display faster targets
 		["fastDisplay"] = true, 
 
-		-- Sensitivty for each mode, 1-5
+		-- Sensitivty for each radar mode, this changes how far the antennas will detect vehicles
 		["same"] = 3, 
 		["opp"] = 3, 
 
-		["alert"] = true,
+		-- Future feature!
+		-- ["alert"] = true,
 
+		-- The volume of the audible beep, follows the JS format (0.0 - 1.0)
 		["beep"] = 0.6,
 
+		-- The speed unit used in conversions
 		["speedType"] = "mph"
 	},
 
+	-- These 3 variables are for the in-radar menu that can be accessed through the remote control, the menuOptions table 
+	-- stores all of the information about each of the settings the user can change 
 	menuActive = false, 
 	currentOptionIndex = 1, 
 	menuOptions = {
@@ -90,40 +109,39 @@ RADAR.vars =
 		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = 1, settingText = "speedType" }
 	},
 
-	-- Player's vehicle speed, this is used to update the patrol vehicle speed on the radar
+	-- Player's vehicle speed, mainly used in the dynamic thread wait update 
 	patrolSpeed = 0,
-	patrolLocked = false, 
-	psBlank = false, 
 
 	-- Antennas, this table contains all of the data needed for operation of the front and rear antennas 
 	antennas = {
 		-- Variables for the front antenna 
 		[ "front" ] = {
-			xmit = false,		-- Whether the antenna is on or off
-			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
-			speed = 0,			-- Speed of the vehicle caught by the front antenna 
-			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
-			fastSpeed = 0, 		-- Speed of the fastest vehicle caught by the front antenna
-			fastDir = nil, 		-- Direction the fastest vehicle is going, 0 = towards, 1 = away  
-			speedLocked = false,
-			lockedSpeed = 0,
-			lockedDir = 0
+			xmit = false,			-- Whether the antenna is transmitting or in hold 
+			mode = 0,				-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
+			speed = 0,				-- Speed of the vehicle caught by the front antenna 
+			dir = nil, 				-- Direction the caught vehicle is going, 0 = towards, 1 = away
+			fastSpeed = 0, 			-- Speed of the fastest vehicle caught by the front antenna
+			fastDir = nil, 			-- Direction the fastest vehicle is going  
+			speedLocked = false, 	-- A speed has been locked for this antenna
+			lockedSpeed = 0, 		-- The locked speed
+			lockedDir = 0 			-- The direction of the vehicle that was locked
 		}, 
 
 		[ "rear" ] = {
-			xmit = false,		-- Whether the antenna is on or off
-			mode = 0,			-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
-			speed = 0,			-- Speed of the vehicle caught by the front antenna 
-			dir = nil, 			-- Direction the caught vehicle is going, 0 = towards, 1 = away
-			fastSpeed = 0, 		-- Speed of the fastest vehicle caught by the front antenna
-			fastDir = nil, 		-- Direction the fastest vehicle is going, 0 = towards, 1 = away  
-			speedLocked = false,
-			lockedSpeed = 0,
-			lockedDir = 0
+			xmit = false,			-- Whether the antenna is transmitting or in hold
+			mode = 0,				-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
+			speed = 0,				-- Speed of the vehicle caught by the front antenna 
+			dir = nil, 				-- Direction the caught vehicle is going, 0 = towards, 1 = away
+			fastSpeed = 0, 			-- Speed of the fastest vehicle caught by the front antenna
+			fastDir = nil, 			-- Direction the fastest vehicle is going
+			speedLocked = false,	-- A speed has been locked for this antenna
+			lockedSpeed = 0,		-- The locked speed
+			lockedDir = 0			-- The direction of the vehicle that was locked
 		}
 	}, 
 
-	-- The maximum distance that the radar system's ray traces can go 
+	-- The maximum distance that the radar system's ray traces can go, changing this will change the max
+	-- distance in-game, but I wouldn't really put it more than 400.0
 	maxCheckDist = 300.0,
 
 	-- Cached dynamic vehicle sphere sizes, automatically populated when the system is running 
@@ -142,13 +160,15 @@ RADAR.vars =
 	-- vehicle IDs for the player using entity enumeration (see cl_utils.lua) 
 	vehiclePool = {}, 
 
-	-- Ray trace state, this is used so the radar stage doesn't progress to the next stage unless 
-	-- all of the ray trace threads have completed 
+	-- Ray trace state, this is used so the radar system doesn't initiate another set of ray traces until 
+	-- the current set has finished 
 	rayTraceState = 0,
 
 	-- Number of ray traces, automatically cached when the system first runs 
 	numberOfRays = 0,
 
+	-- The wait time for the ray trace system, this changes dynamically based on if the player's vehicle is stationary 
+	-- or not
 	threadWaitTime = 500 
 }
 
@@ -157,8 +177,6 @@ RADAR.rayTraces = {
 	{ startVec = { x = 0.0 }, endVec = { x = 0.0, y = 0.0 }, rayType = "same" },
 	{ startVec = { x = -5.0 }, endVec = { x = -5.0, y = 0.0 }, rayType = "same" },
 	{ startVec = { x = 5.0 }, endVec = { x = 5.0, y = 0.0 }, rayType = "same" },
-	-- { startVec = { x = 3.0 }, endVec = { x = 3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
-	-- { startVec = { x = -3.0 }, endVec = { x = -3.0, y = 0.0, baseY = 400.0 }, rayType = "same" },
 	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 0.0 }, rayType = "opp" },
 	{ startVec = { x = -17.0 }, endVec = { x = -17.0, y = 0.0 }, rayType = "opp" }
 }
@@ -171,110 +189,148 @@ RADAR.sorting = {
 }
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar essentials functions  
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
+-- Returns if the radar's power is on or ff
 function RADAR:IsPowerOn()
 	return self.vars.power 
 end 
 
+-- Returns if the radar system is powering up, the powering up stage only takes 2 seconds
 function RADAR:IsPoweringUp()
 	return self.vars.poweringUp
 end 
 
+-- Allows the powering up state variable to be set 
 function RADAR:SetPoweringUpState( state )
 	self.vars.poweringUp = state 
 end 
 
+-- Toggles the radar power
 function RADAR:TogglePower()
+	-- Toggle the power variable
 	self.vars.power = not self.vars.power 
-
+	
+	-- Send the NUI message to toggle the power 
 	SendNUIMessage( { _type = "radarPower", state = self:IsPowerOn() } )
 
 	-- Power is now turned on 
 	if ( self:IsPowerOn() ) then 
+		-- Tell the system the radar is 'powering up'
 		self:SetPoweringUpState( true )
 
+		-- Set a 2 second countdown 
 		Citizen.SetTimeout( 2000, function()
+			-- Tell the system the radar has 'powered up'
 			self:SetPoweringUpState( false )
 
+			-- Let the UI side know the system has loaded
 			SendNUIMessage( { _type = "poweredUp" } )
 		end )
 	else 
+		-- If the system is being turned off, then we reset the antennas
 		self:ResetAntenna( "front" )
 		self:ResetAntenna( "rear" )
 	end
 end
 
+-- Toggles the display state of the radar system
 function RADAR:ToggleDisplayState()
+	-- Toggle the display variable 
 	self.vars.displayed = not self.vars.displayed 
+
+	-- Send the toggle message to the NUI side 
 	SendNUIMessage( { _type = "toggleDisplay", state = self:GetDisplayState() } )
 end 
 
+-- Gets the display state
 function RADAR:GetDisplayState()
 	return self.vars.displayed
 end 
 
+-- Used to set individual settings within RADAR.vars.settings, as all of the settings use string keys, using this
+-- function makes updating settings easier
 function RADAR:SetSettingValue( setting, value )
+	-- Make sure that we're not trying to do set a nil value for the setting
 	if ( value ~= nil ) then 
+		-- Set the setting's value 
 		self.vars.settings[setting] = value 
 
+		-- If the setting that's being updated is same or opp, then we update the end coordinates for the ray tracer
 		if ( setting == "same" or setting == "opp" ) then 
 			self:UpdateRayEndCoords()
 		end 
 	end 
 end 
 
+-- Returns the value of the given setting 
 function RADAR:GetSettingValue( setting )
 	return self.vars.settings[setting]
 end
 
+-- Return the state of the fastDisplay setting, short hand direct way to check if the fast system is enabled
 function RADAR:IsFastDisplayEnabled()
 	return self.vars.settings["fastDisplay"]
 end 
 
+-- Returns if either of the antennas are transmitting 
 function RADAR:IsEitherAntennaOn()
 	return self:IsAntennaTransmitting( "front" ) or self:IsAntennaTransmitting( "rear" )
 end 
 
+-- Sends an update to the NUI side with the current state of the antennas and if the fast system is enabled
 function RADAR:SendSettingUpdate()
+	-- Grab the antennas table and the fast system state
 	local antennas = self.vars.antennas 
 	local fast = self:IsFastDisplayEnabled()
 
+	-- Send a message to the NUI side with the current state of the antennas and the fast mode
 	SendNUIMessage( { _type = "settingUpdate", antennaData = antennas, fast = fast } )
 end 
 
+-- Returns if a main task can be performed 
+-- A main task such as the ray trace thread should only run if the radar's power is on, the system is not in the 
+-- process of powering up, and the operator menu is not open 
 function RADAR:CanPerformMainTask()
 	return self:IsPowerOn() and not self:IsPoweringUp() and not self:IsMenuOpen()
 end 
 
+-- Returns what the dynamic thread wait time is
 function RADAR:GetThreadWaitTime()
 	return self.vars.threadWaitTime
 end 
 
+-- Sets the dynamic thread wait time to the given value 
 function RADAR:SetThreadWaitTime( time )
 	self.vars.threadWaitTime = time 
 end 
 
+-- Sets the display's hidden state to the given state 
 function RADAR:SetDisplayHidden( state )
 	self.vars.hidden = state 
 end 
 
+-- Returns if the display is hidden 
 function RADAR:GetDisplayHidden()
 	return self.vars.hidden 
 end
 
+-- Opens the remote only if the pause menu is not open and the player's vehicle state is valid
 function RADAR:OpenRemote()
-	if ( not IsPauseMenuActive() and PLY.veh > 0 ) then 
+	if ( not IsPauseMenuActive() and PLY:VehicleStateValid() ) then 
+		-- Tell the NUI side to open the remote
 		SendNUIMessage( { _type = "openRemote" } )
+
+		-- Bring focus to the NUI side 
 		SetNuiFocus( true, true )
 	end
 end 
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar menu functions  
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 function RADAR:SetMenuState( state )
 	if ( self:IsPowerOn() ) then 
 		self.vars.menuActive = state
@@ -350,9 +406,9 @@ function RADAR:SendMenuUpdate()
 end 
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar basics functions  
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 function RADAR:GetPatrolSpeed()	
 	return self.vars.patrolSpeed
 end 
@@ -396,9 +452,9 @@ function RADAR:SetActiveVehicles( vehs )
 end 
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar ray trace functions 
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 function RADAR:GetRayTraceState()
 	return self.vars.rayTraceState
 end
@@ -538,9 +594,9 @@ function RADAR:UpdateRayEndCoords()
 end 
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar antenna functions 
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 function RADAR:ToggleAntenna( ant, cb )
 	if ( self:IsPowerOn() ) then 
 		self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
@@ -672,9 +728,9 @@ function RADAR:ResetAntenna( ant )
 end 
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar captured vehicle functions 
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 function RADAR:GetCapturedVehicles()
 	return self.vars.capturedVehicles
 end
@@ -705,9 +761,9 @@ function RADAR:ResetTempVehicleIDs()
 end 
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar dynamic sphere radius functions 
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 function RADAR:GetDynamicDataValue( key )
 	return self.vars.sphereSizes[key]
 end 
@@ -755,9 +811,9 @@ function RADAR:GetDynamicRadius( veh )
 end
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Radar functions 
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 function RADAR:GetVehSpeedFormatted( speed )
 	if ( self:GetSettingValue( "speedType" ) == "mph" ) then 
 		-- return UTIL:Round( math.ceil( speed * 2.236936 ), 0 )
@@ -840,9 +896,9 @@ function RADAR:GetVehiclesForAntenna()
 end 
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	NUI callback
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 RegisterNUICallback( "toggleDisplay", function()
 	RADAR:ToggleDisplayState()
 end )
@@ -893,9 +949,9 @@ RegisterNUICallback( "menu", function()
 end )
 
 
---[[------------------------------------------------------------------------
+--[[----------------------------------------------------------------------------------
 	Main threads   
-------------------------------------------------------------------------]]--
+----------------------------------------------------------------------------------]]--
 function RADAR:RunDynamicThreadWaitCheck()
 	local speed = self:GetPatrolSpeed()
 
@@ -915,7 +971,7 @@ Citizen.CreateThread( function()
 end )
 
 function RADAR:RunThreads()
-	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
+	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
 		if ( self:GetRayTraceState() == 0 ) then 
 			local vehs = self:GetVehiclePool()
 
@@ -940,7 +996,7 @@ end )
 
 function RADAR:Main()
 	-- Check to make sure the player is in the driver's seat, and also that the vehicle has a class of VC_EMERGENCY (18)
-	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() ) then 
+	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then 
 		local data = {} 
 
 		-- Get the player's vehicle speed
@@ -1056,7 +1112,7 @@ end )
 
 -- Update the vehicle pool every 3 seconds
 function RADAR:UpdateVehiclePool()
-	if ( DoesEntityExist( PLY.veh ) and PLY.inDriverSeat and PLY.vehClassValid and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
+	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
 		local vehs = self:GetAllVehicles()
 		self:SetVehiclePool( vehs )
 	end 
