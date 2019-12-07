@@ -7,7 +7,6 @@
 UTIL = {}
 
 function UTIL:Round( num, numDecimalPlaces )
-	-- return tonumber( string.format( "%.0f", num ) )
 	return tonumber( string.format( "%." .. ( numDecimalPlaces or 0 ) .. "f", num ) )
 end 
 

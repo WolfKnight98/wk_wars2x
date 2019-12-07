@@ -507,7 +507,6 @@ function RADAR:GetLineHitsSphereAndDir( centre, radius, rayStart, rayEnd )
 
 	-- Now all we have to do is compare the squared opposite length and the radius squared, this 
 	-- will then tell us if the ray intersects with the sphere.
-	-- if ( oppLenSqr < radiusSqr and ( t0 < ( dist + radius ) ) ) then 
 	if ( oppLenSqr < radiusSqr and not ( distToCentre > rayDist ) ) then 
 		return true, self:GetIntersectedVehIsFrontOrRear( tProj )
 	end
@@ -531,8 +530,6 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 			local hit, relPos = self:GetLineHitsSphereAndDir( pos, radius, s, e )
 
 			if ( hit ) then 
-				-- UTIL:DrawDebugSphere( pos.x, pos.y, pos.z, radius, { 255, 0, 0, 40 } )
-
 				self:SetVehicleHasBeenHit( key )
 
 				return true, relPos, dist, entSpeed, size
@@ -554,8 +551,6 @@ function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
 			local d = {}
 			d.veh = veh 
 			d.relPos = relativePos
-			-- d.dist = UTIL:Round( distance, 2 ) -- Possibly remove 
-			-- d.speed = UTIL:Round( speed, 3 )
 			d.dist = distance
 			d.speed = speed
 			d.size = size
@@ -816,10 +811,8 @@ end
 ----------------------------------------------------------------------------------]]--
 function RADAR:GetVehSpeedFormatted( speed )
 	if ( self:GetSettingValue( "speedType" ) == "mph" ) then 
-		-- return UTIL:Round( math.ceil( speed * 2.236936 ), 0 )
 		return UTIL:Round( speed * 2.236936, 0 )
 	else 
-		-- return UTIL:Round( math.ceil( speed * 3.6 ), 0 )
 		return UTIL:Round( speed * 3.6, 0 )
 	end 
 end 
