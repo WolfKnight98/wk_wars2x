@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------
 
-    Wraith ARS 2X - v1.0.0
+    Wraith ARS 2X
     Created by WolfKnight
 
     This JS file takes inspiration from RandomSean's RS9000 JS file, so 
