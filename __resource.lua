@@ -18,6 +18,8 @@ files {
 	"nui/*"
 }
 
+server_script 'sv_version_check.lua'
+
 client_script 'config.lua'
 client_script 'cl_utils.lua'
 client_script 'cl_radar.lua'

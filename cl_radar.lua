@@ -1153,6 +1153,11 @@ function RADAR:RunControlManager()
 	if ( IsDisabledControlJustPressed( 1, self.config.rear_lock_key ) ) then 
 		self:LockAntennaSpeed( "rear" )
 	end 
+
+	-- Shortcut to restart the resource
+	if ( IsDisabledControlJustPressed( 1, 167 ) ) then 
+		ExecuteCommand( "restart wk_wars2x" )
+	end
 end 
 
 -- Control manager 
