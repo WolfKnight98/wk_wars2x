@@ -417,16 +417,20 @@ function RADAR:ChangeMenuOption( dir )
 	self:SendMenuUpdate()
 end 
 
+-- Returns what text should be displayed in the boxes for the current option
+-- E.g. "¦SL" "SEN"
 function RADAR:GetMenuOptionDisplayText()
 	return self:GetMenuOptionTable().displayText
 end 
 
+-- Returns the option text of the currently selected setting 
 function RADAR:GetMenuOptionText()
 	local opt = self:GetMenuOptionTable()
 
 	return opt.optionsText[opt.optionIndex]
 end 
 
+-- Sends a message to the NUI side with updated information on what should be displayed for the menu 
 function RADAR:SendMenuUpdate()
 	SendNUIMessage( { _type = "menu", text = self:GetMenuOptionDisplayText(), option = self:GetMenuOptionText() } )
 end 
@@ -435,42 +439,51 @@ end
 --[[----------------------------------------------------------------------------------
 	Radar basics functions  
 ----------------------------------------------------------------------------------]]--
+-- Returns the patrol speed value stored
 function RADAR:GetPatrolSpeed()	
 	return self.vars.patrolSpeed
 end 
 
+-- Returns the current vehicle pool 
 function RADAR:GetVehiclePool()
 	return self.vars.vehiclePool
 end 
 
+-- Returns the maximum distance a ray trace can go 
 function RADAR:GetMaxCheckDist()
 	return self.vars.maxCheckDist
 end 
 
+-- Returns the currently set active vehicles 
 function RADAR:GetActiveVehicles()
 	return self.vars.activeVehicles
 end 
 
+-- Returns the table sorting function 'strongest'
 function RADAR:GetStrongestSortFunc()
 	return self.sorting.strongest 
 end 
 
+-- Returns the table sorting function 'fastest'
 function RADAR:GetFastestSortFunc()
 	return self.sorting.fastest
 end 
 
+-- Sets the patrol speed to a formatted version of the given number 
 function RADAR:SetPatrolSpeed( speed )
 	if ( type( speed ) == "number" ) then 
 		self.vars.patrolSpeed = self:GetVehSpeedFormatted( speed )
 	end
 end
 
+-- Sets the vehicle pool to the given value if it's a table
 function RADAR:SetVehiclePool( pool )
 	if ( type( pool ) == "table" ) then 
 		self.vars.vehiclePool = pool 
 	end
 end 
 
+-- Sets the active vehicles to the given value if it's a table
 function RADAR:SetActiveVehicles( vehs )
 	if ( type( vehs ) == "table" ) then 
 		self.vars.activeVehicles = vehs
@@ -481,26 +494,35 @@ end
 --[[----------------------------------------------------------------------------------
 	Radar ray trace functions 
 ----------------------------------------------------------------------------------]]--
+-- Returns what the current ray trace state is
 function RADAR:GetRayTraceState()
 	return self.vars.rayTraceState
 end
 
+-- Caches the number of ray traces in RADAR.rayTraces
 function RADAR:CacheNumRays()
 	self.vars.numberOfRays = #self.rayTraces
 end 
 
+-- Returns the number of ray traces the system has
 function RADAR:GetNumOfRays()
 	return self.vars.numberOfRays
 end
 
+-- Increases the system's ray trace state ny 1
 function RADAR:IncreaseRayTraceState()
 	self.vars.rayTraceState = self.vars.rayTraceState + 1
 end 
 
+-- Resets the ray trace state to 0
 function RADAR:ResetRayTraceState()
 	self.vars.rayTraceState = 0
 end 
 
+-- This function is used to determine if a sphere intersect is in front or behind the player's vehicle, the 
+-- sphere intersect calculation has a 'tProj' value that is a line from the centre of the sphere that goes onto 
+-- the line being traced. This value will either be positive or negative and can be used to work out the 
+-- relative position of a point.
 function RADAR:GetIntersectedVehIsFrontOrRear( t )
 	if ( t > 8.0 ) then 
 		return 1 -- vehicle is in front 
@@ -511,6 +533,11 @@ function RADAR:GetIntersectedVehIsFrontOrRear( t )
 	return 0 -- vehicle is next to self
 end 
 
+-- This function is used to check if a line going from point A to B intersects with a given sphere, it's used in
+-- the radar system to check if the patrol vehicle can detect any vehicles. As the default ray trace system in GTA
+-- cannot detect vehicles beyond 40~ units, my system acts as a replacement that allows the detection of vehicles
+-- much further away (400+ units). Also, as my system uses sphere intersections, each sphere can have a different
+-- radius, which means that larger vehicles can have larger spheres, and smaller vehicles can have smaller spheres. 
 function RADAR:GetLineHitsSphereAndDir( centre, radius, rayStart, rayEnd )
 	-- First we get the normalised ray, this way we then know the direction the ray is going 
 	local rayNorm = norm( rayEnd - rayStart )
@@ -528,6 +555,8 @@ function RADAR:GetLineHitsSphereAndDir( centre, radius, rayStart, rayEnd )
 	-- Square the radius
 	local radiusSqr = radius * radius 
 
+	-- Calculate the distance of the ray trace to make sure we only return valid results if the trace
+	-- is actually within the distance
 	local rayDist = #( rayEnd - rayStart )
 	local distToCentre = #( rayStart - centre ) - ( radius * 2 )
 
@@ -540,21 +569,39 @@ function RADAR:GetLineHitsSphereAndDir( centre, radius, rayStart, rayEnd )
 	return false, nil 
 end 
 
+-- This function is the main custom ray trace function, it performs most of the major tasks for checking a vehicle
+-- is valid and should be tested. It also makes use of the LOS native to make sure that we can only trace a vehicle
+-- if actually nas a direct line of sight with the player's vehicle, this way we don't pick up vehicles behind walls
+-- for example. It then creates a dynamic sphere for the vehicle based on the actual model dimensions of it, adds a 
+-- small bit of realism, as real radars usually return the strongest target speed. 
 function RADAR:ShootCustomRay( plyVeh, veh, s, e )
+	-- Get the world coordinates of the target vehicle
 	local pos = GetEntityCoords( veh )
-	local dist = #( pos - s )
 
+	-- Calculate the distance between the target vehicle and the start point of the ray trace, note how we don't 
+	-- use GetDistanceBetweenCoords or Vdist, the method below still returns the same result with less cpu time 
+	local dist = #( pos - s )
+	
 	local key = tostring( veh )
 
+	-- We only perform a trace on the target vehicle if it exists, isn't the player's vehicle, and the distance is 
+	-- less than the max distance defined by the system 
 	if ( DoesEntityExist( veh ) and veh ~= plyVeh and dist < self:GetMaxCheckDist() --[[ and not self:HasVehicleAlreadyBeenHit( key ) ]] ) then 
+		-- Get the speed of the target vehicle 
 		local entSpeed = GetEntitySpeed( veh )
+
+		-- Check that the target vehicle is within the line of sight of the player's vehicle 
 		local visible = HasEntityClearLosToEntity( plyVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
 
+		-- Now we check that the target vehicle is moving and is visible 
 		if ( entSpeed > 0.1 and visible ) then 
+			-- Get the dynamic radius as well as the size of the target vehicle
 			local radius, size = self:GetDynamicRadius( veh )
 
+			-- Check that the trace line intersects with the target vehicle's sphere
 			local hit, relPos = self:GetLineHitsSphereAndDir( pos, radius, s, e )
 
+			-- Return all of the information if the vehicle was hit
 			if ( hit ) then 
 				self:SetVehicleHasBeenHit( key )
 
@@ -563,41 +610,61 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 		end
 	end 
 
+	-- Return a whole lot of nothing
 	return false, nil, nil, nil, nil
 end 
 
+-- This function is used to gather all of the data on vehicles that have been hit by the given trace line, when 
+-- a vehicle is hit, all of the information about that vehicle is put into a keyless table which is then inserted 
+-- into a main table. When the loop has finished, the function then returns the table with all of the data. 
 function RADAR:GetVehsHitByRay( ownVeh, vehs, s, e )
-	local t = {}
+	-- Create the table that will be used to store all of the results
+	local caughtVehs = {}
+
+	-- Set the variable to say if there has been data collected
 	local hasData = false 
 
+	-- Iterate through all of the vehicles
 	for _, veh in pairs( vehs ) do 
+		-- Shoot a custom ray trace to see if the vehicle gets hit
 		local hit, relativePos, distance, speed, size = self:ShootCustomRay( ownVeh, veh, s, e )
 
+		-- If the vehicle is hit, then we create a table containing all of the information 
 		if ( hit ) then 
-			local d = {}
-			d.veh = veh 
-			d.relPos = relativePos
-			d.dist = distance
-			d.speed = speed
-			d.size = size
+			-- Create the table to store the data
+			local vehData = {}
+			vehData.veh = veh 
+			vehData.relPos = relativePos
+			vehData.dist = distance
+			vehData.speed = speed
+			vehData.size = size
 
-			table.insert( t, d )
+			-- Insert the table into the caught vehicles table 
+			table.insert( caughtVehs, vehData )
 
+			-- Change the has data variable to true, this way the table will be returned
 			hasData = true 
 		end 
 	end 
 
-	if ( hasData ) then return t end
+	-- If the caughtVehs table actually has data, then return it
+	if ( hasData ) then return caughtVehs end
 end 
 
+-- This function is used to gather all of the vehicles hit by a given line trace, and then insert it into the 
+-- internal captured vehicles table. 
 function RADAR:CreateRayThread( vehs, from, startX, endX, endY, rayType )
+	-- Get the start and end points for the ray trace based on the given start and end coordinates
 	local startPoint = GetOffsetFromEntityInWorldCoords( from, startX, 0.0, 0.0 )
 	local endPoint = GetOffsetFromEntityInWorldCoords( from, endX, endY, 0.0 )
 
+	-- Get all of the vehicles hit by the ray
 	local hitVehs = self:GetVehsHitByRay( from, vehs, startPoint, endPoint )
 
+	-- Insert the captured vehicle data and pass the ray type too 
 	self:InsertCapturedVehicleData( hitVehs, rayType )
 
+	-- Increase the ray trace state 
 	self:IncreaseRayTraceState()
 end 
 
