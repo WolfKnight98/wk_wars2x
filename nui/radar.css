@@ -1,26 +1,26 @@
 @font-face {
-    font-family: "Seg-7";
-    src: url( "Segment7Standard.otf" );
+	font-family: "Seg-7";
+	src: url( "Segment7Standard.otf" );
 }
 
 @font-face {
-    font-family: "Heebo";
-    src: url( "Heebo-Bold.ttf" );
+	font-family: "Heebo";
+	src: url( "Heebo-Bold.ttf" );
 }
 
 @font-face {
-    font-family: "Heebo-Regular";
-    src: url( "Heebo-Regular.ttf" );
+	font-family: "Heebo-Regular";
+	src: url( "Heebo-Regular.ttf" );
 }
 
 * {
-    font-family: 'Heebo', Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 13px;
-    box-sizing: border-box;
+	font-family: 'Heebo', Verdana, Geneva, Tahoma, sans-serif;
+	font-size: 13px;
+	box-sizing: border-box;
 }
 
 body {
-    overflow: hidden;
+	overflow: hidden;
 }
 
 /* Removes the outline when buttons have been clicked */
@@ -37,732 +37,732 @@ button:focus { outline: none; }
 #radarFrame.bottom_right { bottom: 10px; right: 10px; }
 
 #radarFrame {
-    width: 715px;
-    height: 230px;
+	width: 715px;
+	height: 230px;
 
-    position: absolute;
-    margin: auto;
+	position: absolute;
+	margin: auto;
 
-    background-image: url( "frame.png" );
+	background-image: url( "frame.png" );
 
-    /* Settings for scaling */
-    transform: scale( 1.0 );
-    transform-origin: bottom right;
+	/* Settings for scaling */
+	transform: scale( 1.0 );
+	transform-origin: bottom right;
 
-    z-index: 1;
+	z-index: 1;
 }
 
 .frame_border {
-    width: 685px;
-    height: 210px;
+	width: 685px;
+	height: 210px;
 
-    position: absolute;
-    margin: auto;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 
-    background-color: rgb( 20, 22, 18 );
+	background-color: rgb( 20, 22, 18 );
 
-    clip-path: polygon( 20px 2px, 665px 2px, 682px 30%, 682px 70%, 665px 208px, 20px 208px, 3px 70%, 3px 30% );
+	clip-path: polygon( 20px 2px, 665px 2px, 682px 30%, 682px 70%, 665px 208px, 20px 208px, 3px 70%, 3px 30% );
 }
 
 .radar_container {
-    width: 675px;
-    height: 200px;
+	width: 675px;
+	height: 200px;
 
-    /* Temp centre */
-    position: absolute;
-    margin: auto;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+	/* Temp centre */
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 
-    display: grid;
-    grid-template-columns: 1fr 635px 1fr;
+	display: grid;
+	grid-template-columns: 1fr 635px 1fr;
 }
 
 .panel_side {
-    width: 100%;
-    height: 100%;
-    z-index: 5;
-    box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 );
+	width: 100%;
+	height: 100%;
+	z-index: 5;
+	box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 );
 }
-    .panel_left {
-        clip-path: polygon( 0 30%, 80% 0, 100% 0, 100% 100%, 80% 100%, 0 70% );
-        transform: translateX( 1px ); 
-        background-image: url( "bg_left.png" );
-        background-repeat: no-repeat;
-    }
+	.panel_left {
+		clip-path: polygon( 0 30%, 80% 0, 100% 0, 100% 100%, 80% 100%, 0 70% );
+		transform: translateX( 1px ); 
+		background-image: url( "bg_left.png" );
+		background-repeat: no-repeat;
+	}
 
-    .panel_right {
-        clip-path: polygon( 0 0, 20% 0, 100% 30%, 100% 70%, 20% 100%, 0 100% );   
-        transform: translateX( -1px ); 
-        background-image: url( "bg_right.png" );
-        background-repeat: no-repeat;
-    }
+	.panel_right {
+		clip-path: polygon( 0 0, 20% 0, 100% 30%, 100% 70%, 20% 100%, 0 100% );   
+		transform: translateX( -1px ); 
+		background-image: url( "bg_right.png" );
+		background-repeat: no-repeat;
+	}
 
 .arrow {
-    width: 11px;
-    height: 15.4px;
-    min-width: 11px;
-    min-height: 15.4px;
-    margin: 8px auto;
-    background-color: rgb( 0, 0, 0 );
-    clip-path: polygon( 50% 0, 100% 55%, 65% 55%, 65% 100%, 35% 100%, 35% 55%, 0 55% );
+	width: 11px;
+	height: 15.4px;
+	min-width: 11px;
+	min-height: 15.4px;
+	margin: 8px auto;
+	background-color: rgb( 0, 0, 0 );
+	clip-path: polygon( 50% 0, 100% 55%, 65% 55%, 65% 100%, 35% 100%, 35% 55%, 0 55% );
 }
-    .arrow_down {
-        transform: rotate( 180deg );
-    }
+	.arrow_down {
+		transform: rotate( 180deg );
+	}
 
 .active {
-    color: rgb( 242, 70, 24 );
-    text-shadow: 0 0 6px rgba( 235, 62, 15, 0.5 );
+	color: rgb( 242, 70, 24 );
+	text-shadow: 0 0 6px rgba( 235, 62, 15, 0.5 );
 }
-    .active_arrow {
-        background-color: rgb( 242, 70, 24 );
-    }
+	.active_arrow {
+		background-color: rgb( 242, 70, 24 );
+	}
 
 #radar {
-    background-image: url( "bg.png" );
-    background-repeat: no-repeat;
+	background-image: url( "bg.png" );
+	background-repeat: no-repeat;
 
-    height: 100%;
-    width: 100%;
+	height: 100%;
+	width: 100%;
 
-    display: grid;
-    grid-template-columns: 45px 50px 150px 35px 50px 135px 35px 135px;
-    gap: 0 0;
+	display: grid;
+	grid-template-columns: 45px 50px 150px 35px 50px 135px 35px 135px;
+	gap: 0 0;
 
-    z-index: 10;
+	z-index: 10;
 
-    box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 );
+	box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 );
 }
-    #radar .label {
-        font-size: 15px;
-        text-align: center; 
-        width: 100%; 
-        position: absolute;
-        color: rgb( 255, 255, 255 );
-    }
-        #radar .label_top {
-            top: 0;
-            left: 0;
-            padding-top: 3px;
-        }
+	#radar .label {
+		font-size: 15px;
+		text-align: center; 
+		width: 100%; 
+		position: absolute;
+		color: rgb( 255, 255, 255 );
+	}
+		#radar .label_top {
+			top: 0;
+			left: 0;
+			padding-top: 3px;
+		}
 
-        #radar .label_bottom {
-            bottom: 0;
-            left: 0;
-            padding-bottom: 3px;
-        }
+		#radar .label_bottom {
+			bottom: 0;
+			left: 0;
+			padding-bottom: 3px;
+		}
 
-    #radar .pwr_button_container {
-        display: flex;
-        flex-direction: column;
-    }
-        #radar .pwr_button_container .pwr_button {
-            width: 45px;
-            height: 45px;
-            margin: auto;
-            background: linear-gradient( to bottom, rgba( 230, 230, 230, 0.8 ), rgb( 40, 168, 40 ) 10%, rgb( 0, 134, 0 ) );
-            box-shadow: 0px 0px 3px 0px rgb( 80, 80, 80 );
-            text-align: center;
-            /* font-family: 'Heebo-Regular'; */
-            font-size: 14px;
-            color: rgb( 34, 34, 34 );
-            line-height: 45px;
-            border-radius: 10px;
-        }
-            #radar .pwr_button_container .pwr_button:hover {
-                background: linear-gradient( to bottom, rgba( 240, 240, 240, 0.8 ), rgb( 50, 178, 50 ) 10%, rgb( 0, 144, 0 ) );
-            }
+	#radar .pwr_button_container {
+		display: flex;
+		flex-direction: column;
+	}
+		#radar .pwr_button_container .pwr_button {
+			width: 45px;
+			height: 45px;
+			margin: auto;
+			background: linear-gradient( to bottom, rgba( 230, 230, 230, 0.8 ), rgb( 40, 168, 40 ) 10%, rgb( 0, 134, 0 ) );
+			box-shadow: 0px 0px 3px 0px rgb( 80, 80, 80 );
+			text-align: center;
+			/* font-family: 'Heebo-Regular'; */
+			font-size: 14px;
+			color: rgb( 34, 34, 34 );
+			line-height: 45px;
+			border-radius: 10px;
+		}
+			#radar .pwr_button_container .pwr_button:hover {
+				background: linear-gradient( to bottom, rgba( 240, 240, 240, 0.8 ), rgb( 50, 178, 50 ) 10%, rgb( 0, 144, 0 ) );
+			}
 
-            #radar .pwr_button_container .pwr_button:active {
-                background: linear-gradient( to bottom, rgba( 220, 220, 220, 0.8 ), rgb( 30, 158, 30 ) 10%, rgb( 0, 124, 0 ) );
-                box-shadow: inset 0px 0px 3px 0px rgb( 80, 80, 80 );
-            }
+			#radar .pwr_button_container .pwr_button:active {
+				background: linear-gradient( to bottom, rgba( 220, 220, 220, 0.8 ), rgb( 30, 158, 30 ) 10%, rgb( 0, 124, 0 ) );
+				box-shadow: inset 0px 0px 3px 0px rgb( 80, 80, 80 );
+			}
 
-    #radar .modes_container {
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-    }
-        #radar .modes_container .modes {
-            display: flex;
-            flex-direction: column;
+	#radar .modes_container {
+		display: grid;
+		grid-template-rows: 1fr 1fr;
+	}
+		#radar .modes_container .modes {
+			display: flex;
+			flex-direction: column;
 
-            padding: 10px 0;
-        }
-            #radar .modes_container .modes p {
-                margin: auto;
-            }
-        
-        #radar .modes_container .fast_top {
-            margin-top: 15px;
-            margin-bottom: 10px;
-            padding-top: 10px;
-            padding-bottom: 0;
-        }
+			padding: 10px 0;
+		}
+			#radar .modes_container .modes p {
+				margin: auto;
+			}
+		
+		#radar .modes_container .fast_top {
+			margin-top: 15px;
+			margin-bottom: 10px;
+			padding-top: 10px;
+			padding-bottom: 0;
+		}
 
-        #radar .modes_container .fast_bottom {
-            margin-top: 10px;
-            margin-bottom: 15px;
-            padding-top: 0;
-            padding-bottom: 10px;
-        }
-    
-    #radar .speeds_container {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-        #radar .speeds_container .display {
-            display: grid;
-            grid-template-columns: 1fr;
-
-            height: 70px;
-
-            border: 2px solid rgb( 0, 0, 0 );
-            
-            margin: auto 0;
-            background-color: rgb( 61, 18, 0 );
-        }   
-            #radar .speeds_container .display p {
-                grid-row-start: 1;
-                grid-column-start: 1;
-
-                font-size: 70px;
-                text-align: center;
-
-                line-height: 115%;
-
-                margin: 0 auto;
-                letter-spacing: 10px;
-
-                margin-right: -9px;
-            }
-        
-        #radar .speeds_container .fast {
-            height: 60px;
-            background-color: rgb( 50, 0, 0 );
-        }
-            #radar .speeds_container .fast p {
-                font-size: 60px;
-                line-height: 110%;
-                margin-right: -8px;
-            }
-
-        #radar .speeds_container .fast_top {
-            margin-top: 27px;
-        }
-
-        #radar .speeds_container .fast_bottom {
-            margin-bottom: 27px;
-        }
-
-    #radar .speed_arrows_container {
-        display: flex;
-        flex-direction: column;
-    }
-        #radar .speed_arrows_container .speed_arrows {
-            height: 70px; 
+		#radar .modes_container .fast_bottom {
+			margin-top: 10px;
+			margin-bottom: 15px;
+			padding-top: 0;
+			padding-bottom: 10px;
+		}
 	
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            justify-content: center;
-            
-            margin: auto 0; 
-        }
+	#radar .speeds_container {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+		#radar .speeds_container .display {
+			display: grid;
+			grid-template-columns: 1fr;
 
-        #radar .speed_arrows_container .fast_top {
-            margin-top: 22px;
-        }
+			height: 70px;
 
-        #radar .speed_arrows_container .fast_bottom {
-            margin-bottom: 22px;
-        }
-    
-    #radar .patrol_and_logo_container {
-        display: grid;
-        grid-template-rows: repeat( 3, 1fr );
-        justify-items: center;
-        align-items: center;
-        height: 100%;
-    }
-        #radar .patrol_and_logo_container .logo {
-            width: 75%;
-            font-size: 18px;
-            text-align: center;
-            line-height: 100%;
-            margin-top: 15px;
-            font-style: italic;
-            color: rgb( 255, 255, 255 );
-        }
-            #radar .patrol_and_logo_container .logo .name {
-                font-size: 24px;
-            }
+			border: 2px solid rgb( 0, 0, 0 );
+			
+			margin: auto 0;
+			background-color: rgb( 61, 18, 0 );
+		}   
+			#radar .speeds_container .display p {
+				grid-row-start: 1;
+				grid-column-start: 1;
 
-        #radar .patrol_and_logo_container .display {
-            background-color: rgb( 0, 57, 35 );
-            /* background: linear-gradient( to bottom, rgb( 0, 40, 29 ), rgb( 0, 46, 32 ) 40%, rgb( 1, 64, 27 ) 85% ); */
-        }
+				font-size: 70px;
+				text-align: center;
 
-        #radar .patrol_and_logo_container .speed_label {
-            color: rgb( 255, 255, 255 );
-            margin-bottom: 40px;
-        }
-    
-    /* Colours and fonts used in multiple areas that are similar */
-    #radar .display p {
-        font-family: 'Seg-7';
-    }
+				line-height: 115%;
 
-    #radar .display .ghost_speed {
-        color: rgb( 90, 35, 1 );
-    }
+				margin: 0 auto;
+				letter-spacing: 10px;
 
-    #radar .display .speed {
-        color: rgb( 252, 113, 1 );
-        text-shadow: 0 0 8px rgba( 252, 114, 1, 0.65 );
-    }
+				margin-right: -9px;
+			}
+		
+		#radar .speeds_container .fast {
+			height: 60px;
+			background-color: rgb( 50, 0, 0 );
+		}
+			#radar .speeds_container .fast p {
+				font-size: 60px;
+				line-height: 110%;
+				margin-right: -8px;
+			}
 
-    #radar .display .fast_ghost_speed {
-        color: rgb( 70, 0, 0 );
-    }
+		#radar .speeds_container .fast_top {
+			margin-top: 27px;
+		}
 
-    #radar .display .fast_speed {
-        color: rgb( 243, 12, 10 );
-        text-shadow: 0 0 8px rgba( 243, 14, 10, 0.65 );
-    }
+		#radar .speeds_container .fast_bottom {
+			margin-bottom: 27px;
+		}
 
-    #radar .display .patrol_ghost_speed {
-        color: rgb( 0, 91, 68 );
-    }
+	#radar .speed_arrows_container {
+		display: flex;
+		flex-direction: column;
+	}
+		#radar .speed_arrows_container .speed_arrows {
+			height: 70px; 
+	
+			display: flex; 
+			flex-direction: column; 
+			align-items: center;
+			justify-content: center;
+			
+			margin: auto 0; 
+		}
 
-    #radar .display .patrol_speed {
-        color: rgb( 15, 244, 57 );
-        text-shadow: 0 0 8px rgba( 15, 244, 57, 0.65 );
-    }
+		#radar .speed_arrows_container .fast_top {
+			margin-top: 22px;
+		}
+
+		#radar .speed_arrows_container .fast_bottom {
+			margin-bottom: 22px;
+		}
+	
+	#radar .patrol_and_logo_container {
+		display: grid;
+		grid-template-rows: repeat( 3, 1fr );
+		justify-items: center;
+		align-items: center;
+		height: 100%;
+	}
+		#radar .patrol_and_logo_container .logo {
+			width: 75%;
+			font-size: 18px;
+			text-align: center;
+			line-height: 100%;
+			margin-top: 15px;
+			font-style: italic;
+			color: rgb( 255, 255, 255 );
+		}
+			#radar .patrol_and_logo_container .logo .name {
+				font-size: 24px;
+			}
+
+		#radar .patrol_and_logo_container .display {
+			background-color: rgb( 0, 57, 35 );
+			/* background: linear-gradient( to bottom, rgb( 0, 40, 29 ), rgb( 0, 46, 32 ) 40%, rgb( 1, 64, 27 ) 85% ); */
+		}
+
+		#radar .patrol_and_logo_container .speed_label {
+			color: rgb( 255, 255, 255 );
+			margin-bottom: 40px;
+		}
+	
+	/* Colours and fonts used in multiple areas that are similar */
+	#radar .display p {
+		font-family: 'Seg-7';
+	}
+
+	#radar .display .ghost_speed {
+		color: rgb( 90, 35, 1 );
+	}
+
+	#radar .display .speed {
+		color: rgb( 252, 113, 1 );
+		text-shadow: 0 0 8px rgba( 252, 114, 1, 0.65 );
+	}
+
+	#radar .display .fast_ghost_speed {
+		color: rgb( 70, 0, 0 );
+	}
+
+	#radar .display .fast_speed {
+		color: rgb( 243, 12, 10 );
+		text-shadow: 0 0 8px rgba( 243, 14, 10, 0.65 );
+	}
+
+	#radar .display .patrol_ghost_speed {
+		color: rgb( 0, 91, 68 );
+	}
+
+	#radar .display .patrol_speed {
+		color: rgb( 15, 244, 57 );
+		text-shadow: 0 0 8px rgba( 15, 244, 57, 0.65 );
+	}
 
 #rc {
-    /* width: 275px;
-    height: 750px; */
-    width: 315px;
-    height: 800px;
+	/* width: 275px;
+	height: 750px; */
+	width: 315px;
+	height: 800px;
    
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    /* padding-top: 25px; */
-    padding: 65px 30px 50px 30px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	/* padding-top: 25px; */
+	padding: 65px 30px 50px 30px;
 
-    display: grid;
-    grid-template-rows: 50px 30px 200px 30px 60px 130px 50px 80px;
-    justify-items: center;
-    align-items: center;
+	display: grid;
+	grid-template-rows: 50px 30px 200px 30px 60px 130px 50px 80px;
+	justify-items: center;
+	align-items: center;
 
-    color: white;
-    /* background-color: rgb( 50, 50, 50 ); */
-    background-image: url( "rc_bg.png" );
+	color: white;
+	/* background-color: rgb( 50, 50, 50 ); */
+	background-image: url( "rc_bg.png" );
 
-    /* clip-path: polygon( 5% 0, 95% 0, 100% 25%, 90% 100%, 10% 100%, 0 25% ); */
+	/* clip-path: polygon( 5% 0, 95% 0, 100% 25%, 90% 100%, 10% 100%, 0 25% ); */
 
-    z-index: 2;
+	z-index: 2;
 }
-    /* Button template classes */
-    #rc button {
-        border: none;
-        margin: 0;
-        padding: 0;
+	/* Button template classes */
+	#rc button {
+		border: none;
+		margin: 0;
+		padding: 0;
 
-        background-color: rgb( 200, 200, 200 ); 
-    
-        /* font-family: 'Heebo-Regular'; */
+		background-color: rgb( 200, 200, 200 ); 
+	
+		/* font-family: 'Heebo-Regular'; */
 
-        box-shadow: 2px 3px rgb( 100, 100, 100 );
-    }
+		box-shadow: 2px 3px rgb( 100, 100, 100 );
+	}
 
-    #rc button:hover {
-        background-color: rgb( 230, 230, 230 );
-    }
+	#rc button:hover {
+		background-color: rgb( 230, 230, 230 );
+	}
 
-    #rc button:active {
-        box-shadow: none;
-        transform: translateX( 2px ) translateY( 3px );
-    }
+	#rc button:active {
+		box-shadow: none;
+		transform: translateX( 2px ) translateY( 3px );
+	}
 
-    #rc .rounded_btn {
-        border-radius: 30px;
-    }
+	#rc .rounded_btn {
+		border-radius: 30px;
+	}
 
-    #rc .circle_btn {
-        border-radius: 100%;
-    }
+	#rc .circle_btn {
+		border-radius: 100%;
+	}
 
-    #rc .zone_btn {
-        width: 65px;
-        height: 65px;
-    }
+	#rc .zone_btn {
+		width: 65px;
+		height: 65px;
+	}
 
-    #rc .xmit_btn {
-        width: 65px; 
-        height: 80px;
-        position: relative;
-        background-color: rgb( 200, 200, 200 ); 
-    }
+	#rc .xmit_btn {
+		width: 65px; 
+		height: 80px;
+		position: relative;
+		background-color: rgb( 200, 200, 200 ); 
+	}
 
-    #rc .xmit_btn:hover {
-        background-color: rgb( 230, 230, 230 );
-    }
-        #rc .xmit_top {
-            clip-path: polygon( 0 15px, 50% 0, 100% 15px, 100% 100%, 0 100% );
-            border-radius: 0 0 7px 7px;
-        }
+	#rc .xmit_btn:hover {
+		background-color: rgb( 230, 230, 230 );
+	}
+		#rc .xmit_top {
+			clip-path: polygon( 0 15px, 50% 0, 100% 15px, 100% 100%, 0 100% );
+			border-radius: 0 0 7px 7px;
+		}
 
-        #rc .xmit_bottom {
-            clip-path: polygon( 0 65px, 0 0, 100% 0, 100% 65px, 50% 100% );
-            border-radius: 7px 7px 0 0;
-        }
+		#rc .xmit_bottom {
+			clip-path: polygon( 0 65px, 0 0, 100% 0, 100% 65px, 50% 100% );
+			border-radius: 7px 7px 0 0;
+		}
 
-    #rc .xmit_wrap {
-        filter: drop-shadow( 2px 3px rgb( 100, 100, 100 ) );
-    }
+	#rc .xmit_wrap {
+		filter: drop-shadow( 2px 3px rgb( 100, 100, 100 ) );
+	}
 
-    #rc .xmit_wrap:active {
-        filter: drop-shadow( 0 0 rgba( 100, 100, 100, 0.0 ) );
-        transform: translateX( 2px ) translateY( 3px );
-    }
-        #rc .xmit_wrap button:active {
-            transform: none;
-        }
+	#rc .xmit_wrap:active {
+		filter: drop-shadow( 0 0 rgba( 100, 100, 100, 0.0 ) );
+		transform: translateX( 2px ) translateY( 3px );
+	}
+		#rc .xmit_wrap button:active {
+			transform: none;
+		}
 
-    #rc .xmit_btn .arrow {
-        width: 40px;
-        height: 20px;
-        position: absolute;
-        left: 0;
-        right: 0;
-        clip-path: polygon( 50% 0, 100% 60%, 70% 60%, 70% 100%, 30% 100%, 30% 60%, 0 60% );
-        background-color: rgb( 0, 0, 0 );
-    }
-        #rc .xmit_btn .arrow_bottom {
-            transform: rotate( 180deg );
-            bottom: 0;
-        }
+	#rc .xmit_btn .arrow {
+		width: 40px;
+		height: 20px;
+		position: absolute;
+		left: 0;
+		right: 0;
+		clip-path: polygon( 50% 0, 100% 60%, 70% 60%, 70% 100%, 30% 100%, 30% 60%, 0 60% );
+		background-color: rgb( 0, 0, 0 );
+	}
+		#rc .xmit_btn .arrow_bottom {
+			transform: rotate( 180deg );
+			bottom: 0;
+		}
 
-    /* Buttons and remote control elements */
-    #rc .toggle_display {
-        width: 130px;
-        height: 40px;
-    }
+	/* Buttons and remote control elements */
+	#rc .toggle_display {
+		width: 130px;
+		height: 40px;
+	}
 
-    #rc .label {
-        /* font-family: 'Heebo-Regular'; */
-        font-size: 20px;
-        letter-spacing: 1px;
-        /* margin: 5px 0; */
-    }
+	#rc .label {
+		/* font-family: 'Heebo-Regular'; */
+		font-size: 20px;
+		letter-spacing: 1px;
+		/* margin: 5px 0; */
+	}
 
-    #rc .antenna_btns_container {
-        width: 90%;
-        height: 100%;
-        display: grid;
-        grid-template-rows: 45% 10% 45%;
-        align-items: center;
-    }
-        #rc .antenna_btns_container .btns {
-            display: flex; 
-            justify-content: space-evenly;
-        }
-            #rc .antenna_btns_container .btns_top {
-                align-items: flex-end;
-            }
+	#rc .antenna_btns_container {
+		width: 90%;
+		height: 100%;
+		display: grid;
+		grid-template-rows: 45% 10% 45%;
+		align-items: center;
+	}
+		#rc .antenna_btns_container .btns {
+			display: flex; 
+			justify-content: space-evenly;
+		}
+			#rc .antenna_btns_container .btns_top {
+				align-items: flex-end;
+			}
 
-            #rc .antenna_btns_container .btns_bottom {
-                align-items: flex-start;
-            }
+			#rc .antenna_btns_container .btns_bottom {
+				align-items: flex-start;
+			}
 
-            /* Style for the button inside the div, this is so the button still works */
-            #rc .antenna_btns_container .btns .xmit_btn button {
-                width: 100%; 
-                height: 100%; 
-                position: absolute; 
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
-                background-color: transparent;
-            }
+			/* Style for the button inside the div, this is so the button still works */
+			#rc .antenna_btns_container .btns .xmit_btn button {
+				width: 100%; 
+				height: 100%; 
+				position: absolute; 
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				margin: auto;
+				background-color: transparent;
+			}
 
-            #rc .antenna_btns_container .btns .top_left {
-                border-radius: 35px 7px 7px 7px;
-            }
+			#rc .antenna_btns_container .btns .top_left {
+				border-radius: 35px 7px 7px 7px;
+			}
 
-            #rc .antenna_btns_container .btns .xmit_btn .top_middle {
-                padding-top: 25px;
-            }
+			#rc .antenna_btns_container .btns .xmit_btn .top_middle {
+				padding-top: 25px;
+			}
 
-            #rc .antenna_btns_container .btns .top_right {
-                border-radius: 7px 35px 7px 7px;
-            }
+			#rc .antenna_btns_container .btns .top_right {
+				border-radius: 7px 35px 7px 7px;
+			}
 
-            #rc .antenna_btns_container .btns .bottom_left {
-                border-radius: 7px 7px 7px 35px;
-            }
+			#rc .antenna_btns_container .btns .bottom_left {
+				border-radius: 7px 7px 7px 35px;
+			}
 
-            #rc .antenna_btns_container .btns .xmit_btn .bottom_middle {
-                padding-bottom: 25px;
-            }
+			#rc .antenna_btns_container .btns .xmit_btn .bottom_middle {
+				padding-bottom: 25px;
+			}
 
-            #rc .antenna_btns_container .btns .bottom_right {
-                border-radius: 7px 7px 35px 7px;
-            }
+			#rc .antenna_btns_container .btns .bottom_right {
+				border-radius: 7px 7px 35px 7px;
+			}
 
-        #rc .antenna_btns_container .breaker {
-            width: 95%;
-            height: 5px;
-            margin: auto;
-            background-color: white; 
-        }
-    
-    #rc .menu {
-        width: 60px;
-        height: 60px;
-        font-size: 17px;
-        line-height: 62px;
-    }
+		#rc .antenna_btns_container .breaker {
+			width: 95%;
+			height: 5px;
+			margin: auto;
+			background-color: white; 
+		}
+	
+	#rc .menu {
+		width: 60px;
+		height: 60px;
+		font-size: 17px;
+		line-height: 62px;
+	}
 
-    #rc .vol_ps_container {
-        width: 90%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        justify-items: center;
-    }
-        #rc .vol_ps_container .vol_and_test, 
-        #rc .vol_ps_container .ps_blank {
-            width: 80px;
-            height: 55px;
-            border-radius: 7px;
-        }
+	#rc .vol_ps_container {
+		width: 90%;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		justify-items: center;
+	}
+		#rc .vol_ps_container .vol_and_test, 
+		#rc .vol_ps_container .ps_blank {
+			width: 80px;
+			height: 55px;
+			border-radius: 7px;
+		}
 
-        #rc .vol_ps_container .hold {
-            border-bottom: 2px solid rgb( 0, 0, 0 );
-        }
+		#rc .vol_ps_container .hold {
+			border-bottom: 2px solid rgb( 0, 0, 0 );
+		}
 
-        #rc .vol_ps_container .ps_blank {
-            padding: 0 10px;
-        }
-    
-    #rc .light {
-        width: 120px; 
-        height: 30px;
-        font-size: 15px;
-    }
+		#rc .vol_ps_container .ps_blank {
+			padding: 0 10px;
+		}
+	
+	#rc .light {
+		width: 120px; 
+		height: 30px;
+		font-size: 15px;
+	}
 
-    #rc .logo {
-        font-size: 18px;
-        font-style: italic;
-    }
-        #rc .logo .large {
-            font-size: 25px;
-        }
+	#rc .logo {
+		font-size: 18px;
+		font-style: italic;
+	}
+		#rc .logo .large {
+			font-size: 25px;
+		}
 
-    #rc .blue {
-        background-color: rgb( 84, 210, 255 );
-    }
+	#rc .blue {
+		background-color: rgb( 84, 210, 255 );
+	}
 
 #uiSettingsBox {
-    width: 200px;
-    height: 350px;
+	width: 200px;
+	height: 350px;
 
-    position: absolute;
-    margin: auto;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 
-    /* background-color: rgb( 0, 255, 55 ); */
-    /* background-color: transparent; */
-    background-color: rgb( 50, 54, 45 );
+	/* background-color: rgb( 0, 255, 55 ); */
+	/* background-color: transparent; */
+	background-color: rgb( 50, 54, 45 );
 
-    /* display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px; */
+	/* display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px; */
 
-    z-index: 3;
+	z-index: 3;
 }
-    #uiSettingsBox .title {
-        text-align: center;
-        font-size: 20px;
-        padding: 5px 0;
-        margin: 0 auto;
-        color: rgb( 255, 255, 255 );
-        background-color: rgb( 20, 22, 18 );
-    }
+	#uiSettingsBox .title {
+		text-align: center;
+		font-size: 20px;
+		padding: 5px 0;
+		margin: 0 auto;
+		color: rgb( 255, 255, 255 );
+		background-color: rgb( 20, 22, 18 );
+	}
 
-    #uiSettingsBox .remote_settings {
-        background-color: rgb( 20, 22, 18 );
-    }
-        #uiSettingsBox .remote_settings .alignment {
-            height: 200px;
-            background-color: purple;
+	#uiSettingsBox .remote_settings {
+		background-color: rgb( 20, 22, 18 );
+	}
+		#uiSettingsBox .remote_settings .alignment {
+			height: 200px;
+			background-color: purple;
 
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-        }
-            #uiSettingsBox .remote_settings .alignment .aligner {
-                height: 85%;
-                width: 25%;
-            }
+			display: flex;
+			justify-content: space-evenly;
+			align-items: center;
+		}
+			#uiSettingsBox .remote_settings .alignment .aligner {
+				height: 85%;
+				width: 25%;
+			}
 
-    #uiSettingsBox .radar_settings {
-        width: 100%;
-    }
-        #uiSettingsBox .radar_settings .alignment {
-            height: 200px;
+	#uiSettingsBox .radar_settings {
+		width: 100%;
+	}
+		#uiSettingsBox .radar_settings .alignment {
+			height: 200px;
 
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-evenly;
-            align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-evenly;
+			align-items: center;
 
-            /* padding: 5px; */
-        }
-            #uiSettingsBox .radar_settings .alignment .aligner {
-                width: 55px;
-                height: 55px;
+			/* padding: 5px; */
+		}
+			#uiSettingsBox .radar_settings .alignment .aligner {
+				width: 55px;
+				height: 55px;
 
-                position: relative;
+				position: relative;
 
-                background-color: rgb( 225, 225, 225 );
+				background-color: rgb( 225, 225, 225 );
 
-                border-radius: 10px;
-            }
+				border-radius: 10px;
+			}
 
-            #uiSettingsBox .radar_settings .alignment .aligner:hover {
-                width: 55px;
-                height: 55px;
+			#uiSettingsBox .radar_settings .alignment .aligner:hover {
+				width: 55px;
+				height: 55px;
 
-                background-color: rgb( 255, 255, 255 );
+				background-color: rgb( 255, 255, 255 );
 
-                position: relative;
-            }
+				position: relative;
+			}
 
-            #uiSettingsBox .radar_settings .alignment .aligner:active {
-                background-color: rgb( 190, 190, 190 );
-            }
-                #uiSettingsBox .radar_settings .alignment .aligner .arrow {
-                    width: 45px; 
-                    height: 45px;
+			#uiSettingsBox .radar_settings .alignment .aligner:active {
+				background-color: rgb( 190, 190, 190 );
+			}
+				#uiSettingsBox .radar_settings .alignment .aligner .arrow {
+					width: 45px; 
+					height: 45px;
 
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    bottom: 0;
-                    left: 0;
+					position: absolute;
+					top: 0;
+					right: 0;
+					bottom: 0;
+					left: 0;
 
-                    margin: auto;
+					margin: auto;
 
-                    background-color: rgb( 0, 0, 0 );
+					background-color: rgb( 0, 0, 0 );
 
-                    clip-path: polygon( 50% 0, 10% 30%, 10% 50%, 40% 30%, 40% 100%, 60% 100%, 60% 30%, 90% 50%, 90% 30% );
-                }
+					clip-path: polygon( 50% 0, 10% 30%, 10% 50%, 40% 30%, 40% 100%, 60% 100%, 60% 30%, 90% 50%, 90% 30% );
+				}
 
-                #uiSettingsBox .radar_settings .alignment .aligner .top_left { transform: rotate( -45deg ); }
-                #uiSettingsBox .radar_settings .alignment .aligner .top_right { transform: rotate( 45deg ); }
-                #uiSettingsBox .radar_settings .alignment .aligner .left { transform: rotate( -90deg ); }
-                #uiSettingsBox .radar_settings .alignment .aligner .right { transform: rotate( 90deg ); }
-                #uiSettingsBox .radar_settings .alignment .aligner .bottom_left { transform: rotate( -135deg ); }
-                #uiSettingsBox .radar_settings .alignment .aligner .bottom { transform: rotate( 180deg ); }
-                #uiSettingsBox .radar_settings .alignment .aligner .bottom_right { transform: rotate( 135deg ); }
+				#uiSettingsBox .radar_settings .alignment .aligner .top_left { transform: rotate( -45deg ); }
+				#uiSettingsBox .radar_settings .alignment .aligner .top_right { transform: rotate( 45deg ); }
+				#uiSettingsBox .radar_settings .alignment .aligner .left { transform: rotate( -90deg ); }
+				#uiSettingsBox .radar_settings .alignment .aligner .right { transform: rotate( 90deg ); }
+				#uiSettingsBox .radar_settings .alignment .aligner .bottom_left { transform: rotate( -135deg ); }
+				#uiSettingsBox .radar_settings .alignment .aligner .bottom { transform: rotate( 180deg ); }
+				#uiSettingsBox .radar_settings .alignment .aligner .bottom_right { transform: rotate( 135deg ); }
 
-                #uiSettingsBox .radar_settings .alignment .aligner button {
-                    width: 100%;
-                    height: 100%;
-                    
-                    position: absolute; 
-                    top: 0;
-                    bottom: 0;
-                    left: 0;
-                    right: 0;
+				#uiSettingsBox .radar_settings .alignment .aligner button {
+					width: 100%;
+					height: 100%;
+					
+					position: absolute; 
+					top: 0;
+					bottom: 0;
+					left: 0;
+					right: 0;
 
-                    margin: auto;
+					margin: auto;
 
-                    border: none;
-                    background-color: transparent;
-                }
+					border: none;
+					background-color: transparent;
+				}
 
-            #uiSettingsBox .radar_settings .alignment .holo {
-                width: 55px;
-                height: 55px;
-                background-color: transparent;
-            }
-    
-    #uiSettingsBox .scaling {
-        height: 70px;
+			#uiSettingsBox .radar_settings .alignment .holo {
+				width: 55px;
+				height: 55px;
+				background-color: transparent;
+			}
+	
+	#uiSettingsBox .scaling {
+		height: 70px;
 
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-    }
-        #uiSettingsBox .scaling p {
-            font-size: 18px;
-            margin: 0 auto;
-            text-align: center;
-            color: rgb( 255, 255, 255 );
-        }
-            #uiSettingsBox .scaling .multiplier {
-                font-size: 16px;
-            }
+		display: flex;
+		justify-content: space-evenly;
+		align-items: center;
+	}
+		#uiSettingsBox .scaling p {
+			font-size: 18px;
+			margin: 0 auto;
+			text-align: center;
+			color: rgb( 255, 255, 255 );
+		}
+			#uiSettingsBox .scaling .multiplier {
+				font-size: 16px;
+			}
 
-        #uiSettingsBox .scaling .symbol {
-            width: 45px; 
-            height: 45px;
+		#uiSettingsBox .scaling .symbol {
+			width: 45px; 
+			height: 45px;
 
-            background-color: rgb( 225, 225, 225 );
-        }
-            #uiSettingsBox .scaling .symbol:hover {
-                background-color: rgb( 255, 255, 255 );
-            }
+			background-color: rgb( 225, 225, 225 );
+		}
+			#uiSettingsBox .scaling .symbol:hover {
+				background-color: rgb( 255, 255, 255 );
+			}
 
-            #uiSettingsBox .scaling .symbol:active {
-                background-color: rgb( 190, 190, 190 );
-            }
+			#uiSettingsBox .scaling .symbol:active {
+				background-color: rgb( 190, 190, 190 );
+			}
 
-        #uiSettingsBox .scaling .minus {
-            clip-path: polygon( 0 35%, 100% 35%, 100% 65%, 0 65% );
-        }
+		#uiSettingsBox .scaling .minus {
+			clip-path: polygon( 0 35%, 100% 35%, 100% 65%, 0 65% );
+		}
 
-        #uiSettingsBox .scaling .plus {
-            clip-path: polygon( 0 35%, 35% 35%, 35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65% );
-        }
+		#uiSettingsBox .scaling .plus {
+			clip-path: polygon( 0 35%, 35% 35%, 35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65% );
+		}
 
-    #uiSettingsBox .close {
-        width: 80px;
-        height: 20px;
+	#uiSettingsBox .close {
+		width: 80px;
+		height: 20px;
 
-        display: block;
+		display: block;
 
-        margin: 5px auto;
+		margin: 5px auto;
 
-        border-radius: 10px;
-        border: none;
-        background-color: rgb( 225, 225, 225 );
-    }
-        #uiSettingsBox .close:hover {
-            background-color: rgb( 255, 255, 255 );
-        }
+		border-radius: 10px;
+		border: none;
+		background-color: rgb( 225, 225, 225 );
+	}
+		#uiSettingsBox .close:hover {
+			background-color: rgb( 255, 255, 255 );
+		}
 
-        #uiSettingsBox .close:active {
-            background-color: rgb( 190, 190, 190 );
-            padding: 0;
-        }
+		#uiSettingsBox .close:active {
+			background-color: rgb( 190, 190, 190 );
+			padding: 0;
+		}

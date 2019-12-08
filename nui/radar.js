@@ -1,11 +1,11 @@
 /*-------------------------------------------------------------------------
 
-    Wraith ARS 2X
-    Created by WolfKnight
+	Wraith ARS 2X
+	Created by WolfKnight
 
-    This JS file takes inspiration from RandomSean's RS9000 JS file, so 
-    thanks to him!
-    
+	This JS file takes inspiration from RandomSean's RS9000 JS file, so 
+	thanks to him!
+	
 -------------------------------------------------------------------------*/
 
 // Variables
@@ -13,95 +13,95 @@ var resourceName;
 
 const audioNames = 
 {
-    beep: "beep.ogg",
-    xmit_on: "xmit_on.ogg",
-    xmit_off: "xmit_off.ogg",
-    done: "done.ogg"
+	beep: "beep.ogg",
+	xmit_on: "xmit_on.ogg",
+	xmit_off: "xmit_off.ogg",
+	done: "done.ogg"
 }
 
 // Setup the main const element structure, this way we can easily access elements without having the mess
 // that was in the JS file for WraithRS
 const elements = 
 {
-    radar: $( "#radarFrame" ),
-    remote: $( "#rc" ), 
-    toggleDisplay: $( "#toggleDisplay" ), 
-    pwrBtn: $( "#pwrBtn" ), 
+	radar: $( "#radarFrame" ),
+	remote: $( "#rc" ), 
+	toggleDisplay: $( "#toggleDisplay" ), 
+	pwrBtn: $( "#pwrBtn" ), 
 
-    uiSettingsBtn: $( "#uiSettings" ), 
-    uiSettingsBox: $( "#uiSettingsBox" ), 
-    closeUiBtn: $( "#closeUiSettings" ),
+	uiSettingsBtn: $( "#uiSettings" ), 
+	uiSettingsBox: $( "#uiSettingsBox" ), 
+	closeUiBtn: $( "#closeUiSettings" ),
 
-    scale: {
-        increase: $( "#increaseScale" ),
-        decrease: $( "#decreaseScale" ),
-        display: $( "#scaleDisplay" )
-    }, 
+	scale: {
+		increase: $( "#increaseScale" ),
+		decrease: $( "#decreaseScale" ),
+		display: $( "#scaleDisplay" )
+	}, 
 
-    patrolSpeed: $( "#patrolSpeed" ),
+	patrolSpeed: $( "#patrolSpeed" ),
 
-    antennas: {
-        front: {
-            targetSpeed: $( "#frontSpeed" ),
-            fastSpeed: $( "#frontFastSpeed" ),
+	antennas: {
+		front: {
+			targetSpeed: $( "#frontSpeed" ),
+			fastSpeed: $( "#frontFastSpeed" ),
 
-            dirs: {
-                fwd: $( "#frontDirAway" ),
-                bwd: $( "#frontDirTowards" ),
-                fwdFast: $( "#frontFastDirAway" ), 
-                bwdFast: $( "#frontFastDirTowards" )
-            },
+			dirs: {
+				fwd: $( "#frontDirAway" ),
+				bwd: $( "#frontDirTowards" ),
+				fwdFast: $( "#frontFastDirAway" ), 
+				bwdFast: $( "#frontFastDirTowards" )
+			},
 
-            modes: {
-                same: $( "#frontSame" ),
-                opp: $( "#frontOpp" ),
-                xmit: $( "#frontXmit" )
-            },
+			modes: {
+				same: $( "#frontSame" ),
+				opp: $( "#frontOpp" ),
+				xmit: $( "#frontXmit" )
+			},
 
-            fast: {
-                fastLabel: $( "#frontFastLabel" ),
-                lockLabel: $( "#frontFastLockLabel" )
-            }
-        },
+			fast: {
+				fastLabel: $( "#frontFastLabel" ),
+				lockLabel: $( "#frontFastLockLabel" )
+			}
+		},
 
-        rear: {
-            targetSpeed: $( "#rearSpeed" ),
-            fastSpeed: $( "#rearFastSpeed" ),
+		rear: {
+			targetSpeed: $( "#rearSpeed" ),
+			fastSpeed: $( "#rearFastSpeed" ),
 
-            dirs: {
-                fwd: $( "#rearDirTowards" ),
-                bwd: $( "#rearDirAway" ), 
-                fwdFast: $( "#rearFastDirTowards" ), 
-                bwdFast: $( "#rearFastDirAway" )
-            },
+			dirs: {
+				fwd: $( "#rearDirTowards" ),
+				bwd: $( "#rearDirAway" ), 
+				fwdFast: $( "#rearFastDirTowards" ), 
+				bwdFast: $( "#rearFastDirAway" )
+			},
 
-            modes: {
-                same: $( "#rearSame" ),
-                opp: $( "#rearOpp" ),
-                xmit: $( "#rearXmit" )
-            },
+			modes: {
+				same: $( "#rearSame" ),
+				opp: $( "#rearOpp" ),
+				xmit: $( "#rearXmit" )
+			},
 
-            fast: {
-                fastLabel: $( "#rearFastLabel" ),
-                lockLabel: $( "#rearFastLockLabel" )
-            }
-        }
-    }
+			fast: {
+				fastLabel: $( "#rearFastLabel" ),
+				lockLabel: $( "#rearFastLockLabel" )
+			}
+		}
+	}
 }
 
 const modes = 
 {
-    off: 0, 
-    same: 1, 
-    opp: 2,
-    both: 3
+	off: 0, 
+	same: 1, 
+	opp: 2,
+	both: 3
 }
 
 const dirs = 
 {
-    none: 0, 
-    closing: 1,
-    away: 2
+	none: 0, 
+	closing: 1,
+	away: 2
 }
 
 // Hide the radar and remote, this way we can bypass setting a style of 'display: none;' in the HTML file
@@ -110,339 +110,339 @@ elements.remote.hide();
 elements.uiSettingsBox.hide(); 
 
 elements.uiSettingsBtn.click( function() {
-    setUISettingsVisible( true, true );
+	setUISettingsVisible( true, true );
 } )
 
 elements.pwrBtn.click( function() {
-    togglePower();
+	togglePower();
 } )
 
 function setRadarVisible( state )
 {
-    state ? elements.radar.fadeIn() : elements.radar.fadeOut();
+	state ? elements.radar.fadeIn() : elements.radar.fadeOut();
 }
 
 function setRemoteVisible( state ) 
 {
-    // elements.remote.toggle();
-    state ? elements.remote.fadeIn() : elements.remote.fadeOut();
+	// elements.remote.toggle();
+	state ? elements.remote.fadeIn() : elements.remote.fadeOut();
 }
 
 function togglePower()
 {
-    sendData( "togglePower", null ); 
+	sendData( "togglePower", null ); 
 }
 
 function setLight( ant, cat, item, state )
 {
-    let obj = elements.antennas[ant][cat][item]; 
+	let obj = elements.antennas[ant][cat][item]; 
 
-    if ( state ) {
-        cat == "dirs" ? obj.addClass( "active_arrow" ) : obj.addClass( "active" ); 
-    } else {
-        cat == "dirs" ? obj.removeClass( "active_arrow" ) : obj.removeClass( "active" ); 
-    }
+	if ( state ) {
+		cat == "dirs" ? obj.addClass( "active_arrow" ) : obj.addClass( "active" ); 
+	} else {
+		cat == "dirs" ? obj.removeClass( "active_arrow" ) : obj.removeClass( "active" ); 
+	}
 }
 
 function clearModes( ant )
 {
-    for ( let i in elements.antennas[ant].modes )
-    {
-        elements.antennas[ant].modes[i].removeClass( "active" ); 
-    }
+	for ( let i in elements.antennas[ant].modes )
+	{
+		elements.antennas[ant].modes[i].removeClass( "active" ); 
+	}
 
-    for ( let a in elements.antennas[ant].fast )
-    {
-        elements.antennas[ant].fast[a].removeClass( "active" ); 
-    }
+	for ( let a in elements.antennas[ant].fast )
+	{
+		elements.antennas[ant].fast[a].removeClass( "active" ); 
+	}
 }
 
 function clearDirs( ant )
 {
-    for ( let i in elements.antennas[ant].dirs )
-    {
-        elements.antennas[ant].dirs[i].removeClass( "active_arrow" ); 
-    }
+	for ( let i in elements.antennas[ant].dirs )
+	{
+		elements.antennas[ant].dirs[i].removeClass( "active_arrow" ); 
+	}
 }
 
 function clearAntenna( ant )
 {
-    clearModes( ant );
-    clearDirs( ant );
+	clearModes( ant );
+	clearDirs( ant );
 
-    elements.antennas[ant].targetSpeed.html( "¦¦¦" );
-    elements.antennas[ant].fastSpeed.html( "¦¦¦" );
+	elements.antennas[ant].targetSpeed.html( "¦¦¦" );
+	elements.antennas[ant].fastSpeed.html( "¦¦¦" );
 }
 
 function clearEverything()
 {
-    elements.patrolSpeed.html( "¦¦¦" ); 
+	elements.patrolSpeed.html( "¦¦¦" ); 
 
-    for ( let i in elements.antennas ) 
-    {
-        clearAntenna( i ); 
-    }
+	for ( let i in elements.antennas ) 
+	{
+		clearAntenna( i ); 
+	}
 }
 
 function setAntennaXmit( ant, state )
 {
-    setLight( ant, "modes", "xmit", state ); 
+	setLight( ant, "modes", "xmit", state ); 
 
-    if ( !state ) {
-        clearDirs( ant ); 
-        elements.antennas[ant].targetSpeed.html( "¦¦¦" );
-        elements.antennas[ant].fastSpeed.html( "HLd" ); 
-    } else {
-        elements.antennas[ant].fastSpeed.html( "¦¦¦" ); 
-    }
+	if ( !state ) {
+		clearDirs( ant ); 
+		elements.antennas[ant].targetSpeed.html( "¦¦¦" );
+		elements.antennas[ant].fastSpeed.html( "HLd" ); 
+	} else {
+		elements.antennas[ant].fastSpeed.html( "¦¦¦" ); 
+	}
 }
 
 function setAntennaMode( ant, mode )
 {
-    setLight( ant, "modes", "same", mode == modes.same );
-    setLight( ant, "modes", "opp", mode == modes.opp );
+	setLight( ant, "modes", "same", mode == modes.same );
+	setLight( ant, "modes", "opp", mode == modes.opp );
 }
 
 function setAntennaFastMode( ant, state )
 {
-    setLight( ant, "fast", "fastLabel", state );
+	setLight( ant, "fast", "fastLabel", state );
 }
 
 function setAntennaLock( ant, state )
 {
-    setLight( ant, "fast", "lockLabel", state ); 
+	setLight( ant, "fast", "lockLabel", state ); 
 }
 
 function setAntennaDirs( ant, dir, fastDir )
 {
-    setLight( ant, "dirs", "fwd", dir == dirs.closing );
-    setLight( ant, "dirs", "bwd", dir == dirs.away );
+	setLight( ant, "dirs", "fwd", dir == dirs.closing );
+	setLight( ant, "dirs", "bwd", dir == dirs.away );
 
-    setLight( ant, "dirs", "fwdFast", fastDir == dirs.closing );
-    setLight( ant, "dirs", "bwdFast", fastDir == dirs.away );
+	setLight( ant, "dirs", "fwdFast", fastDir == dirs.closing );
+	setLight( ant, "dirs", "bwdFast", fastDir == dirs.away );
 }
 
 function updateDisplays( ps, ants )
 {
-    elements.patrolSpeed.html( ps );
+	elements.patrolSpeed.html( ps );
 
-    for ( let ant in ants ) 
-    {
-        if ( ants[ant] != null ) {
-            let e = elements.antennas[ant]; 
+	for ( let ant in ants ) 
+	{
+		if ( ants[ant] != null ) {
+			let e = elements.antennas[ant]; 
 
-            e.targetSpeed.html( ants[ant][0].speed ); 
-            e.fastSpeed.html( ants[ant][1].speed ); 
+			e.targetSpeed.html( ants[ant][0].speed ); 
+			e.fastSpeed.html( ants[ant][1].speed ); 
 
-            // setAntennaFastLabel( ant, ants[ant][1].speed == "¦¦¦" ? false : true );
+			// setAntennaFastLabel( ant, ants[ant][1].speed == "¦¦¦" ? false : true );
 
-            setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
-        }
-    }
+			setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
+		}
+	}
 }
 
 // Simulation of the system powering up
 function poweringUp()
 {
-    elements.patrolSpeed.html( "888" ); 
+	elements.patrolSpeed.html( "888" ); 
 
-    for ( let i of [ "front", "rear" ] )
-    {
-        let e = elements.antennas[i];
+	for ( let i of [ "front", "rear" ] )
+	{
+		let e = elements.antennas[i];
 
-        e.targetSpeed.html( "888" ); 
-        e.fastSpeed.html( "888" ); 
+		e.targetSpeed.html( "888" ); 
+		e.fastSpeed.html( "888" ); 
 
-        for ( let a of [ "dirs", "modes", "fast" ] )
-        {
-            for ( let obj in e[a] )
-            {
-                a == "dirs" ? e[a][obj].addClass( "active_arrow" ) : e[a][obj].addClass( "active" ); 
-            }
-        }
-    }
+		for ( let a of [ "dirs", "modes", "fast" ] )
+		{
+			for ( let obj in e[a] )
+			{
+				a == "dirs" ? e[a][obj].addClass( "active_arrow" ) : e[a][obj].addClass( "active" ); 
+			}
+		}
+	}
 } 
 
 function poweredUp()
 {
-    clearEverything(); 
+	clearEverything(); 
 
-    for ( let ant of [ "front", "rear" ] )
-    {
-        setAntennaXmit( ant, false );
-        setAntennaFastMode( ant, true );    
-    }
+	for ( let ant of [ "front", "rear" ] )
+	{
+		setAntennaXmit( ant, false );
+		setAntennaFastMode( ant, true );    
+	}
 }
 
 function radarPower( state )
 {
-    state ? poweringUp() : clearEverything();
+	state ? poweringUp() : clearEverything();
 }
 
 function menu( optionText, option )
 {
-    clearEverything(); 
+	clearEverything(); 
 
-    elements.antennas.front.targetSpeed.html( optionText[0] );
-    elements.antennas.front.fastSpeed.html( optionText[1] );
+	elements.antennas.front.targetSpeed.html( optionText[0] );
+	elements.antennas.front.fastSpeed.html( optionText[1] );
 
-    elements.patrolSpeed.html( option );
+	elements.patrolSpeed.html( option );
 }
 
 function settingUpdate( ants, fast )
 {
-    for ( let ant in ants )
-    {
-        setAntennaXmit( ant, ants[ant].xmit );
-        setAntennaMode( ant, ants[ant].mode ); 
-        setAntennaFastMode( ant, fast );   
-        setAntennaLock( ant, ants[ant].speedLocked );
-    }
+	for ( let ant in ants )
+	{
+		setAntennaXmit( ant, ants[ant].xmit );
+		setAntennaMode( ant, ants[ant].mode ); 
+		setAntennaFastMode( ant, fast );   
+		setAntennaLock( ant, ants[ant].speedLocked );
+	}
 }
 
 function playAudio( name, vol )
 {
-    let audio = new Audio( audioNames[name] );
-    audio.volume = vol; 
-    audio.play();
+	let audio = new Audio( audioNames[name] );
+	audio.volume = vol; 
+	audio.play();
 }
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
-    $.post( "http://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
-        if ( datab != "ok" ) {
-            console.log( datab );
-        }            
-    } );
+	$.post( "http://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
+		if ( datab != "ok" ) {
+			console.log( datab );
+		}            
+	} );
 }
 
 // UI stuff
 var scale = 1.0 
 
 elements.closeUiBtn.click( function() {
-    setUISettingsVisible( false, true );
+	setUISettingsVisible( false, true );
 } )
 
 elements.scale.increase.click( function() {
-    changeScale( 0.05 );
+	changeScale( 0.05 );
 } )
 
 elements.scale.decrease.click( function() {
-    changeScale( -0.05 );
+	changeScale( -0.05 );
 } )
 
 function setUISettingsVisible( state, remote )
 {
-    state ? elements.uiSettingsBox.fadeIn() : elements.uiSettingsBox.fadeOut(); 
-    if ( remote ) { setRemoteVisible( !state ); }
+	state ? elements.uiSettingsBox.fadeIn() : elements.uiSettingsBox.fadeOut(); 
+	if ( remote ) { setRemoteVisible( !state ); }
 }
 
 function hideUISettings()
 {
-    if ( !elements.uiSettingsBox.is( ":hidden" ) ) {
-        elements.uiSettingsBox.hide(); 
-    }
+	if ( !elements.uiSettingsBox.is( ":hidden" ) ) {
+		elements.uiSettingsBox.hide(); 
+	}
 }
 
 function changeScale( amount )
 {
-    scale = clamp( scale + amount, 0.25, 2.5 ); 
-    elements.radar.css( "transform", "scale(" + scale + ")" );
-    elements.scale.display.html( scale.toFixed( 2 ) + "x" ); 
+	scale = clamp( scale + amount, 0.25, 2.5 ); 
+	elements.radar.css( "transform", "scale(" + scale + ")" );
+	elements.scale.display.html( scale.toFixed( 2 ) + "x" ); 
 }
 
 function clamp( num, min, max )
 {
-    return num < min ? min : num > max ? max : num;
+	return num < min ? min : num > max ? max : num;
 }
 
 elements.uiSettingsBox.find( "button" ).each( function( i, obj ) {
-    if ( $( this ).attr( "data-value" ) && $( this ).attr( "data-scale" ) ) {
-        $( this ).click( function() { 
-            let align = $( this ).data( "value" ); 
-            let origin = $( this ).data( "scale" );
+	if ( $( this ).attr( "data-value" ) && $( this ).attr( "data-scale" ) ) {
+		$( this ).click( function() { 
+			let align = $( this ).data( "value" ); 
+			let origin = $( this ).data( "scale" );
 
-            elements.radar.removeClass().addClass( align );
-            elements.radar.css( "transform-origin", origin );
-        } )
-    }
+			elements.radar.removeClass().addClass( align );
+			elements.radar.css( "transform-origin", origin );
+		} )
+	}
 } );
 
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
 elements.remote.find( "button" ).each( function( i, obj ) {
-    if ( $( this ).attr( "data-nuitype" ) ) {
-        $( this ).click( function() { 
-            let type = $( this ).data( "nuitype" ); 
-            let value = $( this ).attr( "data-value" ) ? $( this ).data( "value" ) : null; 
-            let mode = $( this ).attr( "data-mode" ) ? $( this ).data( "mode" ) : null; 
+	if ( $( this ).attr( "data-nuitype" ) ) {
+		$( this ).click( function() { 
+			let type = $( this ).data( "nuitype" ); 
+			let value = $( this ).attr( "data-value" ) ? $( this ).data( "value" ) : null; 
+			let mode = $( this ).attr( "data-mode" ) ? $( this ).data( "mode" ) : null; 
 
-            sendData( type, { value, mode } ); 
-        } )
-    }
+			sendData( type, { value, mode } ); 
+		} )
+	}
 } );
 
 // Close the remote when the user presses the 'Escape' key or the right mouse button 
 document.onkeyup = function( event ) 
 {
-    if ( event.keyCode == 27 ) 
-    {
-        sendData( "closeRemote", null );
-        setRemoteVisible( false );
-        setUISettingsVisible( false, false );
-    }
+	if ( event.keyCode == 27 ) 
+	{
+		sendData( "closeRemote", null );
+		setRemoteVisible( false );
+		setUISettingsVisible( false, false );
+	}
 }
 
 window.oncontextmenu = function()
 {
-    sendData( "closeRemote", null );
-    setRemoteVisible( false );
-    setUISettingsVisible( false, false );
+	sendData( "closeRemote", null );
+	setRemoteVisible( false );
+	setUISettingsVisible( false, false );
 }
 
 // The main event listener, this is what the NUI messages sent by the LUA side arrive at, they are 
 // then handled properly via a switch/case that runs the relevant code
 window.addEventListener( "message", function( event ) {
-    var item = event.data; 
-    var type = event.data._type; 
+	var item = event.data; 
+	var type = event.data._type; 
 
-    switch ( type ) {
-        case "updatePathName":
-            resourceName = item.pathName
-            break;
-        case "openRemote":
-            setRemoteVisible( true );
-            break; 
-        case "toggleDisplay":
-            setRadarVisible( item.state );
-            break; 
-        case "radarPower":
-            radarPower( item.state );
-            break; 
-        case "poweredUp":
-            poweredUp();
-            break;
-        case "update":
-            updateDisplays( item.speed, item.antennas );
-            break; 
-        case "antennaXmit":
-            setAntennaXmit( item.ant, item.on );
-            break; 
-        case "antennaMode":
-            setAntennaMode( item.ant, item.mode ); 
-            break; 
-        case "antennaLock":
-            setAntennaLock( item.ant, item.state );
-            break; 
-        case "menu":
-            menu( item.text, item.option ); 
-            break;
-        case "settingUpdate":
-            settingUpdate( item.antennaData, item.fast ); 
-            break; 
-        case "audio":
-            playAudio( item.name, item.vol ); 
-            break; 
-        default:
-            break;
-    }
+	switch ( type ) {
+		case "updatePathName":
+			resourceName = item.pathName
+			break;
+		case "openRemote":
+			setRemoteVisible( true );
+			break; 
+		case "toggleDisplay":
+			setRadarVisible( item.state );
+			break; 
+		case "radarPower":
+			radarPower( item.state );
+			break; 
+		case "poweredUp":
+			poweredUp();
+			break;
+		case "update":
+			updateDisplays( item.speed, item.antennas );
+			break; 
+		case "antennaXmit":
+			setAntennaXmit( item.ant, item.on );
+			break; 
+		case "antennaMode":
+			setAntennaMode( item.ant, item.mode ); 
+			break; 
+		case "antennaLock":
+			setAntennaLock( item.ant, item.state );
+			break; 
+		case "menu":
+			menu( item.text, item.option ); 
+			break;
+		case "settingUpdate":
+			settingUpdate( item.antennaData, item.fast ); 
+			break; 
+		case "audio":
+			playAudio( item.name, item.vol ); 
+			break; 
+		default:
+			break;
+	}
 } );

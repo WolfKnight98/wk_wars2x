@@ -17,7 +17,7 @@ function UTIL:FormatSpeed( speed )
 	local pipes = ""
 
 	for i = 1, 3 - string.len( text ) do 
-	    pipes = pipes .. "¦"
+		pipes = pipes .. "¦"
 	end 
 	
 	return pipes .. text
