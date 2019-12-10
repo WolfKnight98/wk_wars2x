@@ -833,35 +833,38 @@ end
 -- When the user presses the speed lock key for either antenna, this function is called to get the 
 -- necessary information from the antenna, and then lock it into the display
 function RADAR:LockAntennaSpeed( ant )
-    -- Check if the antenna already has a speed locked, if it does then reset the lock, otherwise we lock
-    -- a speed
-	if ( self:IsAntennaSpeedLocked( ant ) ) then 
-		self:ResetAntennaSpeedLock( ant )
-    else 
-        -- Set up a temporary table with 2 nil values, this way if the system isn't able to get a speed or
-        -- direction, the speed lock function won't work 
-		local data = { nil, nil }
+    -- Only lock a speed if the antenna is on and the UI is displayed
+    if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() ) then 
+        -- Check if the antenna already has a speed locked, if it does then reset the lock, otherwise we lock
+        -- a speed
+        if ( self:IsAntennaSpeedLocked( ant ) ) then 
+            self:ResetAntennaSpeedLock( ant )
+        else 
+            -- Set up a temporary table with 2 nil values, this way if the system isn't able to get a speed or
+            -- direction, the speed lock function won't work 
+            local data = { nil, nil }
 
-        -- As the lock system is based on which speed is displayed, we have to check if there is a speed in the 
-        -- fast box, if there is then we lock in the fast speed, otherwise we lock in the strongest speed
-		if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then 
-			data[1] = self:GetAntennaFastSpeed( ant )
-			data[2] = self:GetAntennaFastDir( ant )	
-		else 
-			data[1] = self:GetAntennaSpeed( ant )
-			data[2] = self:GetAntennaDir( ant )
-		end
+            -- As the lock system is based on which speed is displayed, we have to check if there is a speed in the 
+            -- fast box, if there is then we lock in the fast speed, otherwise we lock in the strongest speed
+            if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then 
+                data[1] = self:GetAntennaFastSpeed( ant )
+                data[2] = self:GetAntennaFastDir( ant )	
+            else 
+                data[1] = self:GetAntennaSpeed( ant )
+                data[2] = self:GetAntennaDir( ant )
+            end
 
-        -- Lock in the speed data for the antenna
-		self:SetAntennaSpeedLock( ant, data[1], data[2] )
+            -- Lock in the speed data for the antenna
+            self:SetAntennaSpeedLock( ant, data[1], data[2] )
+        end 
+        
+        -- Attempt for fixing speed lock bugging every now and then, doesn't seem to happen as often 
+        -- with this wait in place 
+        Citizen.Wait( 10 )
+
+        -- Send an NUI message to change the lock label, otherwise we'd have to wait until the next main loop
+        SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )
     end 
-    
-    -- Attempt for fixing speed lock bugging every now and then, doesn't seem to happen as often 
-    -- with this wait in place 
-    Citizen.Wait( 10 )
-
-    -- Send an NUI message to change the lock label, otherwise we'd have to wait until the next main loop
-	SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )
 end 
 
 -- Resets an antenna, used when the system is turned off
@@ -1006,7 +1009,10 @@ end
 ----------------------------------------------------------------------------------]]--
 -- Takes a GTA speed and converts it into the type defined by the user in the operator menu 
 function RADAR:GetVehSpeedFormatted( speed )
+    -- Get the speed unit from the settings
     local unit = self:GetSettingValue( "speedType" )
+
+    -- 
     return UTIL:Round( speed * self.speedConversions[unit], 0 )
 end 
 
