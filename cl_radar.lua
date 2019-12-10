@@ -19,7 +19,7 @@ local pairs = pairs
 	complain that the NUI aspect doesn't work!
 ----------------------------------------------------------------------------------]]--
 Citizen.SetTimeout( 1000, function()
-	-- Get the name of the resource, for example the default name is 'wk_wrs2'
+	-- Get the name of the resource, for example the default name is 'wk_wars2x'
 	local name = GetCurrentResourceName()
 
 	-- Print a little message in the client's console
