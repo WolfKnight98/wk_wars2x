@@ -1280,7 +1280,7 @@ function RADAR:RunDisplayValidationCheck()
 	if ( ( ( PLY.veh == 0 or ( PLY.veh > 0 and not PLY.vehClassValid ) ) and self:GetDisplayState() and not self:GetDisplayHidden() ) or IsPauseMenuActive() and self:GetDisplayState() ) then
 		self:SetDisplayHidden( true ) 
 		SendNUIMessage( { _type = "toggleDisplay", state = false } )
-	elseif ( PLY.veh > 0 and PLY.vehClassValid and self:GetDisplayState() and self:GetDisplayHidden() ) then 
+	elseif ( PLY.veh > 0 and PLY.vehClassValid and PLY.inDriverSeat and self:GetDisplayState() and self:GetDisplayHidden() ) then 
 		self:SetDisplayHidden( false ) 
 		SendNUIMessage( { _type = "toggleDisplay", state = true } )
 	end 
