@@ -834,7 +834,7 @@ end
 -- necessary information from the antenna, and then lock it into the display
 function RADAR:LockAntennaSpeed( ant )
     -- Only lock a speed if the antenna is on and the UI is displayed
-    if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() ) then 
+    if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() and self:IsAntennaTransmitting( ant ) ) then 
         -- Check if the antenna already has a speed locked, if it does then reset the lock, otherwise we lock
         -- a speed
         if ( self:IsAntennaSpeedLocked( ant ) ) then 
@@ -847,11 +847,11 @@ function RADAR:LockAntennaSpeed( ant )
             -- As the lock system is based on which speed is displayed, we have to check if there is a speed in the 
             -- fast box, if there is then we lock in the fast speed, otherwise we lock in the strongest speed
             if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then 
-                data[1] = self:GetAntennaFastSpeed( ant )
+                data[1] = self:GetAntennaFastSpeed( ant ) 
                 data[2] = self:GetAntennaFastDir( ant )	
             else 
-                data[1] = self:GetAntennaSpeed( ant )
-                data[2] = self:GetAntennaDir( ant )
+                data[1] = self:GetAntennaSpeed( ant ) 
+                data[2] = self:GetAntennaDir( ant ) 
             end
 
             -- Lock in the speed data for the antenna
@@ -1012,30 +1012,45 @@ function RADAR:GetVehSpeedFormatted( speed )
     -- Get the speed unit from the settings
     local unit = self:GetSettingValue( "speedType" )
 
-    -- 
+    -- Return the coverted speed rounded to a whole number 
     return UTIL:Round( speed * self.speedConversions[unit], 0 )
 end 
 
+-- Gathers all of the vehicles in the local area of the player
 function RADAR:GetAllVehicles()
+    -- Create a temporary table
 	local t = {}
 
-	for v in UTIL:EnumerateVehicles() do
+    -- Iterate through vehicles
+    for v in UTIL:EnumerateVehicles() do
+        -- Insert the vehicle id into the temporary table 
 		table.insert( t, v )
 	end 
 
+    -- Return the table 
 	return t
 end 
 
+-- Used to check if an antennas mode fits with a ray type from the ray trace system 
 function RADAR:CheckVehicleDataFitsMode( ant, rt )
+    -- Get the current mode value for the given antenna
 	local mode = self:GetAntennaMode( ant )
 
+    -- Check that the given ray type matches up with the antenna's current mode
 	if ( ( mode == 3 ) or ( mode == 1 and rt == "same" ) or ( mode == 2 and rt == "opp" ) ) then return true end 
 
+    -- Otherwise, return false as a last resort
 	return false  
 end
 
+-- This function is used to filter through the captured vehicles and work out what vehicles should be used for display
+-- on the radar interface
 function RADAR:GetVehiclesForAntenna()
-	local vehs = { ["front"] = {}, ["rear"] = {} }
+    -- Create the vehs table to store the split up captured vehicle data
+    local vehs = { ["front"] = {}, ["rear"] = {} }
+    
+    -- Create the results table to store the vehicle results, the first index is for the 'strongest' vehicle and the
+    -- second index is for the 'fastest' vehicle
 	local results = { ["front"] = { nil, nil }, ["rear"] = { nil, nil } }
 
 	-- Loop through and split up the vehicles based on front and rear, this is simply because the actual system 
