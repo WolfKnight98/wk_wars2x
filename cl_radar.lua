@@ -458,11 +458,6 @@ function RADAR:GetMaxCheckDist()
 	return self.vars.maxCheckDist
 end 
 
--- Returns the currently set active vehicles 
-function RADAR:GetActiveVehicles()
-	return self.vars.activeVehicles
-end 
-
 -- Returns the table sorting function 'strongest'
 function RADAR:GetStrongestSortFunc()
 	return self.sorting.strongest 
@@ -485,13 +480,6 @@ function RADAR:SetVehiclePool( pool )
 	if ( type( pool ) == "table" ) then 
 		self.vars.vehiclePool = pool 
 	end
-end 
-
--- Sets the active vehicles to the given value if it's a table
-function RADAR:SetActiveVehicles( vehs )
-	if ( type( vehs ) == "table" ) then 
-		self.vars.activeVehicles = vehs
-	end 
 end 
 
 
@@ -765,6 +753,12 @@ function RADAR:SetAntennaDir( ant, dir )
 	self.vars.antennas[ant].dir = dir 
 end  
 
+-- Sets the fast speed and direction in one go 
+function RADAR:SetAntennaData( ant, speed, dir )
+    self:SetAntennaSpeed( ant, speed )
+    self:SetAntennaDir( ant, dir )
+end
+
 -- Returns the fast speed stored for the given antenna
 function RADAR:GetAntennaFastSpeed( ant )
 	return self.vars.antennas[ant].fastSpeed 
@@ -784,6 +778,12 @@ end
 function RADAR:SetAntennaFastDir( ant, dir )
 	self.vars.antennas[ant].fastDir = dir 
 end 
+
+-- Sets the fast speed and direction in one go 
+function RADAR:SetAntennaFastData( ant, speed, dir )
+    self:SetAntennaFastSpeed( ant, speed )
+    self:SetAntennaFastDir( ant, dir )
+end
 
 -- Returns if the stored speed for the given antenna is valid
 function RADAR:DoesAntennaHaveValidData( ant )
@@ -1312,23 +1312,16 @@ function RADAR:Main()
 			data.patrolSpeed = UTIL:FormatSpeed( speed )
 		end 
 
-        -- Only grab data to send if there have actually been vehicles captured by the radar
-        
-        -- Convert the active vehicles to be built into the get vehicles for antenna function
-		if ( not UTIL:IsTableEmpty( self:GetCapturedVehicles() ) ) then 
-			local vehsForDisplay = self:GetVehiclesForAntenna()
-
-			self:SetActiveVehicles( vehsForDisplay ) 
-		else
-			self:SetActiveVehicles( { ["front"] = { nil, nil }, ["rear"] = { nil, nil } } )
-		end
-
-		-- Work out what has to be sent 
-		local av = self:GetActiveVehicles()
+        -- Get the vehicles to be displayed for the antenna, then we take the results from that and send the relevant
+        -- information to the NUI side
+        local av = self:GetVehiclesForAntenna()
 		data.antennas = { ["front"] = nil, ["rear"] = nil }
 
-		for ant in UTIL:Values( { "front", "rear" } ) do 
-			if ( self:IsAntennaTransmitting( ant ) ) then
+        -- Iterate through the front and rear data and obtain the information to be displayed
+        for ant in UTIL:Values( { "front", "rear" } ) do 
+            -- Check that the antenna is actually transmitting, no point in running all the checks below if the antenna is off
+            if ( self:IsAntennaTransmitting( ant ) ) then
+                -- 
 				data.antennas[ant] = {}
 
 				for i = 1, 2 do 
@@ -1351,20 +1344,16 @@ function RADAR:Main()
 
 							-- Set the internal antenna data as this actual dataset is valid 
 							if ( i % 2 == 0 ) then 
-								self:SetAntennaFastSpeed( ant, data.antennas[ant][i].speed )
-								self:SetAntennaFastDir( ant, data.antennas[ant][i].dir )
+                                self:SetAntennaFastData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							else 
-								self:SetAntennaSpeed( ant, data.antennas[ant][i].speed )
-								self:SetAntennaDir( ant, data.antennas[ant][i].dir )
+                                self:SetAntennaData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							end 
 						else 
 							-- If the active vehicle is not valid, we reset the internal data
 							if ( i % 2 == 0 ) then 
-								self:SetAntennaFastSpeed( ant, nil )
-								self:SetAntennaFastDir( ant, nil )
+                                self:SetAntennaFastData( ant, nil, nil )
 							else 
-								self:SetAntennaSpeed( ant, nil )
-								self:SetAntennaDir( ant, nil )
+                                self:SetAntennaData( ant, nil, nil )
 							end
 						end 
 					end 
