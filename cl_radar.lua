@@ -1440,13 +1440,6 @@ Citizen.CreateThread( function()
 	end 
 end )
 
--- Num4 = 108 - INPUT_VEH_FLY_ROLL_LEFT_ONLY
--- Num5 = 112 - INPUT_VEH_FLY_PITCH_DOWN_ONLY
--- Num6 = 109 - INPUT_VEH_FLY_ROLL_RIGHT_ONLY
--- Num7 = 117 - INPUT_VEH_FLY_SELECT_TARGET_LEFT
--- Num8 = 111 - INPUT_VEH_FLY_PITCH_UP_ONLY
--- Num9 = 118 - INPUT_VEH_FLY_SELECT_TARGET_RIGHT
--- F5 = 166 - INPUT_SELECT_CHARACTER_MICHAEL
 function RADAR:RunControlManager()
 	-- 'Z' key, toggles debug mode 
 	--[[ if ( IsDisabledControlJustPressed( 1, 20 ) ) then 
@@ -1485,7 +1478,7 @@ end )
 
 
 ------------------------------ DEBUG ------------------------------
-Citizen.CreateThread( function()
+--[[ Citizen.CreateThread( function()
 	while ( true ) do 
 		if ( RADAR.config.debug_mode ) then 
 			for k, v in pairs( RADAR.rayTraces ) do 
@@ -1519,4 +1512,4 @@ Citizen.CreateThread( function()
 			Citizen.Wait( 500 )
 		end 
 	end 
-end ) 
+end ) ]]
