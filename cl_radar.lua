@@ -821,6 +821,16 @@ function RADAR:SetAntennaSpeedLock( ant, speed, dir )
 	end
 end 
 
+-- Returns the locked speed for the given antenna
+function RADAR:GetAntennaLockedSpeed( ant )
+    return self.vars.antennas[ant].lockedSpeed
+end 
+
+-- Returns the locked direction for the given antenna
+function RADAR:GetAntennaLockedDir( ant )
+    return self.vars.antennas[ant].lockedDir
+end 
+
 -- Resets the speed lock info to do with the given antenna
 function RADAR:ResetAntennaSpeedLock( ant )
     -- Blank the locked speed and direction
@@ -1335,8 +1345,8 @@ function RADAR:Main()
                     -- If the current iteration is the number 2 ('fastest') and there's a speed locked, grab the locked speed 
                     -- and direction
 					if ( i == 2 and self:IsAntennaSpeedLocked( ant ) ) then 
-						data.antennas[ant][i].speed = self.vars.antennas[ant].lockedSpeed
-                        data.antennas[ant][i].dir = self.vars.antennas[ant].lockedDir
+						data.antennas[ant][i].speed = self:GetAntennaLockedSpeed( ant )
+                        data.antennas[ant][i].dir = self:GetAntennaLockedDir( ant )
                         
                     -- Otherwise, continue with getting speed and direction data 
 					else 
