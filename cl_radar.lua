@@ -471,7 +471,7 @@ end
 -- Sets the patrol speed to a formatted version of the given number 
 function RADAR:SetPatrolSpeed( speed )
 	if ( type( speed ) == "number" ) then 
-		self.vars.patrolSpeed = self:GetVehSpeedFormatted( speed )
+		self.vars.patrolSpeed = self:GetVehSpeedConverted( speed )
 	end
 end
 
@@ -1009,7 +1009,7 @@ end
 	Radar functions 
 ----------------------------------------------------------------------------------]]--
 -- Takes a GTA speed and converts it into the type defined by the user in the operator menu 
-function RADAR:GetVehSpeedFormatted( speed )
+function RADAR:GetVehSpeedConverted( speed )
     -- Get the speed unit from the settings
     local unit = self:GetSettingValue( "speedType" )
 
@@ -1308,7 +1308,7 @@ function RADAR:Main()
 		if ( entSpeed == 0 ) then 
 			data.patrolSpeed = "¦[]"
 		else 
-			local speed = self:GetVehSpeedFormatted( entSpeed )
+			local speed = self:GetVehSpeedConverted( entSpeed )
 			data.patrolSpeed = UTIL:FormatSpeed( speed )
 		end 
 
@@ -1321,21 +1321,32 @@ function RADAR:Main()
         for ant in UTIL:Values( { "front", "rear" } ) do 
             -- Check that the antenna is actually transmitting, no point in running all the checks below if the antenna is off
             if ( self:IsAntennaTransmitting( ant ) ) then
-                -- 
+                -- Create a table for the current antenna to store the information 
 				data.antennas[ant] = {}
 
-				for i = 1, 2 do 
+                -- When the system works out what vehicles to be used, both the "front" and "rear" keys have two items located 
+                -- at index 1 and 2. Index 1 stores the vehicle data for the antenna's 'strongest' vehicle, and index 2 stores
+                -- the vehicle data for the 'fastest' vehicle. Here we iterate through both the indexes and just run checks to 
+                -- see if it is a particular type (e.g. if i % 2 == 0 then it's the 'fastest' vehicle)
+                for i = 1, 2 do 
+                    -- Create the table to store the speed and direction for this vehicle data 
 					data.antennas[ant][i] = { speed = "¦¦¦", dir = 0 }
 
+                    -- If the current iteration is the number 2 ('fastest') and there's a speed locked, grab the locked speed 
+                    -- and direction
 					if ( i == 2 and self:IsAntennaSpeedLocked( ant ) ) then 
 						data.antennas[ant][i].speed = self.vars.antennas[ant].lockedSpeed
-						data.antennas[ant][i].dir = self.vars.antennas[ant].lockedDir
+                        data.antennas[ant][i].dir = self.vars.antennas[ant].lockedDir
+                        
+                    -- Otherwise, continue with getting speed and direction data 
 					else 
 						-- The vehicle data exists for this slot 
 						if ( av[ant][i] ~= nil ) then 
-							-- We already have the vehicle speed as we needed it earlier on for filtering 
-							local uSpeed = GetEntitySpeed( av[ant][i].veh )
-							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedFormatted( uSpeed ) )
+                            -- Here we get the entity speed of the vehicle, the speed for this vehicle would've been obtained
+                            -- and stored in the trace stage, but the speed would've only been obtained and stored once, which
+                            -- means that it woulsn't be the current speed
+							local vehSpeed = GetEntitySpeed( av[ant][i].veh )
+							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedConverted( vehSpeed ) )
 
 							-- Work out if the vehicle is closing or away 
 							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
