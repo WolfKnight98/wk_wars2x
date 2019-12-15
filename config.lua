@@ -21,6 +21,11 @@ RADAR.config.front_lock_key = 111
 -- The default key to lock/unlock the rear antenna is 112 (Numpad 5 - INPUT_VEH_FLY_PITCH_DOWN_ONLY)
 RADAR.config.rear_lock_key = 112
 
+-- Radar fast limit locking
+-- When enabled, the player will be able to define a fast limit within the radar's menu, when a vehicle 
+-- exceeds the fast limit, it will be locked into the fast box. Default setting is disabled to maintain realism
+RADAR.config.allow_fast_limit = false 
+
 -- Fast Lock Blip
 -- true = vehicles that go over the fast limit will have a blip added to the minimap for a short period of time
 -- false = no blips
