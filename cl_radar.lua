@@ -287,8 +287,10 @@ end
 
 -- Sends an update to the NUI side with the current state of the antennas and if the fast system is enabled
 function RADAR:SendSettingUpdate()
+    -- Create a table to store the setting information for the antennas
     local antennas = {}
 
+    -- Iterate through each antenna and grab the relevant information 
     for ant in UTIL:Values( { "front", "rear" } ) do 
         antennas[ant] = {}
         antennas[ant].xmit = self:IsAntennaTransmitting( ant )
