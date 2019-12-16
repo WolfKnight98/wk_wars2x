@@ -125,8 +125,8 @@ RADAR.vars =
 			fastDir = nil, 			-- Direction the fastest vehicle is going  
 			speedLocked = false, 	-- A speed has been locked for this antenna
 			lockedSpeed = nil, 		-- The locked speed
-            lockedDir = nil, 			-- The direction of the vehicle that was locked
-            lockedType = nil        -- The locked type, 1 = strongest, 2 = fastest
+			lockedDir = nil, 			-- The direction of the vehicle that was locked
+			lockedType = nil        -- The locked type, 1 = strongest, 2 = fastest
 		}, 
 
 		[ "rear" ] = {
@@ -138,8 +138,8 @@ RADAR.vars =
 			fastDir = nil, 			-- Direction the fastest vehicle is going
 			speedLocked = false,	-- A speed has been locked for this antenna
 			lockedSpeed = nil,		-- The locked speed
-            lockedDir = nil,			-- The direction of the vehicle that was locked
-            lockedType = nil        -- The locked type, 1 = strongest, 2 = fastest
+			lockedDir = nil,			-- The direction of the vehicle that was locked
+			lockedType = nil        -- The locked type, 1 = strongest, 2 = fastest
 		}
 	}, 
 
@@ -258,7 +258,7 @@ end
 -- Used to set individual settings within RADAR.vars.settings, as all of the settings use string keys, using this
 -- function makes updating settings easier
 function RADAR:SetSettingValue( setting, value )
-	-- Make sure that we're not trying to do set a nil value for the setting
+	-- Make sure that we're not trying to set a nil value for the setting
 	if ( value ~= nil ) then 
 		-- Set the setting's value 
 		self.vars.settings[setting] = value 
@@ -287,20 +287,20 @@ end
 
 -- Sends an update to the NUI side with the current state of the antennas and if the fast system is enabled
 function RADAR:SendSettingUpdate()
-    -- Create a table to store the setting information for the antennas
-    local antennas = {}
+	-- Create a table to store the setting information for the antennas
+	local antennas = {}
 
-    -- Iterate through each antenna and grab the relevant information 
-    for ant in UTIL:Values( { "front", "rear" } ) do 
-        antennas[ant] = {}
-        antennas[ant].xmit = self:IsAntennaTransmitting( ant )
-        antennas[ant].mode = self:GetAntennaMode( ant )
-        antennas[ant].speedLocked = self:IsAntennaSpeedLocked( ant )
-        antennas[ant].fast = self:ShouldFastBeDisplayed( ant )
-    end 
+	-- Iterate through each antenna and grab the relevant information 
+	for ant in UTIL:Values( { "front", "rear" } ) do 
+		antennas[ant] = {}
+		antennas[ant].xmit = self:IsAntennaTransmitting( ant )
+		antennas[ant].mode = self:GetAntennaMode( ant )
+		antennas[ant].speedLocked = self:IsAntennaSpeedLocked( ant )
+		antennas[ant].fast = self:ShouldFastBeDisplayed( ant )
+	end 
 
 	-- Send a message to the NUI side with the current state of the antennas
-    SendNUIMessage( { _type = "settingUpdate", antennaData = antennas } )
+	SendNUIMessage( { _type = "settingUpdate", antennaData = antennas } )
 end 
 
 -- Returns if a main task can be performed 
@@ -681,11 +681,11 @@ end
 -- When the user changes either the same lane or opp lane sensitivity from within the operator menu, this function
 -- is then called to update the end coordinates for all of the traces
 function RADAR:UpdateRayEndCoords()
-    for _, v in pairs( self.rayTraces ) do 
-        -- Calculate what the new end coordinate should be
-        local endY = self:GetSettingValue( v.rayType ) * self:GetMaxCheckDist()
-        
-        -- Update the end Y coordinate in the traces table 
+	for _, v in pairs( self.rayTraces ) do 
+		-- Calculate what the new end coordinate should be
+		local endY = self:GetSettingValue( v.rayType ) * self:GetMaxCheckDist()
+		
+		-- Update the end Y coordinate in the traces table 
 		v.endVec.y = endY
 	end 	
 end 
@@ -697,12 +697,12 @@ end
 -- Toggles the state of the given antenna between hold and transmitting, only works if the radar's power is 
 -- on. Also runs a callback function when present.
 function RADAR:ToggleAntenna( ant, cb )
-    -- Check power is on 
-    if ( self:IsPowerOn() ) then 
-        -- Toggle the given antennas state
+	-- Check power is on 
+	if ( self:IsPowerOn() ) then 
+		-- Toggle the given antennas state
 		self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit 
 
-        -- Run the callback function if there is one 
+		-- Run the callback function if there is one 
 		if ( cb ) then cb() end 
 	end 
 end 
@@ -729,15 +729,15 @@ end
 -- Sets the mode of the given antenna if the mode is valid and the power is on. Also runs a callback function 
 -- when present.
 function RADAR:SetAntennaMode( ant, mode, cb )
-    -- Check the mode is actually a number, this is needed as the radar system relies on the mode to be 
-    -- a number to work 
-    if ( type( mode ) == "number" ) then 
-        -- Check the mode is in the valid range for modes, and that the power is on
-        if ( mode >= 0 and mode <= 3 and self:IsPowerOn() ) then 
-            -- Update the mode for the antenna
+	-- Check the mode is actually a number, this is needed as the radar system relies on the mode to be 
+	-- a number to work 
+	if ( type( mode ) == "number" ) then 
+		-- Check the mode is in the valid range for modes, and that the power is on
+		if ( mode >= 0 and mode <= 3 and self:IsPowerOn() ) then 
+			-- Update the mode for the antenna
 			self.vars.antennas[ant].mode = mode 
 
-            -- Run the callback function if there is one 
+			-- Run the callback function if there is one 
 			if ( cb ) then cb() end 
 		end 
 	end 
@@ -765,8 +765,8 @@ end
 
 -- Sets the fast speed and direction in one go 
 function RADAR:SetAntennaData( ant, speed, dir )
-    self:SetAntennaSpeed( ant, speed )
-    self:SetAntennaDir( ant, dir )
+	self:SetAntennaSpeed( ant, speed )
+	self:SetAntennaDir( ant, dir )
 end
 
 -- Returns the fast speed stored for the given antenna
@@ -791,8 +791,8 @@ end
 
 -- Sets the fast speed and direction in one go 
 function RADAR:SetAntennaFastData( ant, speed, dir )
-    self:SetAntennaFastSpeed( ant, speed )
-    self:SetAntennaFastDir( ant, dir )
+	self:SetAntennaFastSpeed( ant, speed )
+	self:SetAntennaFastDir( ant, dir )
 end
 
 -- Returns if the stored speed for the given antenna is valid
@@ -807,11 +807,11 @@ end
 
 -- Returns if the fast label should be displayed 
 function RADAR:ShouldFastBeDisplayed( ant )
-    if ( self:IsAntennaSpeedLocked( ant ) ) then 
-        return self:GetAntennaLockedType( ant ) == 2 
-    else 
-        return self:IsFastDisplayEnabled()
-    end
+	if ( self:IsAntennaSpeedLocked( ant ) ) then 
+		return self:GetAntennaLockedType( ant ) == 2 
+	else 
+		return self:IsFastDisplayEnabled()
+	end
 end 
 
 -- Returns if the given antenna has a locked speed
@@ -826,85 +826,85 @@ end
 
 -- Sets a speed and direction to be locked in for the given antenna 
 function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
-    -- Check that the passed speed and direction are actually valid
-    if ( speed ~= nil and dir ~= nil and lockType ~= nil ) then 
-        -- Set the locked speed and direction to the passed values
+	-- Check that the passed speed and direction are actually valid
+	if ( speed ~= nil and dir ~= nil and lockType ~= nil ) then 
+		-- Set the locked speed and direction to the passed values
 		self.vars.antennas[ant].lockedSpeed = speed 
-        self.vars.antennas[ant].lockedDir = dir 
-        self.vars.antennas[ant].lockedType = lockType
-        
-        -- Tell the system that a speed has been locked for the given antenna
+		self.vars.antennas[ant].lockedDir = dir 
+		self.vars.antennas[ant].lockedType = lockType
+		
+		-- Tell the system that a speed has been locked for the given antenna
 		self:SetAntennaSpeedIsLocked( ant, true )
 
-        -- Send a message to the NUI side to play the beep sound with the current volume setting
+		-- Send a message to the NUI side to play the beep sound with the current volume setting
 		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 	end
 end 
 
 -- Returns the locked speed for the given antenna
 function RADAR:GetAntennaLockedSpeed( ant )
-    return self.vars.antennas[ant].lockedSpeed
+	return self.vars.antennas[ant].lockedSpeed
 end 
 
 -- Returns the locked direction for the given antenna
 function RADAR:GetAntennaLockedDir( ant )
-    return self.vars.antennas[ant].lockedDir
+	return self.vars.antennas[ant].lockedDir
 end 
 
 -- Returns the lock type for the given antenna
 function RADAR:GetAntennaLockedType( ant )
-    return self.vars.antennas[ant].lockedType 
+	return self.vars.antennas[ant].lockedType 
 end 
 
 -- Resets the speed lock info to do with the given antenna
 function RADAR:ResetAntennaSpeedLock( ant )
-    -- Blank the locked speed and direction
+	-- Blank the locked speed and direction
 	self.vars.antennas[ant].lockedSpeed = nil 
-    self.vars.antennas[ant].lockedDir = nil  
-    self.vars.antennas[ant].lockedType = nil
-    
-    -- Set the locked state to false
+	self.vars.antennas[ant].lockedDir = nil  
+	self.vars.antennas[ant].lockedType = nil
+	
+	-- Set the locked state to false
 	self:SetAntennaSpeedIsLocked( ant, false )
 end
 
 -- When the user presses the speed lock key for either antenna, this function is called to get the 
 -- necessary information from the antenna, and then lock it into the display
 function RADAR:LockAntennaSpeed( ant )
-    -- Only lock a speed if the antenna is on and the UI is displayed
-    if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() and self:IsAntennaTransmitting( ant ) ) then 
-        -- Check if the antenna already has a speed locked, if it does then reset the lock, otherwise we lock
-        -- a speed
-        if ( self:IsAntennaSpeedLocked( ant ) ) then 
-            self:ResetAntennaSpeedLock( ant )
-        else 
-            -- Set up a temporary table with 3 nil values, this way if the system isn't able to get a speed or
-            -- direction, the speed lock function won't work 
-            local data = { nil, nil, nil }
+	-- Only lock a speed if the antenna is on and the UI is displayed
+	if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() and self:IsAntennaTransmitting( ant ) ) then 
+		-- Check if the antenna already has a speed locked, if it does then reset the lock, otherwise we lock
+		-- a speed
+		if ( self:IsAntennaSpeedLocked( ant ) ) then 
+			self:ResetAntennaSpeedLock( ant )
+		else 
+			-- Set up a temporary table with 3 nil values, this way if the system isn't able to get a speed or
+			-- direction, the speed lock function won't work 
+			local data = { nil, nil, nil }
 
-            -- As the lock system is based on which speed is displayed, we have to check if there is a speed in the 
-            -- fast box, if there is then we lock in the fast speed, otherwise we lock in the strongest speed
-            if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then 
-                data[1] = self:GetAntennaFastSpeed( ant ) 
-                data[2] = self:GetAntennaFastDir( ant )	
-                data[3] = 2
-            else 
-                data[1] = self:GetAntennaSpeed( ant ) 
-                data[2] = self:GetAntennaDir( ant ) 
-                data[3] = 1
-            end
+			-- As the lock system is based on which speed is displayed, we have to check if there is a speed in the 
+			-- fast box, if there is then we lock in the fast speed, otherwise we lock in the strongest speed
+			if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then 
+				data[1] = self:GetAntennaFastSpeed( ant ) 
+				data[2] = self:GetAntennaFastDir( ant )	
+				data[3] = 2
+			else 
+				data[1] = self:GetAntennaSpeed( ant ) 
+				data[2] = self:GetAntennaDir( ant ) 
+				data[3] = 1
+			end
 
-            -- Lock in the speed data for the antenna
-            self:SetAntennaSpeedLock( ant, data[1], data[2], data[3] )
-        end 
-        
-        -- Attempt for fixing speed lock bugging every now and then, doesn't seem to happen as often 
-        -- with this wait in place 
-        -- Citizen.Wait( 10 )
+			-- Lock in the speed data for the antenna
+			self:SetAntennaSpeedLock( ant, data[1], data[2], data[3] )
+		end 
+		
+		-- Attempt for fixing speed lock bugging every now and then, doesn't seem to happen as often 
+		-- with this wait in place 
+		-- Citizen.Wait( 10 )
 
-        -- Send an NUI message to change the lock label, otherwise we'd have to wait until the next main loop
-        SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )
-        SendNUIMessage( { _type = "antennaFast", ant = ant, state = self:ShouldFastBeDisplayed( ant ) } )
-    end 
+		-- Send an NUI message to change the lock label, otherwise we'd have to wait until the next main loop
+		SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )
+		SendNUIMessage( { _type = "antennaFast", ant = ant, state = self:ShouldFastBeDisplayed( ant ) } )
+	end 
 end 
 
 -- Resets an antenna, used when the system is turned off
@@ -935,14 +935,14 @@ end
 -- Takes the vehicle data from RADAR:CreateRayThread() and puts it into the main captured vehicles table, along
 -- with the ray type for that vehicle data set (e.g. same or opp)
 function RADAR:InsertCapturedVehicleData( t, rt )
-    -- Make sure the table being passed is valid and not empty
-    if ( type( t ) == "table" and not UTIL:IsTableEmpty( t ) ) then 
-        -- Iterate through the given table 
-        for _, v in pairs( t ) do
-            -- Add the ray type to the current row
-            v.rayType = rt 
-            
-            -- Insert it into the main captured vehicles table 
+	-- Make sure the table being passed is valid and not empty
+	if ( type( t ) == "table" and not UTIL:IsTableEmpty( t ) ) then 
+		-- Iterate through the given table 
+		for _, v in pairs( t ) do
+			-- Add the ray type to the current row
+			v.rayType = rt 
+			
+			-- Insert it into the main captured vehicles table 
 			table.insert( self.vars.capturedVehicles, v )
 		end
 	end 
@@ -987,16 +987,16 @@ end
 -- Inserts the given data into the dynamic spheres table, stores the radius and the actual summed up
 -- vehicle size. The key is just the model of a vehicle put into string form 
 function RADAR:InsertDynamicRadiusData( key, radius, actualSize )
-    -- Check to make sure there is no data for the vehicle
-    if ( self:GetDynamicDataValue( key ) == nil ) then 
-        -- Create a table to store the data in
+	-- Check to make sure there is no data for the vehicle
+	if ( self:GetDynamicDataValue( key ) == nil ) then 
+		-- Create a table to store the data in
 		local data = {}
 
-        -- Put the data into the temporary table 
+		-- Put the data into the temporary table 
 		data.radius = radius 
 		data.actualSize = actualSize
 
-        -- Set the dynamic sphere data for the vehicle
+		-- Set the dynamic sphere data for the vehicle
 		self:SetDynamicRadiusKey( key, data )
 	end 
 end 
@@ -1009,37 +1009,37 @@ end
 -- This function is used to get the dynamic sphere data for a vehicle, if data already exists for the 
 -- given vehicle, then the system just returns the already made data, otherwise the data gets created 
 function RADAR:GetDynamicRadius( veh )
-    -- Get the model of the vehicle 
-    local mdl = GetEntityModel( veh )
-    
-    -- Create a key based on the model 
-    local key = tostring( mdl )
-    
-    -- Check to see if data already exists
+	-- Get the model of the vehicle 
+	local mdl = GetEntityModel( veh )
+	
+	-- Create a key based on the model 
+	local key = tostring( mdl )
+	
+	-- Check to see if data already exists
 	local dataExists = self:DoesDynamicRadiusDataExist( key )
-    
-    -- If the data doesn't already exist, then we create it 
-    if ( not dataExists ) then 
-        -- Get the min and max points of the vehicle model 
-        local min, max = GetModelDimensions( mdl )
-        
-        -- Calculate the size, as the min value is negative 
-        local size = max - min 
-        
-        -- Get a numeric size which composes of the x, y, and z size combined
-        local numericSize = size.x + size.y + size.z 
-        
-        -- Get a dynamic radius for the given vehicle model that fits into the world of GTA
+	
+	-- If the data doesn't already exist, then we create it 
+	if ( not dataExists ) then 
+		-- Get the min and max points of the vehicle model 
+		local min, max = GetModelDimensions( mdl )
+		
+		-- Calculate the size, as the min value is negative 
+		local size = max - min 
+		
+		-- Get a numeric size which composes of the x, y, and z size combined
+		local numericSize = size.x + size.y + size.z 
+		
+		-- Get a dynamic radius for the given vehicle model that fits into the world of GTA
 		local dynamicRadius = UTIL:Clamp( ( numericSize * numericSize ) / 12, 5.0, 11.0 )
 
-        -- Insert the newly created sphere data into the sphere data table
+		-- Insert the newly created sphere data into the sphere data table
 		self:InsertDynamicRadiusData( key, dynamicRadius, numericSize )
 
-        -- Return the data
+		-- Return the data
 		return dynamicRadius, numericSize
 	end 
 
-    -- Return the stored data
+	-- Return the stored data
 	return self:GetRadiusData( key )
 end
 
@@ -1049,64 +1049,64 @@ end
 ----------------------------------------------------------------------------------]]--
 -- Takes a GTA speed and converts it into the type defined by the user in the operator menu 
 function RADAR:GetVehSpeedConverted( speed )
-    -- Get the speed unit from the settings
-    local unit = self:GetSettingValue( "speedType" )
+	-- Get the speed unit from the settings
+	local unit = self:GetSettingValue( "speedType" )
 
-    -- Return the coverted speed rounded to a whole number 
-    return UTIL:Round( speed * self.speedConversions[unit], 0 )
+	-- Return the coverted speed rounded to a whole number 
+	return UTIL:Round( speed * self.speedConversions[unit], 0 )
 end 
 
 -- Gathers all of the vehicles in the local area of the player
 function RADAR:GetAllVehicles()
-    -- Create a temporary table
+	-- Create a temporary table
 	local t = {}
 
-    -- Iterate through vehicles
-    for v in UTIL:EnumerateVehicles() do
-        -- Insert the vehicle id into the temporary table 
+	-- Iterate through vehicles
+	for v in UTIL:EnumerateVehicles() do
+		-- Insert the vehicle id into the temporary table 
 		table.insert( t, v )
 	end 
 
-    -- Return the table 
+	-- Return the table 
 	return t
 end 
 
 -- Used to check if an antennas mode fits with a ray type from the ray trace system 
 function RADAR:CheckVehicleDataFitsMode( ant, rt )
-    -- Get the current mode value for the given antenna
+	-- Get the current mode value for the given antenna
 	local mode = self:GetAntennaMode( ant )
 
-    -- Check that the given ray type matches up with the antenna's current mode
+	-- Check that the given ray type matches up with the antenna's current mode
 	if ( ( mode == 3 ) or ( mode == 1 and rt == "same" ) or ( mode == 2 and rt == "opp" ) ) then return true end 
 
-    -- Otherwise, return false as a last resort
+	-- Otherwise, return false as a last resort
 	return false  
 end
 
 -- This function is used to filter through the captured vehicles and work out what vehicles should be used for display
 -- on the radar interface
 function RADAR:GetVehiclesForAntenna()
-    -- Create the vehs table to store the split up captured vehicle data
-    local vehs = { ["front"] = {}, ["rear"] = {} }
-    
-    -- Create the results table to store the vehicle results, the first index is for the 'strongest' vehicle and the
-    -- second index is for the 'fastest' vehicle
+	-- Create the vehs table to store the split up captured vehicle data
+	local vehs = { ["front"] = {}, ["rear"] = {} }
+	
+	-- Create the results table to store the vehicle results, the first index is for the 'strongest' vehicle and the
+	-- second index is for the 'fastest' vehicle
 	local results = { ["front"] = { nil, nil }, ["rear"] = { nil, nil } }
 
 	-- Loop through and split up the vehicles based on front and rear, this is simply because the actual system 
 	-- that gets all of the vehicles hit by the radar only has a relative position of either 1 or -1, which we 
 	-- then convert below into an antenna string!
-    for ant in UTIL:Values( { "front", "rear" } ) do 
-        -- Check that the antenna is actually transmitting
-        if ( self:IsAntennaTransmitting( ant ) ) then 
-            -- Iterate through the captured vehicles
-            for k, v in pairs( self:GetCapturedVehicles() ) do 
-                -- Convert the relative position to antenna text
+	for ant in UTIL:Values( { "front", "rear" } ) do 
+		-- Check that the antenna is actually transmitting
+		if ( self:IsAntennaTransmitting( ant ) ) then 
+			-- Iterate through the captured vehicles
+			for k, v in pairs( self:GetCapturedVehicles() ) do 
+				-- Convert the relative position to antenna text
 				local antText = self:GetAntennaTextFromNum( v.relPos )
 
-                -- Check the current vehicle's relative position is the same as the current antenna 
-                if ( ant == antText ) then 
-                    -- Insert the vehicle into the table for the current antenna 
+				-- Check the current vehicle's relative position is the same as the current antenna 
+				if ( ant == antText ) then 
+					-- Insert the vehicle into the table for the current antenna 
 					table.insert( vehs[ant], v )
 				end 
 			end 
@@ -1118,36 +1118,36 @@ function RADAR:GetVehiclesForAntenna()
 		end
 	end 
 
-    -- Now that we have all of the vehicles split into front and rear, we can iterate through both sets and get 
-    -- the strongest and fastest vehicle for display
-    for ant in UTIL:Values( { "front", "rear" } ) do 
-        -- Check that the table for the current antenna is not empty 
+	-- Now that we have all of the vehicles split into front and rear, we can iterate through both sets and get 
+	-- the strongest and fastest vehicle for display
+	for ant in UTIL:Values( { "front", "rear" } ) do 
+		-- Check that the table for the current antenna is not empty 
 		if ( not UTIL:IsTableEmpty( vehs[ant] ) ) then
 			-- Get the 'strongest' vehicle for the antenna 
-            for k, v in pairs( vehs[ant] ) do 
-                -- Check if the current vehicle item fits the mode set by the user
-                if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) ) then 
-                    -- Set the result for the current antenna 
+			for k, v in pairs( vehs[ant] ) do 
+				-- Check if the current vehicle item fits the mode set by the user
+				if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) ) then 
+					-- Set the result for the current antenna 
 					results[ant][1] = v
 					break
 				end 
 			end 
 
-            -- Here we get the vehicle for the fastest section, but only if the user has the fast mode enabled
-            -- in the operator menu 
+			-- Here we get the vehicle for the fastest section, but only if the user has the fast mode enabled
+			-- in the operator menu 
 			if ( self:IsFastDisplayEnabled() ) then 
 				-- Get the 'fastest' vehicle for the antenna 
 				table.sort( vehs[ant], self:GetFastestSortFunc() )
 
-                -- Create a temporary variable for the first result, reduces line length
+				-- Create a temporary variable for the first result, reduces line length
 				local temp = results[ant][1]
 
-                -- Iterate through the vehicles for the current antenna
-                for k, v in pairs( vehs[ant] ) do 
-                    -- When we grab a vehicle for the fastest section, as it is like how the real system works, there are a few
-                    -- additional checks that have to be made 
-                    if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= temp.veh and v.size < temp.size and v.speed > temp.speed ) then 
-                        -- Set the result for the current antenna 
+				-- Iterate through the vehicles for the current antenna
+				for k, v in pairs( vehs[ant] ) do 
+					-- When we grab a vehicle for the fastest section, as it is like how the real system works, there are a few
+					-- additional checks that have to be made 
+					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= temp.veh and v.size < temp.size and v.speed > temp.speed ) then 
+						-- Set the result for the current antenna 
 						results[ant][2] = v 
 						break
 					end 
@@ -1156,7 +1156,7 @@ function RADAR:GetVehiclesForAntenna()
 		end 
 	end
 
-    -- Return the results 
+	-- Return the results 
 	return { ["front"] = { results["front"][1], results["front"][2] }, ["rear"] = { results["rear"][1], results["rear"][2] } }
 end 
 
@@ -1166,41 +1166,41 @@ end
 ----------------------------------------------------------------------------------]]--
 -- Runs when the "Toggle Display" button is pressed on the remote control 
 RegisterNUICallback( "toggleDisplay", function()
-    -- Toggle the display state 
+	-- Toggle the display state 
 	RADAR:ToggleDisplayState()
 end )
 
 -- Runs when the user presses the power button on the radar ui 
 RegisterNUICallback( "togglePower", function()
-    -- Toggle the radar's power 
+	-- Toggle the radar's power 
 	RADAR:TogglePower()
 end )
 
 -- Runs when the user presses the ESC or RMB when the remote is open 
 RegisterNUICallback( "closeRemote", function()
-    -- Remove focus to the NUI side 
+	-- Remove focus to the NUI side 
 	SetNuiFocus( false, false )
 end )
 
 -- Runs when the user presses any of the antenna mode buttons on the remote
 RegisterNUICallback( "setAntennaMode", function( data ) 
-    -- As the mode buttons are used to exit the menu, we check for that 
-    if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
-        -- Set the internal menu state to be closed (false)
-        RADAR:SetMenuState( false )
-        
-        -- Send a setting update to the NUI side 
-        RADAR:SendSettingUpdate()
-        
-        -- Play a menu done beep 
+	-- As the mode buttons are used to exit the menu, we check for that 
+	if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
+		-- Set the internal menu state to be closed (false)
+		RADAR:SetMenuState( false )
+		
+		-- Send a setting update to the NUI side 
+		RADAR:SendSettingUpdate()
+		
+		-- Play a menu done beep 
 		SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
-    else
-        -- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
-        RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
-            -- Update the interface with the new mode 
-            SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
-            
-            -- Play a beep 
+	else
+		-- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
+		RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
+			-- Update the interface with the new mode 
+			SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+			
+			-- Play a beep 
 			SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 		end )
 	end 
@@ -1208,20 +1208,20 @@ end )
 
 -- Runs when the user presses either of the XMIT/HOLD buttons on the remote 
 RegisterNUICallback( "toggleAntenna", function( data ) 
-    -- As the xmit/hold buttons are used to change settings in the menu, we check for that 
-    if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
-        -- Change the menu option based on which button is pressed
-        RADAR:ChangeMenuOption( data.value )
-        
-        -- Play a beep noise 
+	-- As the xmit/hold buttons are used to change settings in the menu, we check for that 
+	if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
+		-- Change the menu option based on which button is pressed
+		RADAR:ChangeMenuOption( data.value )
+		
+		-- Play a beep noise 
 		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-    else
-        -- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
-        RADAR:ToggleAntenna( data.value, function()
-            -- Update the interface with the new antenna transmit state
-            SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
-            
-            -- Play some audio specific to the transmit state
+	else
+		-- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
+		RADAR:ToggleAntenna( data.value, function()
+			-- Update the interface with the new antenna transmit state
+			SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+			
+			-- Play some audio specific to the transmit state
 			SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
 		end )
 	end 
@@ -1229,19 +1229,19 @@ end )
 
 -- Runs when the user presses the menu button on the remote control
 RegisterNUICallback( "menu", function()
-    -- As the menu button is a multipurpose button, we first check to see if the menu is already open
-    if ( RADAR:IsMenuOpen() ) then 
-        -- As the menu is already open, we then iterate to the next option in the settings list
+	-- As the menu button is a multipurpose button, we first check to see if the menu is already open
+	if ( RADAR:IsMenuOpen() ) then 
+		-- As the menu is already open, we then iterate to the next option in the settings list
 		RADAR:ChangeMenuIndex()
 	else 
 		-- Set the menu state to open, which will prevent anything else within the radar from working
-        RADAR:SetMenuState( true )
-        
-        -- Send an update to the NUI side
+		RADAR:SetMenuState( true )
+		
+		-- Send an update to the NUI side
 		RADAR:SendMenuUpdate()
 	end
 
-    -- Play the standard audio beep
+	-- Play the standard audio beep
 	SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 end )
 
@@ -1258,26 +1258,26 @@ end )
 -- the user is stationary, if the system takes up an additional one or two frames per second, it won't really 
 -- be noticeable.
 function RADAR:RunDynamicThreadWaitCheck()
-    -- Get the speed of the local players vehicle
+	-- Get the speed of the local players vehicle
 	local speed = self:GetPatrolSpeed()
 
-    -- Check that the vehicle speed is less than 0.1
-    if ( speed < 0.1 ) then 
-        -- Change the thread wait time to 200 ms, the trace system will now run five times per second
+	-- Check that the vehicle speed is less than 0.1
+	if ( speed < 0.1 ) then 
+		-- Change the thread wait time to 200 ms, the trace system will now run five times per second
 		self:SetThreadWaitTime( 200 )
-    else 
-        -- Change the thread wait time to 500 ms, the trace system will now run two times a second
+	else 
+		-- Change the thread wait time to 500 ms, the trace system will now run two times a second
 		self:SetThreadWaitTime( 500 )
 	end 
 end 
 
 -- Create the thread that will run the dynamic thread wait check, this check only runs every two seconds
 Citizen.CreateThread( function()
-    while ( true ) do 
-        -- Run the function
+	while ( true ) do 
+		-- Run the function
 		RADAR:RunDynamicThreadWaitCheck()
 
-        -- Make the thread wait two seconds
+		-- Make the thread wait two seconds
 		Citizen.Wait( 2000 )
 	end 
 end )
@@ -1285,31 +1285,31 @@ end )
 -- This function handles the custom ray trace system that is used to gather all of the vehicles hit by
 -- the ray traces defined in RADAR.rayTraces. 
 function RADAR:RunThreads()
-    -- For the system to even run, the player needs to be sat in the driver's seat of a class 18 vehicle, the 
-    -- radar has to be visible and the power must be on, and either one of the antennas must be enabled.
-    if ( PLY:VehicleStateValid() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
-        -- Before we create any of the custom ray trace threads, we need to make sure that the ray trace state 
-        -- is at zero, if it is not at zero, then it means the system is still currently tracing
-        if ( self:GetRayTraceState() == 0 ) then 
-            -- Grab a copy of the vehicle pool
+	-- For the system to even run, the player needs to be sat in the driver's seat of a class 18 vehicle, the 
+	-- radar has to be visible and the power must be on, and either one of the antennas must be enabled.
+	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
+		-- Before we create any of the custom ray trace threads, we need to make sure that the ray trace state 
+		-- is at zero, if it is not at zero, then it means the system is still currently tracing
+		if ( self:GetRayTraceState() == 0 ) then 
+			-- Grab a copy of the vehicle pool
 			local vehs = self:GetVehiclePool()
 
-            -- Reset the main captured vehicles table
-            self:ResetCapturedVehicles()
-            
-            -- Reset the ray trace state back to 0
-            -- self:ResetRayTraceState()
-            
-            -- Here we run the function that creates all of the main ray threads
+			-- Reset the main captured vehicles table
+			self:ResetCapturedVehicles()
+			
+			-- Reset the ray trace state back to 0
+			-- self:ResetRayTraceState()
+			
+			-- Here we run the function that creates all of the main ray threads
 			self:CreateRayThreads( PLY.veh, vehs )
 
-            -- Make the thread this function runs in wait the dynamic time defined by the system
-            Citizen.Wait( self:GetThreadWaitTime() )
-            
-        -- If the current ray trace state is the same as the total number of rays, then we reset the ray trace 
-        -- state back to 0 so the thread system can run again
-        elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
-            -- Reset the ray trace state to 0
+			-- Make the thread this function runs in wait the dynamic time defined by the system
+			Citizen.Wait( self:GetThreadWaitTime() )
+			
+		-- If the current ray trace state is the same as the total number of rays, then we reset the ray trace 
+		-- state back to 0 so the thread system can run again
+		elseif ( self:GetRayTraceState() == self:GetNumOfRays() ) then 
+			-- Reset the ray trace state to 0
 			self:ResetRayTraceState()
 		end
 	end 
@@ -1318,11 +1318,11 @@ end
 -- Create the main thread that will run the threads function, the function itself is run every frame as the
 -- dynamic wait time is ran inside the function
 Citizen.CreateThread( function()
-    while ( true ) do 
-        -- Run the function
+	while ( true ) do 
+		-- Run the function
 		RADAR:RunThreads()
 
-        -- Make the thread wait 0 ms
+		-- Make the thread wait 0 ms
 		Citizen.Wait( 0 )
 	end 
 end )
@@ -1330,20 +1330,20 @@ end )
 -- This is the main function that runs and handles all information that is sent to the NUI side for display, all 
 -- speed values are converted on the Lua side into a format that is displayable using the custom font on the NUI side
 function RADAR:Main()
-    -- Only run any of the main code if all of the states are met, player in the driver's seat of a class 18 vehicle, and
-    -- the system has to be able to perform main tasks 
-    if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then 
-        -- Create a table that will be used to store all of the data to be sent to the NUI side
+	-- Only run any of the main code if all of the states are met, player in the driver's seat of a class 18 vehicle, and
+	-- the system has to be able to perform main tasks 
+	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then 
+		-- Create a table that will be used to store all of the data to be sent to the NUI side
 		local data = {} 
 
 		-- Get the player's vehicle speed
-        local entSpeed = GetEntitySpeed( PLY.veh )
-        
-        -- Set the internal patrol speed to the speed obtained above, this is then used in the dynamic thread wait calculation
+		local entSpeed = GetEntitySpeed( PLY.veh )
+		
+		-- Set the internal patrol speed to the speed obtained above, this is then used in the dynamic thread wait calculation
 		self:SetPatrolSpeed( entSpeed )
 
-        -- Change what is displayed in the patrol speed box on the radar interface depending on if the players vehicle is 
-        -- stationary or moving
+		-- Change what is displayed in the patrol speed box on the radar interface depending on if the players vehicle is 
+		-- stationary or moving
 		if ( entSpeed == 0 ) then 
 			data.patrolSpeed = "¦[]"
 		else 
@@ -1351,39 +1351,39 @@ function RADAR:Main()
 			data.patrolSpeed = UTIL:FormatSpeed( speed )
 		end 
 
-        -- Get the vehicles to be displayed for the antenna, then we take the results from that and send the relevant
-        -- information to the NUI side
-        local av = self:GetVehiclesForAntenna()
+		-- Get the vehicles to be displayed for the antenna, then we take the results from that and send the relevant
+		-- information to the NUI side
+		local av = self:GetVehiclesForAntenna()
 		data.antennas = { ["front"] = nil, ["rear"] = nil }
 
-        -- Iterate through the front and rear data and obtain the information to be displayed
-        for ant in UTIL:Values( { "front", "rear" } ) do 
-            -- Check that the antenna is actually transmitting, no point in running all the checks below if the antenna is off
-            if ( self:IsAntennaTransmitting( ant ) ) then
-                -- Create a table for the current antenna to store the information 
+		-- Iterate through the front and rear data and obtain the information to be displayed
+		for ant in UTIL:Values( { "front", "rear" } ) do 
+			-- Check that the antenna is actually transmitting, no point in running all the checks below if the antenna is off
+			if ( self:IsAntennaTransmitting( ant ) ) then
+				-- Create a table for the current antenna to store the information 
 				data.antennas[ant] = {}
 
-                -- When the system works out what vehicles to be used, both the "front" and "rear" keys have two items located 
-                -- at index 1 and 2. Index 1 stores the vehicle data for the antenna's 'strongest' vehicle, and index 2 stores
-                -- the vehicle data for the 'fastest' vehicle. Here we iterate through both the indexes and just run checks to 
-                -- see if it is a particular type (e.g. if i % 2 == 0 then it's the 'fastest' vehicle)
-                for i = 1, 2 do 
-                    -- Create the table to store the speed and direction for this vehicle data 
+				-- When the system works out what vehicles to be used, both the "front" and "rear" keys have two items located 
+				-- at index 1 and 2. Index 1 stores the vehicle data for the antenna's 'strongest' vehicle, and index 2 stores
+				-- the vehicle data for the 'fastest' vehicle. Here we iterate through both the indexes and just run checks to 
+				-- see if it is a particular type (e.g. if i % 2 == 0 then it's the 'fastest' vehicle)
+				for i = 1, 2 do 
+					-- Create the table to store the speed and direction for this vehicle data 
 					data.antennas[ant][i] = { speed = "¦¦¦", dir = 0 }
 
-                    -- If the current iteration is the number 2 ('fastest') and there's a speed locked, grab the locked speed 
-                    -- and direction
+					-- If the current iteration is the number 2 ('fastest') and there's a speed locked, grab the locked speed 
+					-- and direction
 					if ( i == 2 and self:IsAntennaSpeedLocked( ant ) ) then 
 						data.antennas[ant][i].speed = self:GetAntennaLockedSpeed( ant )
-                        data.antennas[ant][i].dir = self:GetAntennaLockedDir( ant )
-                        
-                    -- Otherwise, continue with getting speed and direction data 
+						data.antennas[ant][i].dir = self:GetAntennaLockedDir( ant )
+						
+					-- Otherwise, continue with getting speed and direction data 
 					else 
 						-- The vehicle data exists for this slot 
 						if ( av[ant][i] ~= nil ) then 
-                            -- Here we get the entity speed of the vehicle, the speed for this vehicle would've been obtained
-                            -- and stored in the trace stage, but the speed would've only been obtained and stored once, which
-                            -- means that it woulsn't be the current speed
+							-- Here we get the entity speed of the vehicle, the speed for this vehicle would've been obtained
+							-- and stored in the trace stage, but the speed would've only been obtained and stored once, which
+							-- means that it woulsn't be the current speed
 							local vehSpeed = GetEntitySpeed( av[ant][i].veh )
 							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedConverted( vehSpeed ) )
 
@@ -1394,16 +1394,16 @@ function RADAR:Main()
 
 							-- Set the internal antenna data as this actual dataset is valid 
 							if ( i % 2 == 0 ) then 
-                                self:SetAntennaFastData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
+								self:SetAntennaFastData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							else 
-                                self:SetAntennaData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
+								self:SetAntennaData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							end 
 						else 
 							-- If the active vehicle is not valid, we reset the internal data
 							if ( i % 2 == 0 ) then 
-                                self:SetAntennaFastData( ant, nil, nil )
+								self:SetAntennaFastData( ant, nil, nil )
 							else 
-                                self:SetAntennaData( ant, nil, nil )
+								self:SetAntennaData( ant, nil, nil )
 							end
 						end 
 					end 
