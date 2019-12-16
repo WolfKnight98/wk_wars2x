@@ -106,7 +106,7 @@ RADAR.vars =
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
-		{ displayText = { "BEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" },
+		{ displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" },
 		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = 1, settingText = "speedType" }
 	},
 
@@ -339,6 +339,50 @@ function RADAR:OpenRemote()
 		-- Bring focus to the NUI side 
 		SetNuiFocus( true, true )
 	end
+end 
+
+-- Returns if the fast limit option should be available for the radar
+function RADAR:IsFastLimitAllowed()
+	return self.config.allow_fast_limit
+end
+
+-- Only create the functions if the fast limit config option is enabled
+if ( RADAR:IsFastLimitAllowed() ) then
+	-- Adds settings into the radar's variables for when the allow_fast_limit variable is true 
+	function RADAR:CreateFastLimitConfig()
+		-- Create the options for the menu 
+		local fastOptions = 
+		{
+			{ displayText = { "FAS", "Loc" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 2, settingText = "fastLock" },
+			{ displayText = { "FAS", "SPd" }, optionsText = {}, options = {}, optionIndex = 12, settingText = "fastLimit" }
+		}
+
+		-- Iterate from 5 to 200 in steps of 5 and insert into the fast limit option 
+		for i = 5, 200, 5 do
+			local text = UTIL:FormatSpeed( i )
+
+			table.insert( fastOptions[2].optionsText, text )
+			table.insert( fastOptions[2].options, i )
+		end 
+
+		-- Create the settings with the default options 
+		self:SetSettingValue( "fastLock", false )
+		self:SetSettingValue( "fastLimit", 60 )
+
+		-- Add the fast options to the main menu options table 
+		table.insert( self.vars.menuOptions, fastOptions[1] )
+		table.insert( self.vars.menuOptions, fastOptions[2] )
+	end 
+
+	-- Returns the numerical fast limit 
+	function RADAR:GetFastLimit()
+		return self.vars.settings["fastLimit"]
+	end 
+
+	-- Returns if the fast lock menu option is on or off
+	function RADAR:IsFastLockEnabled()
+		return self.vars.settings["fastLock"]
+	end 
 end 
 
 
@@ -1385,7 +1429,8 @@ function RADAR:Main()
 							-- and stored in the trace stage, but the speed would've only been obtained and stored once, which
 							-- means that it woulsn't be the current speed
 							local vehSpeed = GetEntitySpeed( av[ant][i].veh )
-							data.antennas[ant][i].speed = UTIL:FormatSpeed( self:GetVehSpeedConverted( vehSpeed ) )
+							local convertedSpeed = self:GetVehSpeedConverted( vehSpeed )
+							data.antennas[ant][i].speed = UTIL:FormatSpeed( convertedSpeed ) 
 
 							-- Work out if the vehicle is closing or away 
 							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
@@ -1397,6 +1442,14 @@ function RADAR:Main()
 								self:SetAntennaFastData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
 							else 
 								self:SetAntennaData( ant, data.antennas[ant][i].speed, data.antennas[ant][i].dir )
+							end
+							
+							-- Lock the speed automatically if the fast limit system is allowed
+							if ( self:IsFastLimitAllowed() ) then 
+								-- Make sure the speed is larger than the limit, and that there isn't already a locked speed
+								if ( self:IsFastLockEnabled() and convertedSpeed > self:GetFastLimit() and not self:IsAntennaSpeedLocked( ant ) ) then 
+									self:LockAntennaSpeed( ant )
+								end 
 							end 
 						else 
 							-- If the active vehicle is not valid, we reset the internal data
@@ -1425,6 +1478,10 @@ Citizen.CreateThread( function()
 
 	RADAR:CacheNumRays()
 	RADAR:UpdateRayEndCoords()
+
+	if ( RADAR:IsFastLimitAllowed() ) then 
+		RADAR:CreateFastLimitConfig()
+	end 
 
 	while ( true ) do
 		RADAR:Main()
