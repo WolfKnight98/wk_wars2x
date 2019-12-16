@@ -210,7 +210,7 @@ function setAntennaFastMode( ant, state )
 
 function setAntennaLock( ant, state )
 {
-	setLight( ant, "fast", "lockLabel", state ); 
+    setLight( ant, "fast", "lockLabel", state ); 
 }
 
 function setAntennaDirs( ant, dir, fastDir )
@@ -289,13 +289,13 @@ function menu( optionText, option )
 	elements.patrolSpeed.html( option );
 }
 
-function settingUpdate( ants, fast )
+function settingUpdate( ants )
 {
 	for ( let ant in ants )
 	{
 		setAntennaXmit( ant, ants[ant].xmit );
 		setAntennaMode( ant, ants[ant].mode ); 
-		setAntennaFastMode( ant, fast );   
+        setAntennaFastMode( ant, ants[ant].fast );  
 		setAntennaLock( ant, ants[ant].speedLocked );
 	}
 }
@@ -432,13 +432,16 @@ window.addEventListener( "message", function( event ) {
 			setAntennaMode( item.ant, item.mode ); 
 			break; 
 		case "antennaLock":
-			setAntennaLock( item.ant, item.state );
-			break; 
+            setAntennaLock( item.ant, item.state );
+            break; 
+        case "antennaFast":
+            setAntennaFastMode( item.ant, item.state ); 
+            break; 
 		case "menu":
 			menu( item.text, item.option ); 
 			break;
 		case "settingUpdate":
-			settingUpdate( item.antennaData, item.fast ); 
+			settingUpdate( item.antennaData ); 
 			break; 
 		case "audio":
 			playAudio( item.name, item.vol ); 

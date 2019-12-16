@@ -124,8 +124,9 @@ RADAR.vars =
 			fastSpeed = 0, 			-- Speed of the fastest vehicle caught by the front antenna
 			fastDir = nil, 			-- Direction the fastest vehicle is going  
 			speedLocked = false, 	-- A speed has been locked for this antenna
-			lockedSpeed = 0, 		-- The locked speed
-			lockedDir = 0 			-- The direction of the vehicle that was locked
+			lockedSpeed = nil, 		-- The locked speed
+            lockedDir = nil, 			-- The direction of the vehicle that was locked
+            lockedType = nil        -- The locked type, 1 = strongest, 2 = fastest
 		}, 
 
 		[ "rear" ] = {
@@ -136,8 +137,9 @@ RADAR.vars =
 			fastSpeed = 0, 			-- Speed of the fastest vehicle caught by the front antenna
 			fastDir = nil, 			-- Direction the fastest vehicle is going
 			speedLocked = false,	-- A speed has been locked for this antenna
-			lockedSpeed = 0,		-- The locked speed
-			lockedDir = 0			-- The direction of the vehicle that was locked
+			lockedSpeed = nil,		-- The locked speed
+            lockedDir = nil,			-- The direction of the vehicle that was locked
+            lockedType = nil        -- The locked type, 1 = strongest, 2 = fastest
 		}
 	}, 
 
@@ -285,12 +287,18 @@ end
 
 -- Sends an update to the NUI side with the current state of the antennas and if the fast system is enabled
 function RADAR:SendSettingUpdate()
-	-- Grab the antennas table and the fast system state
-	local antennas = self.vars.antennas 
-	local fast = self:IsFastDisplayEnabled()
+    local antennas = {}
 
-	-- Send a message to the NUI side with the current state of the antennas and the fast mode
-	SendNUIMessage( { _type = "settingUpdate", antennaData = antennas, fast = fast } )
+    for ant in UTIL:Values( { "front", "rear" } ) do 
+        antennas[ant] = {}
+        antennas[ant].xmit = self:IsAntennaTransmitting( ant )
+        antennas[ant].mode = self:GetAntennaMode( ant )
+        antennas[ant].speedLocked = self:IsAntennaSpeedLocked( ant )
+        antennas[ant].fast = self:ShouldFastBeDisplayed( ant )
+    end 
+
+	-- Send a message to the NUI side with the current state of the antennas
+    SendNUIMessage( { _type = "settingUpdate", antennaData = antennas } )
 end 
 
 -- Returns if a main task can be performed 
@@ -795,6 +803,15 @@ function RADAR:DoesAntennaHaveValidFastData( ant )
 	return self:GetAntennaFastSpeed( ant ) ~= nil 
 end 
 
+-- Returns if the fast label should be displayed 
+function RADAR:ShouldFastBeDisplayed( ant )
+    if ( self:IsAntennaSpeedLocked( ant ) ) then 
+        return self:GetAntennaLockedType( ant ) == 2 
+    else 
+        return self:IsFastDisplayEnabled()
+    end
+end 
+
 -- Returns if the given antenna has a locked speed
 function RADAR:IsAntennaSpeedLocked( ant )
 	return self.vars.antennas[ant].speedLocked
@@ -806,12 +823,13 @@ function RADAR:SetAntennaSpeedIsLocked( ant, state )
 end 
 
 -- Sets a speed and direction to be locked in for the given antenna 
-function RADAR:SetAntennaSpeedLock( ant, speed, dir )
+function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
     -- Check that the passed speed and direction are actually valid
-    if ( speed ~= nil and dir ~= nil ) then 
+    if ( speed ~= nil and dir ~= nil and lockType ~= nil ) then 
         -- Set the locked speed and direction to the passed values
 		self.vars.antennas[ant].lockedSpeed = speed 
-		self.vars.antennas[ant].lockedDir = dir 
+        self.vars.antennas[ant].lockedDir = dir 
+        self.vars.antennas[ant].lockedType = lockType
         
         -- Tell the system that a speed has been locked for the given antenna
 		self:SetAntennaSpeedIsLocked( ant, true )
@@ -831,11 +849,17 @@ function RADAR:GetAntennaLockedDir( ant )
     return self.vars.antennas[ant].lockedDir
 end 
 
+-- Returns the lock type for the given antenna
+function RADAR:GetAntennaLockedType( ant )
+    return self.vars.antennas[ant].lockedType 
+end 
+
 -- Resets the speed lock info to do with the given antenna
 function RADAR:ResetAntennaSpeedLock( ant )
     -- Blank the locked speed and direction
 	self.vars.antennas[ant].lockedSpeed = nil 
-	self.vars.antennas[ant].lockedDir = nil  
+    self.vars.antennas[ant].lockedDir = nil  
+    self.vars.antennas[ant].lockedType = nil
     
     -- Set the locked state to false
 	self:SetAntennaSpeedIsLocked( ant, false )
@@ -851,30 +875,33 @@ function RADAR:LockAntennaSpeed( ant )
         if ( self:IsAntennaSpeedLocked( ant ) ) then 
             self:ResetAntennaSpeedLock( ant )
         else 
-            -- Set up a temporary table with 2 nil values, this way if the system isn't able to get a speed or
+            -- Set up a temporary table with 3 nil values, this way if the system isn't able to get a speed or
             -- direction, the speed lock function won't work 
-            local data = { nil, nil }
+            local data = { nil, nil, nil }
 
             -- As the lock system is based on which speed is displayed, we have to check if there is a speed in the 
             -- fast box, if there is then we lock in the fast speed, otherwise we lock in the strongest speed
             if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then 
                 data[1] = self:GetAntennaFastSpeed( ant ) 
                 data[2] = self:GetAntennaFastDir( ant )	
+                data[3] = 2
             else 
                 data[1] = self:GetAntennaSpeed( ant ) 
                 data[2] = self:GetAntennaDir( ant ) 
+                data[3] = 1
             end
 
             -- Lock in the speed data for the antenna
-            self:SetAntennaSpeedLock( ant, data[1], data[2] )
+            self:SetAntennaSpeedLock( ant, data[1], data[2], data[3] )
         end 
         
         -- Attempt for fixing speed lock bugging every now and then, doesn't seem to happen as often 
         -- with this wait in place 
-        Citizen.Wait( 10 )
+        -- Citizen.Wait( 10 )
 
         -- Send an NUI message to change the lock label, otherwise we'd have to wait until the next main loop
         SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )
+        SendNUIMessage( { _type = "antennaFast", ant = ant, state = self:ShouldFastBeDisplayed( ant ) } )
     end 
 end 
 
