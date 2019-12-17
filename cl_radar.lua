@@ -28,7 +28,6 @@ Citizen.SetTimeout( 1000, function()
 	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
 	SendNUIMessage( { _type = "updatePathName", pathName = name } )
 end )
---local type = type 
 
 
 --[[----------------------------------------------------------------------------------
@@ -159,11 +158,6 @@ RADAR.vars =
 
 	-- The current vehicle data for display 
 	activeVehicles = {},
-	--[[-- Radar stage, this is used to tell the system what it should currently be doing, the stages are:
-	--    - 0 = gathering vehicles hit by the radar
-	--    - 1 = Filtering the vehicles caught 
-	--    - 3 = Calculating what vehicle speed to show based on modes
-	radarStage = 0, ]]
 
 	-- Vehicle pool, automatically populated when the system is running, holds all of the current
 	-- vehicle IDs for the player using entity enumeration (see cl_utils.lua) 
@@ -185,18 +179,13 @@ RADAR.vars =
 RADAR.speedConversions = { ["mph"] = 2.236936, ["kmh"] = 3.6 }
 
 -- These vectors are used in the custom ray tracing system 
---[[RADAR.rayTraces = {
+RADAR.rayTraces = {
 	{ startVec = { x = 0.0 }, endVec = { x = 0.0, y = 0.0 }, rayType = "same" },
 	{ startVec = { x = -5.0 }, endVec = { x = -5.0, y = 0.0 }, rayType = "same" },
 	{ startVec = { x = 5.0 }, endVec = { x = 5.0, y = 0.0 }, rayType = "same" },
 	{ startVec = { x = -10.0 }, endVec = { x = -10.0, y = 0.0 }, rayType = "opp" },
 	{ startVec = { x = -17.0 }, endVec = { x = -17.0, y = 0.0 }, rayType = "opp" }
-	{ startVec = { x = 0.0,   y = 5.0 },  endVec = { x = 0.0,   y = 150.0 } },
-	{ startVec = { x = -5.0,  y = 15.0 }, endVec = { x = -5.0,  y = 150.0 } },
-	{ startVec = { x = 5.0,   y = 15.0 }, endVec = { x = 5.0,   y = 150.0 } },
-	--{ startVec = { x = -12.0, y = 25.0 }, endVec = { x = -12.0, y = 150.0 } },
-	--{ startVec = { x = 12.0,  y = 25.0 }, endVec = { x = 12.0,  y = 150.0 } }
-}]]
+}
 
 -- Each of these are used for sorting the captured vehicle data, the 'strongest' filter is used for the main 
 -- target window of each antenna, whereas the 'fastest' filter is used for the fast target window of each antenna
