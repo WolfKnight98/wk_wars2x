@@ -9,7 +9,6 @@
 local next = next 
 local dot = dot 
 local table = table 
-<<<<<<< HEAD
 local type = type
 local tostring = tostring
 local math = math 
@@ -30,9 +29,6 @@ Citizen.SetTimeout( 1000, function()
 	SendNUIMessage( { _type = "updatePathName", pathName = name } )
 end )
 --local type = type 
-=======
-local type = type 
->>>>>>> parent of 294c82c... Fixed misspellings.
 
 
 --[[----------------------------------------------------------------------------------
@@ -161,7 +157,6 @@ RADAR.vars =
 	-- Table for temp id storage to stop unnecessary trace checks
 	tempVehicleIDs = {},
 
-<<<<<<< HEAD
 	-- The current vehicle data for display 
 	activeVehicles = {},
 	--[[-- Radar stage, this is used to tell the system what it should currently be doing, the stages are:
@@ -169,13 +164,6 @@ RADAR.vars =
 	--    - 1 = Filtering the vehicles caught 
 	--    - 3 = Calculating what vehicle speed to show based on modes
 	radarStage = 0, ]]
-=======
-	-- Radar stage, this is used to tell the system what it should currently be doing, the stages are:
-	--    - 0 = gathering vehicles hit by the radar
-	--    - 1 = Filtering the vehicles caught 
-	--    - 3 = Calculating what vehicle speed to show based on modes
-	radarStage = 0,
->>>>>>> parent of 294c82c... Fixed misspellings.
 
 	-- Vehicle pool, automatically populated when the system is running, holds all of the current
 	-- vehicle IDs for the player using entity enumeration (see cl_utils.lua) 
