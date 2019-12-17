@@ -10,7 +10,6 @@ local next = next
 local dot = dot 
 local table = table 
 <<<<<<< HEAD
-<<<<<<< HEAD
 local type = type
 local tostring = tostring
 local math = math 
@@ -49,9 +48,6 @@ PLY.vehClassValid = false
 function PLY:VehicleStateValid()
 	return DoesEntityExist( self.veh ) and self.veh > 0 and self.inDriverSeat and self.vehClassValid
 end 
-=======
-local type = type 
->>>>>>> parent of 294c82c... Fixed misspellings.
 
 -- The main purpose of this thread is to update the information about the local player, including their
 -- ped id, the vehicle id (if they're in one), whether they're in a driver seat, and if the vehicle's class
