@@ -1,16 +1,16 @@
 @font-face {
 	font-family: "Seg-7";
-	src: url( "Segment7Standard.otf" );
+	src: url( "fonts/Segment7Standard.otf" );
 }
 
 @font-face {
 	font-family: "Heebo";
-	src: url( "Heebo-Bold.ttf" );
+	src: url( "fonts/Heebo-Bold.ttf" );
 }
 
 @font-face {
 	font-family: "Heebo-Regular";
-	src: url( "Heebo-Regular.ttf" );
+	src: url( "fonts/Heebo-Regular.ttf" );
 }
 
 * {
@@ -43,7 +43,7 @@ button:focus { outline: none; }
 	position: absolute;
 	margin: auto;
 
-	background-image: url( "frame.png" );
+	background-image: url( "images/frame.png" );
 
 	/* Settings for scaling */
 	transform: scale( 1.0 );
@@ -93,14 +93,14 @@ button:focus { outline: none; }
 	.panel_left {
 		clip-path: polygon( 0 30%, 80% 0, 100% 0, 100% 100%, 80% 100%, 0 70% );
 		transform: translateX( 1px ); 
-		background-image: url( "bg_left.png" );
+		background-image: url( "images/bg_left.png" );
 		background-repeat: no-repeat;
 	}
 
 	.panel_right {
 		clip-path: polygon( 0 0, 20% 0, 100% 30%, 100% 70%, 20% 100%, 0 100% );   
 		transform: translateX( -1px ); 
-		background-image: url( "bg_right.png" );
+		background-image: url( "images/bg_right.png" );
 		background-repeat: no-repeat;
 	}
 
@@ -126,7 +126,7 @@ button:focus { outline: none; }
 	}
 
 #radar {
-	background-image: url( "bg.png" );
+	background-image: url( "images/bg.png" );
 	background-repeat: no-repeat;
 
 	height: 100%;
@@ -369,7 +369,7 @@ button:focus { outline: none; }
 
 	color: white;
 	/* background-color: rgb( 50, 50, 50 ); */
-	background-image: url( "rc_bg.png" );
+	background-image: url( "images/rc_bg.png" );
 
 	/* clip-path: polygon( 5% 0, 95% 0, 100% 25%, 90% 100%, 10% 100%, 0 25% ); */
 

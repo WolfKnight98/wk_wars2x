@@ -302,7 +302,7 @@ function settingUpdate( ants )
 
 function playAudio( name, vol )
 {
-	let audio = new Audio( audioNames[name] );
+	let audio = new Audio( "sounds/" + audioNames[name] );
 	audio.volume = vol; 
 	audio.play();
 }
