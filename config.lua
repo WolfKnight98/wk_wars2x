@@ -26,10 +26,5 @@ RADAR.config.rear_lock_key = 112
 -- exceeds the fast limit, it will be locked into the fast box. Default setting is disabled to maintain realism
 RADAR.config.allow_fast_limit = true 
 
--- Fast Lock Blip
--- true = vehicles that go over the fast limit will have a blip added to the minimap for a short period of time
--- false = no blips
--- RADAR.config.fast_lock_blips = true
-
 -- Debug mode
 RADAR.config.debug_mode = false 
