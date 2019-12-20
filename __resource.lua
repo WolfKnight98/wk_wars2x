@@ -15,7 +15,12 @@ version 'beta2c'
 ui_page "nui/radar.html"
 
 files {
-	"nui/*"
+    "nui/radar.html", 
+    "nui/radar.css", 
+    "nui/radar.js",
+    "nui/images/*",
+    "nui/fonts/*",
+    "nui/sounds/*"
 }
 
 server_script 'sv_version_check.lua'
