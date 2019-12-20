@@ -93,8 +93,11 @@ RADAR.vars =
 		-- Future feature!
 		-- ["alert"] = true,
 
-		-- The volume of the audible beep, follows the JS format (0.0 - 1.0)
-		["beep"] = 0.6,
+		-- The volume of the audible beep 
+        ["beep"] = 0.6,
+        
+        -- The volume of the verbal lock confirmation 
+        ["voice"] = 0.6,
 
 		-- The speed unit used in conversions
 		["speedType"] = "mph"
@@ -108,7 +111,8 @@ RADAR.vars =
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
-		{ displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" },
+        { displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" },
+        { displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "voice" },
 		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = 1, settingText = "speedType" }
 	},
 
@@ -883,7 +887,9 @@ function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
 		self:SetAntennaSpeedIsLocked( ant, true )
 
 		-- Send a message to the NUI side to play the beep sound with the current volume setting
-		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+        SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+        
+        SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = RADAR:GetSettingValue( "beep" ) } )
 	end
 end 
 
@@ -918,12 +924,10 @@ end
 function RADAR:LockAntennaSpeed( ant )
 	-- Only lock a speed if the antenna is on and the UI is displayed
 	if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() and self:IsAntennaTransmitting( ant ) ) then 
-		-- Check if the antenna already has a speed locked, if it does then reset the lock, otherwise we lock
-		-- a speed
-		if ( self:IsAntennaSpeedLocked( ant ) ) then 
-			self:ResetAntennaSpeedLock( ant )
-		else 
-			-- Set up a temporary table with 3 nil values, this way if the system isn't able to get a speed or
+        -- Check if the antenna doesn't have a locked speed, if it doesn't then we lock in the speed, otherwise we 
+        -- reset the lock 
+		if ( not self:IsAntennaSpeedLocked( ant ) ) then 
+            -- Set up a temporary table with 3 nil values, this way if the system isn't able to get a speed or
 			-- direction, the speed lock function won't work 
 			local data = { nil, nil, nil }
 
@@ -940,12 +944,10 @@ function RADAR:LockAntennaSpeed( ant )
 			end
 
 			-- Lock in the speed data for the antenna
-			self:SetAntennaSpeedLock( ant, data[1], data[2], data[3] )
+            self:SetAntennaSpeedLock( ant, data[1], data[2], data[3] )
+		else 
+			self:ResetAntennaSpeedLock( ant )
 		end 
-		
-		-- Attempt for fixing speed lock bugging every now and then, doesn't seem to happen as often 
-		-- with this wait in place 
-		-- Citizen.Wait( 10 )
 
 		-- Send an NUI message to change the lock label, otherwise we'd have to wait until the next main loop
 		SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )

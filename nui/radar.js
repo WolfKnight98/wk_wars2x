@@ -13,10 +13,30 @@ var resourceName;
 
 const audioNames = 
 {
+    // Beeps
 	beep: "beep.ogg",
 	xmit_on: "xmit_on.ogg",
 	xmit_off: "xmit_off.ogg",
-	done: "done.ogg"
+    done: "done.ogg", 
+    
+    // Verbal lock 
+    front: "front.ogg", 
+    rear: "rear.ogg", 
+    closing: "closing.ogg", 
+    away: "away.ogg"
+}
+
+const lockAudio = 
+{
+    front: { 
+        1: "away",
+        2: "closing"
+    }, 
+
+    rear: {
+        1: "closing", 
+        2: "away"
+    }
 }
 
 // Setup the main const element structure, this way we can easily access elements without having the mess
@@ -307,6 +327,18 @@ function playAudio( name, vol )
 	audio.play();
 }
 
+function playLockAudio( ant, dir, vol )
+{
+    playAudio( ant, vol ); 
+
+    if ( dir > 0 ) 
+    {
+        setTimeout( function() {
+            playAudio( lockAudio[ant][dir], vol ); 
+        }, 500 );
+    }
+}
+
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
 	$.post( "http://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
@@ -445,7 +477,10 @@ window.addEventListener( "message", function( event ) {
 			break; 
 		case "audio":
 			playAudio( item.name, item.vol ); 
-			break; 
+            break; 
+        case "lockAudio":
+            playLockAudio( item.ant, item.dir, item.vol ); 
+            break; 
 		default:
 			break;
 	}
