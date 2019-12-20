@@ -33,11 +33,13 @@ end )
 --[[----------------------------------------------------------------------------------
 	Player info variables
 ----------------------------------------------------------------------------------]]--
-local PLY = {}
-PLY.ped = PlayerPedId()
-PLY.veh = nil 
-PLY.inDriverSeat = false 
-PLY.vehClassValid = false
+local PLY = 
+{
+    ped = PlayerPedId(),
+    veh = nil,
+    inDriverSeat = false,
+    vehClassValid = false
+}
 
 -- Used to check if the player is in a position where the radar should be allowed operation 
 function PLY:VehicleStateValid()
