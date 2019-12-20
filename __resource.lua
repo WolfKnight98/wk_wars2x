@@ -12,8 +12,6 @@ description 'An advanced radar system for FiveM'
 author 'WolfKnight'
 version 'beta2d'
 
-ui_page "nui/radar.html"
-
 files {
     "nui/radar.html", 
     "nui/radar.css", 
@@ -22,6 +20,8 @@ files {
     "nui/fonts/*",
     "nui/sounds/*"
 }
+
+ui_page "nui/radar.html"
 
 server_script 'sv_version_check.lua'
 
