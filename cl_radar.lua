@@ -889,7 +889,8 @@ function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
 		-- Send a message to the NUI side to play the beep sound with the current volume setting
         SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
         
-        SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = RADAR:GetSettingValue( "beep" ) } )
+        -- Send a message to the NUI side to play the lock audio with the current voice volume setting 
+        SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = RADAR:GetSettingValue( "voice" ) } )
 	end
 end 
 
