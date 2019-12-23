@@ -56,7 +56,9 @@ const elements =
 		increase: $( "#increaseScale" ),
 		decrease: $( "#decreaseScale" ),
 		display: $( "#scaleDisplay" )
-	}, 
+    }, 
+    
+    keyLock: $( "#keyLockLabel" ), 
 
 	patrolSpeed: $( "#patrolSpeed" ),
 
@@ -128,6 +130,7 @@ const dirs =
 elements.radar.hide(); 
 elements.remote.hide(); 
 elements.uiSettingsBox.hide(); 
+elements.keyLock.hide(); 
 
 elements.uiSettingsBtn.click( function() {
 	setUISettingsVisible( true, true );
@@ -320,6 +323,15 @@ function settingUpdate( ants )
 	}
 }
 
+function displayKeyLock()
+{
+    elements.keyLock.fadeIn();
+
+    setTimeout( function() {
+        elements.keyLock.fadeOut();
+    }, 2000 ); 
+}
+
 function playAudio( name, vol )
 {
 	let audio = new Audio( "sounds/" + audioNames[name] );
@@ -480,6 +492,9 @@ window.addEventListener( "message", function( event ) {
             break; 
         case "lockAudio":
             playLockAudio( item.ant, item.dir, item.vol ); 
+            break; 
+        case "displayKeyLock":
+            displayKeyLock();
             break; 
 		default:
 			break;

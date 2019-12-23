@@ -10,7 +10,7 @@ resource_manifest_version '44febabe-d386-4d18-afbe-5e627f4af937'
 name 'Wraith ARS 2X'
 description 'An advanced radar system for FiveM'
 author 'WolfKnight'
-version 'beta2d'
+version 'beta2e'
 
 files {
     "nui/radar.html", 

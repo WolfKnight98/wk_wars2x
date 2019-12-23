@@ -765,4 +765,19 @@ button:focus { outline: none; }
 		#uiSettingsBox .close:active {
 			background-color: rgb( 190, 190, 190 );
 			padding: 0;
-		}
+        }
+        
+#keyLockLabel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 300px;
+
+    text-align: center;
+    font-size: 30px;
+
+    color: rgb( 200, 200, 200 );
+    text-shadow: 3px 2px 5px rgb( 0, 0, 0 );
+
+    z-index: 4;
+}

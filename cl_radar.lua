@@ -178,7 +178,10 @@ RADAR.vars =
 
 	-- The wait time for the ray trace system, this changes dynamically based on if the player's vehicle is stationary 
 	-- or not
-	threadWaitTime = 500 
+    threadWaitTime = 500, 
+    
+    -- Key lock, when true, prevents any of the radar's key events from working, like the ELS key lock 
+    keyLock = false 
 }
 
 -- Speed conversion values
@@ -389,6 +392,18 @@ if ( RADAR:IsFastLimitAllowed() ) then
 	function RADAR:IsFastLockEnabled()
 		return self.vars.settings["fastLock"]
 	end 
+end 
+
+function RADAR:ToggleKeyLock()
+    if ( PLY:VehicleStateValid() ) then 
+        self.vars.keyLock = not self.vars.keyLock
+
+        SendNUIMessage( { _type = "displayKeyLock" } )
+    end
+end 
+
+function RADAR:GetKeyLockState()
+    return self.vars.keyLock
 end 
 
 
@@ -1536,21 +1551,28 @@ function RADAR:RunControlManager()
 	--[[ if ( IsDisabledControlJustPressed( 1, 20 ) ) then 
 		self.config.debug_mode = not self.config.debug_mode
 	end ]]
-	
-	-- Opens the remote control 
-	if ( IsDisabledControlJustPressed( 1, self.config.remote_control_key ) ) then 
-		self:OpenRemote()
-	end 
+    
+    if ( not self:GetKeyLockState() ) then 
+        -- Opens the remote control 
+        if ( IsDisabledControlJustPressed( 1, self.config.remote_control_key ) ) then 
+            self:OpenRemote()
+        end 
 
-	-- Locks speed from front antenna
-	if ( IsDisabledControlJustPressed( 1, self.config.front_lock_key ) ) then 
-		self:LockAntennaSpeed( "front" )
-	end 
+        -- Locks speed from front antenna
+        if ( IsDisabledControlJustPressed( 1, self.config.front_lock_key ) ) then 
+            self:LockAntennaSpeed( "front" )
+        end 
 
-	-- Locks speed from rear antenna
-	if ( IsDisabledControlJustPressed( 1, self.config.rear_lock_key ) ) then 
-		self:LockAntennaSpeed( "rear" )
-	end 
+        -- Locks speed from rear antenna
+        if ( IsDisabledControlJustPressed( 1, self.config.rear_lock_key ) ) then 
+            self:LockAntennaSpeed( "rear" )
+        end 
+    end 
+    
+    -- Toggles the key lock state 
+    if ( IsDisabledControlJustPressed( 1, self.config.key_lock_key ) ) then 
+		self:ToggleKeyLock()
+    end 
 
 	-- Shortcut to restart the resource
 	--[[if ( IsDisabledControlJustPressed( 1, 167 ) ) then 
