@@ -94,10 +94,10 @@ RADAR.vars =
 		-- ["alert"] = true,
 
 		-- The volume of the audible beep 
-        ["beep"] = 0.6,
+        ["beep"] = 1.0,
         
         -- The volume of the verbal lock confirmation 
-        ["voice"] = 0.6,
+        ["voice"] = 1.0,
 
 		-- The speed unit used in conversions
 		["speedType"] = "mph"
@@ -111,8 +111,8 @@ RADAR.vars =
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
-        { displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" },
-        { displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "voice" },
+        { displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 6, settingText = "beep" },
+        { displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 6, settingText = "voice" },
 		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = 1, settingText = "speedType" }
 	},
 
@@ -150,8 +150,8 @@ RADAR.vars =
 	}, 
 
 	-- The maximum distance that the radar system's ray traces can go, changing this will change the max
-	-- distance in-game, but I wouldn't really put it more than 400.0
-	maxCheckDist = 300.0,
+	-- distance in-game, but I wouldn't really put it more than 500.0
+	maxCheckDist = 400.0,
 
 	-- Cached dynamic vehicle sphere sizes, automatically populated when the system is running 
 	sphereSizes = {}, 
@@ -394,14 +394,19 @@ if ( RADAR:IsFastLimitAllowed() ) then
 	end 
 end 
 
+-- Toggles the internal key lock state, which stops any of the radar's key binds from working
 function RADAR:ToggleKeyLock()
+    -- Check the player state is valid
     if ( PLY:VehicleStateValid() ) then 
+        -- Toggle the key lock variable 
         self.vars.keyLock = not self.vars.keyLock
 
+        -- Tell the NUI side to display the key lock message
         SendNUIMessage( { _type = "displayKeyLock" } )
     end
 end 
 
+-- Returns the key lock state 
 function RADAR:GetKeyLockState()
     return self.vars.keyLock
 end 
@@ -605,7 +610,14 @@ end
 -- cannot detect vehicles beyond 40~ units, my system acts as a replacement that allows the detection of vehicles
 -- much further away (400+ units). Also, as my system uses sphere intersections, each sphere can have a different
 -- radius, which means that larger vehicles can have larger spheres, and smaller vehicles can have smaller spheres. 
-function RADAR:GetLineHitsSphereAndDir( centre, radius, rayStart, rayEnd )
+function RADAR:GetLineHitsSphereAndDir( c, radius, rs, re )
+    -- Take the vector3's and turn them into vector2's, this way all of the calculations below are for an 
+    -- infinite cylinder rather than a sphere, which also means that vehicles can be detected even when on
+    -- an incline!   
+    local rayStart = vector2( rs.x, rs.y )
+    local rayEnd = vector2( re.x, re.y )
+    local centre = vector2( c.x, c.y )
+
 	-- First we get the normalised ray, this way we then know the direction the ray is going 
 	local rayNorm = norm( rayEnd - rayStart )
 
@@ -647,21 +659,22 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 
 	-- Calculate the distance between the target vehicle and the start point of the ray trace, note how we don't 
 	-- use GetDistanceBetweenCoords or Vdist, the method below still returns the same result with less cpu time 
-	local dist = #( pos - s )
-	
-	local key = tostring( veh )
+    local dist = #( pos - s )
 
 	-- We only perform a trace on the target vehicle if it exists, isn't the player's vehicle, and the distance is 
 	-- less than the max distance defined by the system 
-	if ( DoesEntityExist( veh ) and veh ~= plyVeh and dist < self:GetMaxCheckDist() --[[ and not self:HasVehicleAlreadyBeenHit( key ) ]] ) then 
+	if ( DoesEntityExist( veh ) and veh ~= plyVeh and dist < self:GetMaxCheckDist() ) then 
 		-- Get the speed of the target vehicle 
 		local entSpeed = GetEntitySpeed( veh )
 
 		-- Check that the target vehicle is within the line of sight of the player's vehicle 
-		local visible = HasEntityClearLosToEntity( plyVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
+        local visible = HasEntityClearLosToEntity( plyVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
+        
+        -- Get the pitch of the player's vehicle
+        local pitch = GetEntityPitch( plyVeh )
 
 		-- Now we check that the target vehicle is moving and is visible 
-		if ( entSpeed > 0.1 and visible ) then 
+		if ( entSpeed > 0.1 and ( pitch > -35 and pitch < 35 ) and visible ) then 
 			-- Get the dynamic radius as well as the size of the target vehicle
 			local radius, size = self:GetDynamicRadius( veh )
 
@@ -670,8 +683,6 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 
 			-- Return all of the information if the vehicle was hit
 			if ( hit ) then 
-				self:SetVehicleHasBeenHit( key )
-
 				return true, relPos, dist, entSpeed, size
 			end 
 		end
@@ -1012,6 +1023,10 @@ function RADAR:InsertCapturedVehicleData( t, rt )
 	end 
 end 
 
+--[[
+    These need to be changed so a ray type can be set too, otherwise in its current state, messes up vehicle 
+    detection. 
+
 -- Sets the given value to true in the temp vehicles table, it is a test system used to reduce ray traces
 -- on vehicles that have already been hit by another trace. Currently not implemented fully, as it doesn't 
 -- check for ray traces of different types, e.g. same or opp. 
@@ -1028,6 +1043,7 @@ end
 function RADAR:ResetTempVehicleIDs()
 	self.vars.tempVehicleIDs = {}
 end 
+]]
 
 
 --[[----------------------------------------------------------------------------------
@@ -1210,7 +1226,7 @@ function RADAR:GetVehiclesForAntenna()
 				for k, v in pairs( vehs[ant] ) do 
 					-- When we grab a vehicle for the fastest section, as it is like how the real system works, there are a few
 					-- additional checks that have to be made 
-					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= temp.veh and v.size < temp.size and v.speed > temp.speed ) then 
+					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= temp.veh and v.size < temp.size and v.speed + 1.0 > temp.speed ) then 
 						-- Set the result for the current antenna 
 						results[ant][2] = v 
 						break
@@ -1361,9 +1377,6 @@ function RADAR:RunThreads()
 			-- Reset the main captured vehicles table
 			self:ResetCapturedVehicles()
 			
-			-- Reset the ray trace state back to 0
-			-- self:ResetRayTraceState()
-			
 			-- Here we run the function that creates all of the main ray threads
 			self:CreateRayThreads( PLY.veh, vehs )
 
@@ -1487,8 +1500,7 @@ function RADAR:Main()
 		-- Send the update to the NUI side
 		SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
 
-		self:ResetTempVehicleIDs()
-		-- self:ResetRayTraceState()
+		-- self:ResetTempVehicleIDs()
 	end 
 end 
 
@@ -1591,6 +1603,18 @@ end )
 
 
 ------------------------------ DEBUG ------------------------------
+Citizen.CreateThread( function()
+	while ( true ) do 
+        if ( PLY:VehicleStateValid() ) then 
+            local pitch = GetEntityPitch( PLY.veh )
+
+            UTIL:DrawDebugText( 0.5, 0.75, 0.8, true, "Pitch: " .. tostring( pitch ) )
+        end 
+
+		Citizen.Wait( 0 )
+	end 
+end )
+
 --[[ Citizen.CreateThread( function()
 	while ( true ) do 
 		if ( RADAR.config.debug_mode ) then 
