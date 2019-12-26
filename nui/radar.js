@@ -8,7 +8,9 @@
 	
 -------------------------------------------------------------------------*/
 
-// Variables
+/*------------------------------------------------------------------------------------
+	Variables
+------------------------------------------------------------------------------------*/
 var resourceName; 
 
 const audioNames = 
@@ -52,7 +54,7 @@ const elements =
 	uiSettingsBox: $( "#uiSettingsBox" ), 
 	closeUiBtn: $( "#closeUiSettings" ),
 
-	scale: {
+	radarScaling: {
 		increase: $( "#increaseScale" ),
 		decrease: $( "#decreaseScale" ),
 		display: $( "#scaleDisplay" )
@@ -126,9 +128,12 @@ const dirs =
 	away: 2
 }
 
-// Hide the radar and remote, this way we can bypass setting a style of 'display: none;' in the HTML file
+
+/*------------------------------------------------------------------------------------
+	Hide elements
+------------------------------------------------------------------------------------*/
 elements.radar.hide(); 
-elements.remote.hide(); 
+// elements.remote.hide(); 
 elements.uiSettingsBox.hide(); 
 elements.keyLock.hide(); 
 
@@ -140,6 +145,10 @@ elements.pwrBtn.click( function() {
 	togglePower();
 } )
 
+
+/*------------------------------------------------------------------------------------
+	Setters
+------------------------------------------------------------------------------------*/
 function setRadarVisible( state )
 {
 	state ? elements.radar.fadeIn() : elements.radar.fadeOut();
@@ -147,13 +156,7 @@ function setRadarVisible( state )
 
 function setRemoteVisible( state ) 
 {
-	// elements.remote.toggle();
 	state ? elements.remote.fadeIn() : elements.remote.fadeOut();
-}
-
-function togglePower()
-{
-	sendData( "togglePower", null ); 
 }
 
 function setLight( ant, cat, item, state )
@@ -164,46 +167,6 @@ function setLight( ant, cat, item, state )
 		cat == "dirs" ? obj.addClass( "active_arrow" ) : obj.addClass( "active" ); 
 	} else {
 		cat == "dirs" ? obj.removeClass( "active_arrow" ) : obj.removeClass( "active" ); 
-	}
-}
-
-function clearModes( ant )
-{
-	for ( let i in elements.antennas[ant].modes )
-	{
-		elements.antennas[ant].modes[i].removeClass( "active" ); 
-	}
-
-	for ( let a in elements.antennas[ant].fast )
-	{
-		elements.antennas[ant].fast[a].removeClass( "active" ); 
-	}
-}
-
-function clearDirs( ant )
-{
-	for ( let i in elements.antennas[ant].dirs )
-	{
-		elements.antennas[ant].dirs[i].removeClass( "active_arrow" ); 
-	}
-}
-
-function clearAntenna( ant )
-{
-	clearModes( ant );
-	clearDirs( ant );
-
-	elements.antennas[ant].targetSpeed.html( "¦¦¦" );
-	elements.antennas[ant].fastSpeed.html( "¦¦¦" );
-}
-
-function clearEverything()
-{
-	elements.patrolSpeed.html( "¦¦¦" ); 
-
-	for ( let i in elements.antennas ) 
-	{
-		clearAntenna( i ); 
 	}
 }
 
@@ -245,26 +208,59 @@ function setAntennaDirs( ant, dir, fastDir )
 	setLight( ant, "dirs", "bwdFast", fastDir == dirs.away );
 }
 
-function updateDisplays( ps, ants )
+
+/*------------------------------------------------------------------------------------
+	Clearing functions 
+------------------------------------------------------------------------------------*/
+function clearModes( ant )
 {
-	elements.patrolSpeed.html( ps );
-
-	for ( let ant in ants ) 
+	for ( let i in elements.antennas[ant].modes )
 	{
-		if ( ants[ant] != null ) {
-			let e = elements.antennas[ant]; 
+		elements.antennas[ant].modes[i].removeClass( "active" ); 
+	}
 
-			e.targetSpeed.html( ants[ant][0].speed ); 
-			e.fastSpeed.html( ants[ant][1].speed ); 
-
-			// setAntennaFastLabel( ant, ants[ant][1].speed == "¦¦¦" ? false : true );
-
-			setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
-		}
+	for ( let a in elements.antennas[ant].fast )
+	{
+		elements.antennas[ant].fast[a].removeClass( "active" ); 
 	}
 }
 
-// Simulation of the system powering up
+function clearDirs( ant )
+{
+	for ( let i in elements.antennas[ant].dirs )
+	{
+		elements.antennas[ant].dirs[i].removeClass( "active_arrow" ); 
+	}
+}
+
+function clearAntenna( ant )
+{
+	clearModes( ant );
+	clearDirs( ant );
+
+	elements.antennas[ant].targetSpeed.html( "¦¦¦" );
+	elements.antennas[ant].fastSpeed.html( "¦¦¦" );
+}
+
+function clearEverything()
+{
+	elements.patrolSpeed.html( "¦¦¦" ); 
+
+	for ( let i in elements.antennas ) 
+	{
+		clearAntenna( i ); 
+	}
+}
+
+
+/*------------------------------------------------------------------------------------
+	Radar power functions
+------------------------------------------------------------------------------------*/
+function togglePower()
+{
+	sendData( "togglePower", null ); 
+}
+
 function poweringUp()
 {
 	elements.patrolSpeed.html( "888" ); 
@@ -302,6 +298,51 @@ function radarPower( state )
 	state ? poweringUp() : clearEverything();
 }
 
+
+/*------------------------------------------------------------------------------------
+	Audio 
+------------------------------------------------------------------------------------*/
+function playAudio( name, vol )
+{
+	let audio = new Audio( "sounds/" + audioNames[name] );
+	audio.volume = vol; 
+	audio.play();
+}
+
+function playLockAudio( ant, dir, vol )
+{
+    playAudio( ant, vol ); 
+
+    if ( dir > 0 ) 
+    {
+        setTimeout( function() {
+            playAudio( lockAudio[ant][dir], vol ); 
+        }, 500 );
+    }
+}
+
+
+
+
+
+
+function updateDisplays( ps, ants )
+{
+	elements.patrolSpeed.html( ps );
+
+	for ( let ant in ants ) 
+	{
+		if ( ants[ant] != null ) {
+			let e = elements.antennas[ant]; 
+
+			e.targetSpeed.html( ants[ant][0].speed ); 
+			e.fastSpeed.html( ants[ant][1].speed ); 
+
+			setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
+		}
+	}
+}
+
 function menu( optionText, option )
 {
 	clearEverything(); 
@@ -332,24 +373,7 @@ function displayKeyLock()
     }, 2000 ); 
 }
 
-function playAudio( name, vol )
-{
-	let audio = new Audio( "sounds/" + audioNames[name] );
-	audio.volume = vol; 
-	audio.play();
-}
 
-function playLockAudio( ant, dir, vol )
-{
-    playAudio( ant, vol ); 
-
-    if ( dir > 0 ) 
-    {
-        setTimeout( function() {
-            playAudio( lockAudio[ant][dir], vol ); 
-        }, 500 );
-    }
-}
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
@@ -360,19 +384,62 @@ function sendData( name, data ) {
 	} );
 }
 
-// UI stuff
-var scale = 1.0 
+/*------------------------------------------------------------------------------------
+	UI scaling and positioning 
+------------------------------------------------------------------------------------*/
+var radarScale = 1.0;
+var radarMoving = false; 
+var radarOffset = [ 0, 0 ]; 
 
+var remoteScale = 1.0;
+var remoteMoving = false; 
+var remoteOffset = [ 0, 0 ]; 
+
+// Close the UI settings window when the 'Close' button is pressed
 elements.closeUiBtn.click( function() {
 	setUISettingsVisible( false, true );
 } )
 
-elements.scale.increase.click( function() {
-	changeScale( 0.05 );
+// Set the radar scale buttons to change the radar's scale 
+elements.radarScaling.increase.click( function() {
+    // changeScale( 0.05 );
+    radarScale = changeScale( elements.radar, radarScale, 0.05 ); 
+    elements.radarScaling.display.html( radarScale.toFixed( 2 ) + "x" ); 
 } )
 
-elements.scale.decrease.click( function() {
-	changeScale( -0.05 );
+elements.radarScaling.decrease.click( function() {
+    // changeScale( -0.05 );
+    radarScale = changeScale( elements.radar, radarScale, -0.05 ); 
+    elements.radarScaling.display.html( radarScale.toFixed( 2 ) + "x" ); 
+} )
+
+// Remote mouse down and up event
+elements.remote.mousedown( function( event ) {
+    remoteMoving = true; 
+
+    let offset = $( this ).offset();
+
+    remoteOffset = [
+        offset.left - event.clientX, 
+        offset.top - event.clientY
+    ]
+} )
+
+elements.remote.mouseup( function( event ) {
+    remoteMoving = false; 
+} )
+
+$( document ).mousemove( function( event ) {
+    event.preventDefault(); 
+
+    if ( remoteMoving )
+    {
+        let x = event.clientX; 
+        let y = event.clientY; 
+
+        elements.remote.css( "left", ( x + remoteOffset[0] ) + "px" );
+        elements.remote.css( "top", ( y + remoteOffset[1] ) + "px" );
+    }
 } )
 
 function setUISettingsVisible( state, remote )
@@ -388,11 +455,12 @@ function hideUISettings()
 	}
 }
 
-function changeScale( amount )
+function changeScale( ele, current, amount )
 {
-	scale = clamp( scale + amount, 0.25, 2.5 ); 
-	elements.radar.css( "transform", "scale(" + scale + ")" );
-	elements.scale.display.html( scale.toFixed( 2 ) + "x" ); 
+    let scale = clamp( current + amount, 0.25, 2.5 ); 
+    ele.css( "transform", "scale(" + scale + ")" );
+
+    return scale; 
 }
 
 function clamp( num, min, max )
@@ -400,6 +468,9 @@ function clamp( num, min, max )
 	return num < min ? min : num > max ? max : num;
 }
 
+/*------------------------------------------------------------------------------------
+	Button click event assigning 
+------------------------------------------------------------------------------------*/
 elements.uiSettingsBox.find( "button" ).each( function( i, obj ) {
 	if ( $( this ).attr( "data-value" ) && $( this ).attr( "data-scale" ) ) {
 		$( this ).click( function() { 
@@ -425,7 +496,9 @@ elements.remote.find( "button" ).each( function( i, obj ) {
 	}
 } );
 
-// Close the remote when the user presses the 'Escape' key or the right mouse button 
+/*------------------------------------------------------------------------------------
+    Close the remote when the user presses the 'Escape' key or the right mouse button 
+------------------------------------------------------------------------------------*/
 function closeRemote()
 {
     sendData( "closeRemote", null );
@@ -444,8 +517,11 @@ $( document ).contextmenu( function() {
     closeRemote(); 
 } );
 
-// The main event listener, this is what the NUI messages sent by the LUA side arrive at, they are 
-// then handled properly via a switch/case that runs the relevant code
+
+/*------------------------------------------------------------------------------------
+    The main event listener, this is where the NUI messages sent by the LUA side arrive 
+    at, they are then handled properly via a switch/case that runs the relevant code
+------------------------------------------------------------------------------------*/
 window.addEventListener( "message", function( event ) {
 	var item = event.data; 
 	var type = event.data._type; 
