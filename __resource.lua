@@ -15,6 +15,7 @@ version 'beta2e'
 files {
     "nui/radar.html", 
     "nui/radar.css", 
+    "nui/jquery-3.4.1.min.js", 
     "nui/radar.js",
     "nui/images/*",
     "nui/fonts/*",

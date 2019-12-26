@@ -354,10 +354,12 @@ button:focus { outline: none; }
 	height: 800px;
    
 	position: absolute;
-	top: 0;
+	/* top: 0;
 	bottom: 0;
 	left: 0;
-	right: 0;
+    right: 0; */
+    top: calc( 50% - ( 800px / 2 ) );
+    left: calc( 50% - ( 315px / 2 ) );
 	margin: auto;
 	/* padding-top: 25px; */
 	padding: 65px 30px 50px 30px;
