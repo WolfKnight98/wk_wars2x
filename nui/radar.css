@@ -16,7 +16,8 @@
 * {
 	font-family: 'Heebo', Verdana, Geneva, Tahoma, sans-serif;
 	font-size: 13px;
-	box-sizing: border-box;
+    box-sizing: border-box;
+    user-select: none;
 }
 
 body {
@@ -41,13 +42,16 @@ button:focus { outline: none; }
 	height: 230px;
 
 	position: absolute;
-	margin: auto;
+    margin: auto;
+    
+    top: calc( ( 100% - 10px ) - 230px );
+    left: calc( ( 100% - 10px ) - 715px );
 
 	background-image: url( "images/frame.png" );
 
 	/* Settings for scaling */
 	transform: scale( 1.0 );
-	transform-origin: bottom right;
+	transform-origin: 0 0;
 
 	z-index: 1;
 }

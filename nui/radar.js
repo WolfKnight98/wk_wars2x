@@ -132,7 +132,7 @@ const dirs =
 /*------------------------------------------------------------------------------------
 	Hide elements
 ------------------------------------------------------------------------------------*/
-elements.radar.hide(); 
+// elements.radar.hide(); 
 // elements.remote.hide(); 
 elements.uiSettingsBox.hide(); 
 elements.keyLock.hide(); 
@@ -429,23 +429,57 @@ elements.remote.mouseup( function( event ) {
     remoteMoving = false; 
 } )
 
+// Radar mouse down and up event
+elements.radar.mousedown( function( event ) {
+    radarMoving = true; 
+
+    let offset = $( this ).offset();
+
+    radarOffset = [
+        offset.left - event.clientX, 
+        offset.top - event.clientY
+    ]
+} )
+
+elements.radar.mouseup( function( event ) {
+    radarMoving = false; 
+} )
+
 $( document ).mousemove( function( event ) {
     event.preventDefault(); 
 
+    let x = event.clientX; 
+    let y = event.clientY; 
+
     if ( remoteMoving )
     {
-        let x = event.clientX; 
-        let y = event.clientY; 
+        let maxWidth = $( window ).width() - elements.remote.outerWidth();
+        let maxHeight = $( window ).height() - elements.remote.outerHeight();
 
-        elements.remote.css( "left", ( x + remoteOffset[0] ) + "px" );
-        elements.remote.css( "top", ( y + remoteOffset[1] ) + "px" );
+        let left = clamp( x + remoteOffset[0], 0, maxWidth );
+        let top = clamp( y + remoteOffset[1], 0, maxHeight ); 
+
+        elements.remote.css( "left", left + "px" );
+        elements.remote.css( "top", top + "px" );
+    }
+
+    if ( radarMoving )
+    {
+        let maxWidth = $( window ).width() - ( elements.radar.outerWidth() * radarScale );
+        let maxHeight = $( window ).height() - ( elements.radar.outerHeight() * radarScale );
+
+        let left = clamp( x + radarOffset[0], 0, maxWidth );
+        let top = clamp( y + radarOffset[1], 0, maxHeight ); 
+
+        elements.radar.css( "left", left + "px" );
+        elements.radar.css( "top", top + "px" );
     }
 } )
 
 function setUISettingsVisible( state, remote )
 {
 	state ? elements.uiSettingsBox.fadeIn() : elements.uiSettingsBox.fadeOut(); 
-	if ( remote ) { setRemoteVisible( !state ); }
+	// if ( remote ) { setRemoteVisible( !state ); }
 }
 
 function hideUISettings()
@@ -471,7 +505,7 @@ function clamp( num, min, max )
 /*------------------------------------------------------------------------------------
 	Button click event assigning 
 ------------------------------------------------------------------------------------*/
-elements.uiSettingsBox.find( "button" ).each( function( i, obj ) {
+/* elements.uiSettingsBox.find( "button" ).each( function( i, obj ) {
 	if ( $( this ).attr( "data-value" ) && $( this ).attr( "data-scale" ) ) {
 		$( this ).click( function() { 
 			let align = $( this ).data( "value" ); 
@@ -481,7 +515,7 @@ elements.uiSettingsBox.find( "button" ).each( function( i, obj ) {
 			elements.radar.css( "transform-origin", origin );
 		} )
 	}
-} );
+} ); */
 
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
 elements.remote.find( "button" ).each( function( i, obj ) {
