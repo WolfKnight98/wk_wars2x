@@ -138,8 +138,8 @@ const dirs =
 /*------------------------------------------------------------------------------------
 	Hide elements
 ------------------------------------------------------------------------------------*/
-// elements.radar.hide(); 
-// elements.remote.hide(); 
+elements.radar.hide(); 
+elements.remote.hide(); 
 elements.uiSettingsBox.hide(); 
 elements.keyLock.hide(); 
 
