@@ -27,16 +27,6 @@ body {
 /* Removes the outline when buttons have been clicked */
 button:focus { outline: none; }
 
-/* The alignment classes for the dynamic repositioning system */
-#radarFrame.top_left { top: 10px; left: 10px; }
-#radarFrame.top_middle { top: 10px; left: 0; right: 0; }
-#radarFrame.top_right { top: 10px; right: 10px; }
-#radarFrame.middle_right { top: 0; bottom: 0; right: 10px; }
-#radarFrame.middle_left { top: 0; bottom: 0; left: 10px; }
-#radarFrame.bottom_left { bottom: 10px; left: 10px; }
-#radarFrame.bottom_middle { bottom: 10px; left: 0; right: 0; }
-#radarFrame.bottom_right { bottom: 10px; right: 10px; }
-
 #radarFrame {
 	width: 715px;
 	height: 230px;
@@ -377,7 +367,11 @@ button:focus { outline: none; }
 	/* background-color: rgb( 50, 50, 50 ); */
 	background-image: url( "images/rc_bg.png" );
 
-	/* clip-path: polygon( 5% 0, 95% 0, 100% 25%, 90% 100%, 10% 100%, 0 25% ); */
+    /* clip-path: polygon( 5% 0, 95% 0, 100% 25%, 90% 100%, 10% 100%, 0 25% ); */
+    
+    /* Settings for scaling */
+	transform: scale( 1.0 );
+	transform-origin: 0 0;
 
 	z-index: 2;
 }
@@ -585,8 +579,8 @@ button:focus { outline: none; }
 	}
 
 #uiSettingsBox {
-	width: 200px;
-	height: 350px;
+	width: 250px;
+	height: 230px;
 
 	position: absolute;
 	margin: auto;
@@ -614,111 +608,26 @@ button:focus { outline: none; }
 		background-color: rgb( 20, 22, 18 );
 	}
 
-	#uiSettingsBox .remote_settings {
-		background-color: rgb( 20, 22, 18 );
-	}
-		#uiSettingsBox .remote_settings .alignment {
-			height: 200px;
-			background-color: purple;
-
-			display: flex;
-			justify-content: space-evenly;
-			align-items: center;
-		}
-			#uiSettingsBox .remote_settings .alignment .aligner {
-				height: 85%;
-				width: 25%;
-			}
-
 	#uiSettingsBox .radar_settings {
 		width: 100%;
-	}
-		#uiSettingsBox .radar_settings .alignment {
-			height: 200px;
-
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-evenly;
-			align-items: center;
-
-			/* padding: 5px; */
-		}
-			#uiSettingsBox .radar_settings .alignment .aligner {
-				width: 55px;
-				height: 55px;
-
-				position: relative;
-
-				background-color: rgb( 225, 225, 225 );
-
-				border-radius: 10px;
-			}
-
-			#uiSettingsBox .radar_settings .alignment .aligner:hover {
-				width: 55px;
-				height: 55px;
-
-				background-color: rgb( 255, 255, 255 );
-
-				position: relative;
-			}
-
-			#uiSettingsBox .radar_settings .alignment .aligner:active {
-				background-color: rgb( 190, 190, 190 );
-			}
-				#uiSettingsBox .radar_settings .alignment .aligner .arrow {
-					width: 45px; 
-					height: 45px;
-
-					position: absolute;
-					top: 0;
-					right: 0;
-					bottom: 0;
-					left: 0;
-
-					margin: auto;
-
-					background-color: rgb( 0, 0, 0 );
-
-					clip-path: polygon( 50% 0, 10% 30%, 10% 50%, 40% 30%, 40% 100%, 60% 100%, 60% 30%, 90% 50%, 90% 30% );
-				}
-
-				#uiSettingsBox .radar_settings .alignment .aligner .top_left { transform: rotate( -45deg ); }
-				#uiSettingsBox .radar_settings .alignment .aligner .top_right { transform: rotate( 45deg ); }
-				#uiSettingsBox .radar_settings .alignment .aligner .left { transform: rotate( -90deg ); }
-				#uiSettingsBox .radar_settings .alignment .aligner .right { transform: rotate( 90deg ); }
-				#uiSettingsBox .radar_settings .alignment .aligner .bottom_left { transform: rotate( -135deg ); }
-				#uiSettingsBox .radar_settings .alignment .aligner .bottom { transform: rotate( 180deg ); }
-				#uiSettingsBox .radar_settings .alignment .aligner .bottom_right { transform: rotate( 135deg ); }
-
-				#uiSettingsBox .radar_settings .alignment .aligner button {
-					width: 100%;
-					height: 100%;
-					
-					position: absolute; 
-					top: 0;
-					bottom: 0;
-					left: 0;
-					right: 0;
-
-					margin: auto;
-
-					border: none;
-					background-color: transparent;
-				}
-
-			#uiSettingsBox .radar_settings .alignment .holo {
-				width: 55px;
-				height: 55px;
-				background-color: transparent;
-			}
+    }
+    
+    #uiSettingsBox .scaling_container {
+        height: 150px;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+    }
 	
 	#uiSettingsBox .scaling {
 		height: 70px;
 
-		display: flex;
+		/* display: flex;
 		justify-content: space-evenly;
-		align-items: center;
+        align-items: center; */
+        
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        place-items: center center;
 	}
 		#uiSettingsBox .scaling p {
 			font-size: 18px;
@@ -731,8 +640,8 @@ button:focus { outline: none; }
 			}
 
 		#uiSettingsBox .scaling .symbol {
-			width: 45px; 
-			height: 45px;
+			width: 40px; 
+			height: 40px;
 
 			background-color: rgb( 225, 225, 225 );
 		}

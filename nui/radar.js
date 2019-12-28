@@ -55,10 +55,16 @@ const elements =
 	closeUiBtn: $( "#closeUiSettings" ),
 
 	radarScaling: {
-		increase: $( "#increaseScale" ),
-		decrease: $( "#decreaseScale" ),
-		display: $( "#scaleDisplay" )
+		increase: $( "#radarIncreaseScale" ),
+		decrease: $( "#radarDecreaseScale" ),
+		display: $( "#radarScaleDisplay" )
     }, 
+
+    remoteScaling: {
+        increase: $( "#remoteIncreaseScale" ),
+		decrease: $( "#remoteDecreaseScale" ),
+		display: $( "#remoteScaleDisplay" )
+    },
     
     keyLock: $( "#keyLockLabel" ), 
 
@@ -387,28 +393,37 @@ function sendData( name, data ) {
 /*------------------------------------------------------------------------------------
 	UI scaling and positioning 
 ------------------------------------------------------------------------------------*/
-var radarScale = 1.0;
-var radarMoving = false; 
-var radarOffset = [ 0, 0 ]; 
-
 var remoteScale = 1.0;
 var remoteMoving = false; 
 var remoteOffset = [ 0, 0 ]; 
+
+var radarScale = 1.0;
+var radarMoving = false; 
+var radarOffset = [ 0, 0 ]; 
 
 // Close the UI settings window when the 'Close' button is pressed
 elements.closeUiBtn.click( function() {
 	setUISettingsVisible( false, true );
 } )
 
+// Set the remote scale buttons to change the remote's scale 
+elements.remoteScaling.increase.click( function() {
+    remoteScale = changeScale( elements.remote, remoteScale, 0.05 ); 
+    elements.remoteScaling.display.html( remoteScale.toFixed( 2 ) + "x" ); 
+} )
+
+elements.remoteScaling.decrease.click( function() {
+    remoteScale = changeScale( elements.remote, remoteScale, -0.05 ); 
+    elements.remoteScaling.display.html( remoteScale.toFixed( 2 ) + "x" ); 
+} )
+
 // Set the radar scale buttons to change the radar's scale 
 elements.radarScaling.increase.click( function() {
-    // changeScale( 0.05 );
     radarScale = changeScale( elements.radar, radarScale, 0.05 ); 
     elements.radarScaling.display.html( radarScale.toFixed( 2 ) + "x" ); 
 } )
 
 elements.radarScaling.decrease.click( function() {
-    // changeScale( -0.05 );
     radarScale = changeScale( elements.radar, radarScale, -0.05 ); 
     elements.radarScaling.display.html( radarScale.toFixed( 2 ) + "x" ); 
 } )
@@ -453,8 +468,8 @@ $( document ).mousemove( function( event ) {
 
     if ( remoteMoving )
     {
-        let maxWidth = $( window ).width() - elements.remote.outerWidth();
-        let maxHeight = $( window ).height() - elements.remote.outerHeight();
+        let maxWidth = $( window ).width() - ( elements.remote.outerWidth() * remoteScale );
+        let maxHeight = $( window ).height() - ( elements.remote.outerHeight() * remoteScale );
 
         let left = clamp( x + remoteOffset[0], 0, maxWidth );
         let top = clamp( y + remoteOffset[1], 0, maxHeight ); 

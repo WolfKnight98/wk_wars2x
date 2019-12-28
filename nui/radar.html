@@ -164,73 +164,32 @@
 		</div>
 
 		<div id="uiSettingsBox">
-			<!-- <div class="remote_settings">
-				<p class="title">Remote</p>
-
-				<div class="alignment">
-					<button id="remoteAlignLeft" class="aligner"></button>
-					<button id="remoteAlignCentre" class="aligner"></button>
-					<button id="remoteAlignRight" class="aligner"></button>
-				</div>
-			</div> -->
-
 			<div class="radar_settings">
-				<p class="title">Radar UI Settings</p>
-
-				<div class="alignment">
-					<div class="aligner">
-						<div class="arrow top_left"></div>
-						<button data-value="top_left" data-scale="top left"></button>
-					</div>
-					
-					<div class="aligner">
-						<div class="arrow"></div>
-						<button data-value="top_middle" data-scale="top center"></button>
-					</div>
-
-					<div class="aligner">
-						<div class="arrow top_right"></div>
-						<button data-value="top_right" data-scale="top right"></button>
-					</div>
-
-					<div class="aligner">
-						<div class="arrow left"></div>
-						<button data-value="middle_left" data-scale="center left"></button>
-					</div>
-
-					<div class="holo"></div>
-
-					<div class="aligner">
-						<div class="arrow right"></div>
-						<button data-value="middle_right" data-scale="center right"></button>
-					</div>
-
-					<div class="aligner">
-						<div class="arrow bottom_left"></div>
-						<button data-value="bottom_left" data-scale="bottom left"></button>
-					</div>
-
-					<div class="aligner">
-						<div class="arrow bottom"></div>
-						<button data-value="bottom_middle" data-scale="bottom center"></button>
-					</div>
-
-					<div class="aligner">
-						<div class="arrow bottom_right"></div>
-						<button data-value="bottom_right" data-scale="bottom right"></button>
-					</div>
-				</div>
+				<p class="title">UI Settings</p>
 			</div>
 
-			<div class="scaling">
-				<div id="decreaseScale" class="symbol minus"></div>
+			<div class="scaling_container">
+                <div class="scaling">
+                    <div id="radarDecreaseScale" class="symbol minus"></div>
 
-				<div class="info">
-					<p>Scale</p>
-					<p id="scaleDisplay" class="multiplier">1.00x</p>
-				</div>
+                    <div class="info">
+                        <p>Radar Scale</p>
+                        <p id="radarScaleDisplay" class="multiplier">1.00x</p>
+                    </div>
 
-				<div id="increaseScale" class="symbol plus"></div>
+                    <div id="radarIncreaseScale" class="symbol plus"></div>
+                </div>
+
+                <div class="scaling">
+                    <div id="remoteDecreaseScale" class="symbol minus"></div>
+
+                    <div class="info">
+                        <p>Remote Scale</p>
+                        <p id="remoteScaleDisplay" class="multiplier">1.00x</p>
+                    </div>
+
+                    <div id="remoteIncreaseScale" class="symbol plus"></div>
+                </div>
 			</div>
 
 			<button id="closeUiSettings" class="close">CLOSE</button>
