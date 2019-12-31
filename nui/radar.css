@@ -580,7 +580,7 @@ button:focus { outline: none; }
 
 #uiSettingsBox {
 	width: 250px;
-	height: 230px;
+	height: 325px;
 
 	position: absolute;
 	margin: auto;
@@ -659,15 +659,56 @@ button:focus { outline: none; }
 
 		#uiSettingsBox .scaling .plus {
 			clip-path: polygon( 0 35%, 35% 35%, 35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65% );
-		}
+        }
+        
+    #uiSettingsBox .safezone_container {
+        width: 85%;
+        margin: 0 auto;
+    }
+        #uiSettingsBox .safezone_container p, 
+        #uiSettingsBox .safezone_container span {
+            font-size: 18px;
+			margin: 0 auto;
+			text-align: center;
+			color: rgb( 255, 255, 255 );
+        }
+
+        #uiSettingsBox .safezone_container .slider {
+            width: 100%;
+            height: 10px;
+            margin: 10px 0;
+
+            border-radius: 5px;
+
+            -webkit-appearance: none;
+
+            background-color: rgb( 180, 180, 180 );
+        }
+            #uiSettingsBox .safezone_container .slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 15px;
+                height: 25px;
+                background: rgb( 84, 210, 255 );
+                cursor: pointer;
+            }
+              
+            #uiSettingsBox .safezone_container .slider::-moz-range-thumb {
+                width: 15px;
+                height: 25px;
+                background: rgb( 84, 210, 255 );
+                cursor: pointer;
+            }
 
 	#uiSettingsBox .close {
 		width: 80px;
 		height: 20px;
 
-		display: block;
-
-		margin: 5px auto;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 30px;
+        margin: auto;
 
 		border-radius: 10px;
 		border: none;

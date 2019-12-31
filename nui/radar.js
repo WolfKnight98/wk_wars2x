@@ -65,6 +65,9 @@ const elements =
 		decrease: $( "#remoteDecreaseScale" ),
 		display: $( "#remoteScaleDisplay" )
     },
+
+    safezoneSlider: $( "#safezone" ), 
+    safezoneDisplay: $( "#safezoneDisplay" ),
     
     keyLock: $( "#keyLockLabel" ), 
 
@@ -401,6 +404,10 @@ var radarScale = 1.0;
 var radarMoving = false; 
 var radarOffset = [ 0, 0 ]; 
 
+var windowWidth = 0; 
+var windowHeight = 0; 
+var safezone = 0; 
+
 // Close the UI settings window when the 'Close' button is pressed
 elements.closeUiBtn.click( function() {
 	setUISettingsVisible( false, true );
@@ -408,24 +415,20 @@ elements.closeUiBtn.click( function() {
 
 // Set the remote scale buttons to change the remote's scale 
 elements.remoteScaling.increase.click( function() {
-    remoteScale = changeScale( elements.remote, remoteScale, 0.05 ); 
-    elements.remoteScaling.display.html( remoteScale.toFixed( 2 ) + "x" ); 
+    remoteScale = changeEleScale( elements.remote, remoteScale, 0.05, elements.remoteScaling.display ); 
 } )
 
 elements.remoteScaling.decrease.click( function() {
-    remoteScale = changeScale( elements.remote, remoteScale, -0.05 ); 
-    elements.remoteScaling.display.html( remoteScale.toFixed( 2 ) + "x" ); 
+    remoteScale = changeEleScale( elements.remote, remoteScale, -0.05, elements.remoteScaling.display ); 
 } )
 
 // Set the radar scale buttons to change the radar's scale 
 elements.radarScaling.increase.click( function() {
-    radarScale = changeScale( elements.radar, radarScale, 0.05 ); 
-    elements.radarScaling.display.html( radarScale.toFixed( 2 ) + "x" ); 
+    radarScale = changeEleScale( elements.radar, radarScale, 0.05, elements.radarScaling.display ); 
 } )
 
 elements.radarScaling.decrease.click( function() {
-    radarScale = changeScale( elements.radar, radarScale, -0.05 ); 
-    elements.radarScaling.display.html( radarScale.toFixed( 2 ) + "x" ); 
+    radarScale = changeEleScale( elements.radar, radarScale, -0.05, elements.radarScaling.display ); 
 } )
 
 // Remote mouse down and up event
@@ -434,14 +437,7 @@ elements.remote.mousedown( function( event ) {
 
     let offset = $( this ).offset();
 
-    remoteOffset = [
-        offset.left - event.clientX, 
-        offset.top - event.clientY
-    ]
-} )
-
-elements.remote.mouseup( function( event ) {
-    remoteMoving = false; 
+    remoteOffset = getOffset( offset, event.clientX, event.clientY );
 } )
 
 // Radar mouse down and up event
@@ -450,46 +446,93 @@ elements.radar.mousedown( function( event ) {
 
     let offset = $( this ).offset();
 
-    radarOffset = [
-        offset.left - event.clientX, 
-        offset.top - event.clientY
-    ]
+    radarOffset = getOffset( offset, event.clientX, event.clientY );
 } )
 
-elements.radar.mouseup( function( event ) {
+$( document ).mouseup( function( event ) {
+    remoteMoving = false; 
     radarMoving = false; 
 } )
 
 $( document ).mousemove( function( event ) {
-    event.preventDefault(); 
-
     let x = event.clientX; 
     let y = event.clientY; 
 
     if ( remoteMoving )
     {
-        let maxWidth = $( window ).width() - ( elements.remote.outerWidth() * remoteScale );
-        let maxHeight = $( window ).height() - ( elements.remote.outerHeight() * remoteScale );
+        event.preventDefault();
 
-        let left = clamp( x + remoteOffset[0], 0, maxWidth );
-        let top = clamp( y + remoteOffset[1], 0, maxHeight ); 
-
-        elements.remote.css( "left", left + "px" );
-        elements.remote.css( "top", top + "px" );
+        calculatePos( elements.remote, x, y, windowWidth, windowHeight, remoteOffset, remoteScale, safezone );
     }
 
     if ( radarMoving )
     {
-        let maxWidth = $( window ).width() - ( elements.radar.outerWidth() * radarScale );
-        let maxHeight = $( window ).height() - ( elements.radar.outerHeight() * radarScale );
+        event.preventDefault(); 
 
-        let left = clamp( x + radarOffset[0], 0, maxWidth );
-        let top = clamp( y + radarOffset[1], 0, maxHeight ); 
-
-        elements.radar.css( "left", left + "px" );
-        elements.radar.css( "top", top + "px" );
+        calculatePos( elements.radar, x, y, windowWidth, windowHeight, radarOffset, radarScale, safezone );
     }
 } )
+
+$( window ).resize( function() {
+    windowWidth = $( this ).width(); 
+    windowHeight = $( this ).height(); 
+} )
+
+$( document ).ready( function() {
+    windowWidth = $( window ).width(); 
+    windowHeight = $( window ).height();
+} )
+
+elements.safezoneSlider.on( "input", function() {
+    let val = $( this ).val();
+    safezone = parseInt( val, 10 ); 
+
+    elements.safezoneDisplay.html( val + "px" ); 
+} )
+
+function calculatePos( ele, x, y, w, h, offset, scale, safezone )
+{
+    let eleWidth = ( ele.outerWidth() * scale );
+    let eleHeight = ( ele.outerHeight() * scale );
+    let eleWidthPerct = ( eleWidth / w ) * 100; 
+    let eleHeightPerct = ( eleHeight / h ) * 100; 
+
+    let maxWidth = w - eleWidth;
+    let maxHeight = h - eleHeight; 
+
+    let left = clamp( x + offset[0], 0 + safezone, maxWidth - safezone );
+    let top = clamp( y + offset[1], 0 + safezone, maxHeight - safezone );
+
+    let leftPos = ( left / w ) * 100; 
+    let topPos = ( top / h ) * 100; 
+
+    // Lock pos check 
+    if ( ( leftPos + ( eleWidthPerct / 2 ) ) >= 49.0 && ( leftPos + ( eleWidthPerct / 2 ) ) <= 51.0 ) 
+    {
+        leftPos = 50.0 - ( eleWidthPerct / 2 ); 
+    }
+
+    if ( ( topPos + ( eleHeightPerct / 2 ) ) >= 49.0 && ( topPos + ( eleHeightPerct / 2 ) ) <= 51.0 ) 
+    {
+        topPos = 50.0 - ( eleHeightPerct / 2 ); 
+    }
+
+    updatePosition( ele, leftPos, topPos );
+}
+
+function updatePosition( ele, left, top )
+{
+    ele.css( "left", left + "%" );
+    ele.css( "top", top + "%" );
+}
+
+function getOffset( offset, x, y )
+{
+    return [
+        offset.left - x, 
+        offset.top - y
+    ]
+}
 
 function setUISettingsVisible( state, remote )
 {
@@ -502,6 +545,14 @@ function hideUISettings()
 	if ( !elements.uiSettingsBox.is( ":hidden" ) ) {
 		elements.uiSettingsBox.hide(); 
 	}
+}
+
+function changeEleScale( ele, scaleVar, amount, display )
+{
+    let scale = changeScale( ele, scaleVar, amount ); 
+    display.html( scale.toFixed( 2 ) + "x" );
+
+    return scale; 
 }
 
 function changeScale( ele, current, amount )
