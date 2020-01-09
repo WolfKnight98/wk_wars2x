@@ -69,7 +69,10 @@ const elements =
     safezoneSlider: $( "#safezone" ), 
     safezoneDisplay: $( "#safezoneDisplay" ),
     
-    keyLock: $( "#keyLockLabel" ), 
+    keyLock: {
+        label: $( "#keyLockLabel" ), 
+        stateLabel: $( "#keyLockStateLabel" )
+    },
 
 	patrolSpeed: $( "#patrolSpeed" ),
 
@@ -144,7 +147,7 @@ const dirs =
 elements.radar.hide(); 
 elements.remote.hide(); 
 elements.uiSettingsBox.hide(); 
-elements.keyLock.hide(); 
+elements.keyLock.label.hide(); 
 
 elements.uiSettingsBtn.click( function() {
 	setUISettingsVisible( true, true );
@@ -373,12 +376,14 @@ function settingUpdate( ants )
 	}
 }
 
-function displayKeyLock()
+function displayKeyLock( state )
 {
-    elements.keyLock.fadeIn();
+    elements.keyLock.stateLabel.html( state ? "enabled" : "disabled" );
+
+    elements.keyLock.label.fadeIn();
 
     setTimeout( function() {
-        elements.keyLock.fadeOut();
+        elements.keyLock.label.fadeOut();
     }, 2000 ); 
 }
 
@@ -670,7 +675,7 @@ window.addEventListener( "message", function( event ) {
             playLockAudio( item.ant, item.dir, item.vol ); 
             break; 
         case "displayKeyLock":
-            displayKeyLock();
+            displayKeyLock( item.state );
             break; 
 		default:
 			break;

@@ -207,7 +207,7 @@ RADAR.sorting = {
 --[[----------------------------------------------------------------------------------
 	Radar essentials functions  
 ----------------------------------------------------------------------------------]]--
--- Returns if the radar's power is on or ff
+-- Returns if the radar's power is on or off
 function RADAR:IsPowerOn()
 	return self.vars.power 
 end 
@@ -402,7 +402,7 @@ function RADAR:ToggleKeyLock()
         self.vars.keyLock = not self.vars.keyLock
 
         -- Tell the NUI side to display the key lock message
-        SendNUIMessage( { _type = "displayKeyLock" } )
+        SendNUIMessage( { _type = "displayKeyLock", state = self:GetKeyLockState() } )
     end
 end 
 
