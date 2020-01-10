@@ -19,7 +19,7 @@ function GetCurrentVersion()
 	return GetResourceMetadata( GetCurrentResourceName(), "version" )
 end 
 
-PerformHttpRequest( "https://wolfknight98.github.io/wk_wars2x/version.txt", function( err, text, headers )
+PerformHttpRequest( "https://wolfknight98.github.io/wk_wars2x_web/version.txt", function( err, text, headers )
     Citizen.Wait( 2000 )
 
     print( label )
