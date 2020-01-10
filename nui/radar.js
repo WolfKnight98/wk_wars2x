@@ -176,9 +176,9 @@ function setLight( ant, cat, item, state )
 	let obj = elements.antennas[ant][cat][item]; 
 
 	if ( state ) {
-		cat == "dirs" ? obj.addClass( "active_arrow" ) : obj.addClass( "active" ); 
+        obj.addClass( cat == "dirs" ? "active_arrow" : "active" ); 
 	} else {
-		cat == "dirs" ? obj.removeClass( "active_arrow" ) : obj.removeClass( "active" ); 
+        obj.removeClass( cat == "dirs" ? "active_arrow" : "active" );
 	}
 }
 
@@ -334,10 +334,9 @@ function playLockAudio( ant, dir, vol )
 }
 
 
-
-
-
-
+/*------------------------------------------------------------------------------------
+	Radar updating  
+------------------------------------------------------------------------------------*/
 function updateDisplays( ps, ants )
 {
 	elements.patrolSpeed.html( ps );
@@ -355,16 +354,6 @@ function updateDisplays( ps, ants )
 	}
 }
 
-function menu( optionText, option )
-{
-	clearEverything(); 
-
-	elements.antennas.front.targetSpeed.html( optionText[0] );
-	elements.antennas.front.fastSpeed.html( optionText[1] );
-
-	elements.patrolSpeed.html( option );
-}
-
 function settingUpdate( ants )
 {
 	for ( let ant in ants )
@@ -374,6 +363,20 @@ function settingUpdate( ants )
         setAntennaFastMode( ant, ants[ant].fast );  
 		setAntennaLock( ant, ants[ant].speedLocked );
 	}
+}
+
+
+/*------------------------------------------------------------------------------------
+	Misc
+------------------------------------------------------------------------------------*/
+function menu( optionText, option )
+{
+	clearEverything(); 
+
+	elements.antennas.front.targetSpeed.html( optionText[0] );
+	elements.antennas.front.fastSpeed.html( optionText[1] );
+
+	elements.patrolSpeed.html( option );
 }
 
 function displayKeyLock( state )
@@ -386,8 +389,6 @@ function displayKeyLock( state )
         elements.keyLock.label.fadeOut();
     }, 2000 ); 
 }
-
-
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
