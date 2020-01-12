@@ -399,6 +399,7 @@ function sendData( name, data ) {
 	} );
 }
 
+
 /*------------------------------------------------------------------------------------
 	UI scaling and positioning 
 ------------------------------------------------------------------------------------*/
@@ -574,21 +575,10 @@ function clamp( num, min, max )
 	return num < min ? min : num > max ? max : num;
 }
 
+
 /*------------------------------------------------------------------------------------
 	Button click event assigning 
 ------------------------------------------------------------------------------------*/
-/* elements.uiSettingsBox.find( "button" ).each( function( i, obj ) {
-	if ( $( this ).attr( "data-value" ) && $( this ).attr( "data-scale" ) ) {
-		$( this ).click( function() { 
-			let align = $( this ).data( "value" ); 
-			let origin = $( this ).data( "scale" );
-
-			elements.radar.removeClass().addClass( align );
-			elements.radar.css( "transform-origin", origin );
-		} )
-	}
-} ); */
-
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
 elements.remote.find( "button" ).each( function( i, obj ) {
 	if ( $( this ).attr( "data-nuitype" ) ) {
@@ -601,6 +591,7 @@ elements.remote.find( "button" ).each( function( i, obj ) {
 		} )
 	}
 } );
+
 
 /*------------------------------------------------------------------------------------
     Close the remote when the user presses the 'Escape' key or the right mouse button 
