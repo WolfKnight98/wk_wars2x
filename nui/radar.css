@@ -684,6 +684,10 @@ button:focus { outline: none; }
 
             background-color: rgb( 180, 180, 180 );
         }
+
+        #uiSettingsBox .safezone_container .slider:focus {
+            outline: none;
+        }
             #uiSettingsBox .safezone_container .slider::-webkit-slider-thumb {
                 -webkit-appearance: none;
                 appearance: none;
