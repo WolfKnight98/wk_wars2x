@@ -12,6 +12,7 @@
 	Variables
 ------------------------------------------------------------------------------------*/
 var resourceName; 
+var uiEdited = false;
 
 const audioNames = 
 {
@@ -399,16 +400,77 @@ function sendData( name, data ) {
 	} );
 }
 
+function setUiHasBeenEdited( state )
+{
+    uiEdited = state; 
+}
+
+function hasUiBeenEdited()
+{
+    return uiEdited;
+}
+
+function sendSaveData()
+{
+    if ( hasUiBeenEdited() ) {
+        let data = 
+        {
+            remote: {
+                left: elements.remote.css( "left" ),
+                top: elements.remote.css( "top" ),
+                scale: remoteScale
+            },
+
+            radar: {
+                left: elements.radar.css( "left" ),
+                top: elements.radar.css( "top" ),
+                scale: radarScale
+            },
+
+            safezone: safezone 
+        }
+
+        sendData( "saveUiData", data );
+    }
+}
+
+function loadUiSettings( data )
+{
+    // Iterate through "remote" and "radar"
+    for ( let setting of [ "remote", "radar" ] ) 
+    {
+        // Iterate through the settings
+        for ( let i of [ "left", "top" ] )
+        {
+            // Update the position of the current element 
+            elements[setting].css( i, data[setting][i] );
+        }
+
+        // Set the scale and update the display
+        setScaleAndDisplay( elements[setting], data[setting].scale, elements[setting + "Scaling"].display ); 
+    }
+
+    // Update the remote and radar scale variables
+    remoteScale = data.remote.scale; 
+    radarScale = data.radar.scale; 
+
+    // Set the safezone and update the display
+    elements.safezoneSlider.val( data.safezone );
+    elements.safezoneSlider.trigger( "input" ); 
+}
+
 
 /*------------------------------------------------------------------------------------
 	UI scaling and positioning 
 ------------------------------------------------------------------------------------*/
 var remoteScale = 1.0;
 var remoteMoving = false; 
+var remoteLastOffset = [ 0, 0 ]; 
 var remoteOffset = [ 0, 0 ]; 
 
 var radarScale = 1.0;
 var radarMoving = false; 
+var radarLastOffset = [ 0, 0 ]; 
 var radarOffset = [ 0, 0 ]; 
 
 var windowWidth = 0; 
@@ -457,6 +519,7 @@ elements.radar.mousedown( function( event ) {
 } )
 
 $( document ).mouseup( function( event ) {
+    // Reset the remote and radar moving variables
     remoteMoving = false; 
     radarMoving = false; 
 } )
@@ -503,6 +566,8 @@ function calculatePos( ele, x, y, w, h, offset, scale, safezone )
     let eleHeight = ( ele.outerHeight() * scale );
     let eleWidthPerct = ( eleWidth / w ) * 100; 
     let eleHeightPerct = ( eleHeight / h ) * 100; 
+    let eleWidthPerctHalf = eleWidthPerct / 2; 
+    let eleHeightPerctHalf = eleHeightPerct / 2;
 
     let maxWidth = w - eleWidth;
     let maxHeight = h - eleHeight; 
@@ -513,18 +578,22 @@ function calculatePos( ele, x, y, w, h, offset, scale, safezone )
     let leftPos = ( left / w ) * 100; 
     let topPos = ( top / h ) * 100; 
 
+    let leftLockGap = leftPos + eleWidthPerctHalf; 
+    let topLockGap = topPos + eleHeightPerctHalf;
+
     // Lock pos check 
-    if ( ( leftPos + ( eleWidthPerct / 2 ) ) >= 49.0 && ( leftPos + ( eleWidthPerct / 2 ) ) <= 51.0 ) 
+    if ( leftLockGap >= 48.0 && leftLockGap <= 52.0 ) 
     {
-        leftPos = 50.0 - ( eleWidthPerct / 2 ); 
+        leftPos = 50.0 - eleWidthPerctHalf; 
     }
 
-    if ( ( topPos + ( eleHeightPerct / 2 ) ) >= 49.0 && ( topPos + ( eleHeightPerct / 2 ) ) <= 51.0 ) 
+    if ( topLockGap >= 48.0 && topLockGap <= 52.0 ) 
     {
-        topPos = 50.0 - ( eleHeightPerct / 2 ); 
+        topPos = 50.0 - eleHeightPerctHalf; 
     }
 
     updatePosition( ele, leftPos, topPos );
+    setUiHasBeenEdited( true ); 
 }
 
 function updatePosition( ele, left, top )
@@ -556,8 +625,13 @@ function hideUISettings()
 
 function changeEleScale( ele, scaleVar, amount, display )
 {
+    // Change the scale of the element and update it's displayer
     let scale = changeScale( ele, scaleVar, amount ); 
     display.html( scale.toFixed( 2 ) + "x" );
+
+    // Tell the system the UI has been edited
+    // !uiEdited ? uiEdited = true : null; 
+    setUiHasBeenEdited( true ); 
 
     return scale; 
 }
@@ -568,6 +642,12 @@ function changeScale( ele, current, amount )
     ele.css( "transform", "scale(" + scale + ")" );
 
     return scale; 
+}
+
+function setScaleAndDisplay( ele, scale, display )
+{
+    ele.css( "transform", "scale(" + scale + ")" );
+    display.html( scale.toFixed( 2 ) + "x" );
 }
 
 function clamp( num, min, max )
@@ -600,7 +680,9 @@ function closeRemote()
 {
     sendData( "closeRemote", null );
 	setRemoteVisible( false );
-	setUISettingsVisible( false, false );
+    setUISettingsVisible( false, false );
+    
+    sendSaveData(); 
 }
 
 $( document ).keyup( function( event ) {
@@ -626,9 +708,14 @@ window.addEventListener( "message", function( event ) {
 	switch ( type ) {
 		case "updatePathName":
 			resourceName = item.pathName
-			break;
+            break;
+        case "loadUiSettings":
+            loadUiSettings( item.data );
+            break;
 		case "openRemote":
-			setRemoteVisible( true );
+            setRemoteVisible( true );
+            // uiEdited = false;
+            setUiHasBeenEdited( false ); 
 			break; 
 		case "toggleDisplay":
 			setRadarVisible( item.state );

@@ -41,7 +41,9 @@ button:focus { outline: none; }
 
 	/* Settings for scaling */
 	transform: scale( 1.0 );
-	transform-origin: 0 0;
+    transform-origin: 0 0;
+    
+    transition: transform 0.5s;
 
 	z-index: 1;
 }
@@ -365,7 +367,9 @@ button:focus { outline: none; }
 
 	color: white;
 	/* background-color: rgb( 50, 50, 50 ); */
-	background-image: url( "images/rc_bg.png" );
+    background-image: url( "images/rc_bg.png" );
+    
+    transition: transform 0.5s;
 
     /* clip-path: polygon( 5% 0, 95% 0, 100% 25%, 90% 100%, 10% 100%, 0 25% ); */
     

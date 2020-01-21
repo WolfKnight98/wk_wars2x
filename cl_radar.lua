@@ -31,6 +31,23 @@ end )
 
 
 --[[----------------------------------------------------------------------------------
+	UI loading trigger
+----------------------------------------------------------------------------------]]--
+local spawned = false 
+
+AddEventHandler( "playerSpawned", function()
+    if ( not spawned ) then 
+        TriggerServerEvent( "wk:getUiData" )
+        spawned = true
+    end 
+end )
+
+RegisterNetEvent( "wk:loadUiData" )
+AddEventHandler( "wk:loadUiData", function( data )
+    SendNUIMessage( { _type = "loadUiSettings", data = data } )
+end )
+
+--[[----------------------------------------------------------------------------------
 	Player info variables
 ----------------------------------------------------------------------------------]]--
 local PLY = 
@@ -1325,6 +1342,11 @@ RegisterNUICallback( "menu", function()
 	SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 end )
 
+-- Runs when the JavaScript side sends the UI data for saving 
+RegisterNUICallback( "saveUiData", function( data, cb )
+    TriggerServerEvent( "wk:saveUiData", data )
+end )
+
 
 --[[----------------------------------------------------------------------------------
 	Main threads   
@@ -1587,9 +1609,9 @@ function RADAR:RunControlManager()
     end 
 
 	-- Shortcut to restart the resource
-	--[[if ( IsDisabledControlJustPressed( 1, 167 ) ) then 
+	if ( IsDisabledControlJustPressed( 1, 167 ) ) then 
 		ExecuteCommand( "restart wk_wars2x" )
-	end]]
+	end
 end 
 
 -- Control manager 
