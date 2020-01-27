@@ -51,31 +51,38 @@ function DATASAVE:GetPlayerData( src )
     return data
 end 
 
+-- Checks that the given data is valid, helps to stop modified data from being sent through the save system 
 function DATASAVE:CheckDataIsValid( data )
     -- First we check to make sure the data being passed is actually a table 
     if ( type( data ) ~= "table" ) then return false end 
 
-    -- Then we check to make sure that the data has only 3 elements, "remote", "radar" and "safezone"
+    -- Then we check to make sure that the data has only 3 elements, "remote", "radar", "reader" and "safezone"
     local c = 0 
     for _ in pairs( data ) do c = c + 1 end 
 
-    -- If there isn't 3 elements, then the data isn't valid
-    if ( c ~= 3 ) then return false end 
+    -- If there isn't 4 elements, then the data isn't valid
+    if ( c ~= 4 ) then return false end 
 
     return true 
 end 
 
+-- Gets the identifier for the given player based on the identifier type specified at the top 
 function DATASAVE:GetIdentifier( src )
+    -- Get the number of identifiers the player has
     local max = GetNumPlayerIdentifiers( src )
 
+    -- Iterate through the identifier numerical range 
     for i = 0, max do
+        -- Get the current identifier 
         local id = GetPlayerIdentifier( src, i )
 
+        -- In the event the identifier is nil, report it to the server console and return nil 
         if ( id == nil ) then 
             self:Print( "^1It appears there was an error trying to find the specified ID (" .. self.idType .. ") for player " .. GetPlayerName( source ) )
             return nil
         end 
         
+        -- 
         if ( string.find( id, self.idType, 1 ) ) then 
             local split = self:SplitString( id, ":" )
             return split[2]

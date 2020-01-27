@@ -6,7 +6,6 @@
 	</head>
 
 	<body>
-		<!-- <div id="radarFrame" class="bottom_right"> -->
         <div id="radarFrame">
 			<div class="frame_border"></div>
 
@@ -153,15 +152,57 @@
 
 			<button id="menuButton" data-nuitype="menu" class="circle_btn menu blue">MENU</button>
 
-			<div class="vol_ps_container">
-				<button id="volAndTest" class="vol_and_test blue">VOLUME <span class="hold">TEST</span></button>
-				<button id="psBlank" class="ps_blank blue">PS BLANK</button>
+			<div class="plate_reader_and_help_container">
+				<button id="plateReaderBtn" class="plate_reader blue">PLATE READER</button>
+				<button id="helpBtn" class="help blue">HELP</button>
 			</div>
 
 			<button id="uiSettings" class="rounded_btn light blue">UI SETTINGS</button>
 
 			<p class="logo"><span class="large">Wraith</span> ARS 2X</p>
-		</div>
+        </div>
+        
+        <div id="plateReaderFrame">
+            <div class="frame_border"></div>
+
+            <div id="plateReader">
+                <div class="labels">
+                    <p class="title">FRONT</p>
+                    <p class="title">REAR</p>
+                </div>
+
+                <div class="plates">
+                    <div class="plate_container">
+                        <img id="frontPlate" class="plate" src="images/plates/0.png">
+                        
+                        <div id="frontPlateText" class="text_container">
+                            <!-- <p id="frontPlateText" class="text">46EEK872</p> -->
+                            <p class="text">46EEK872</p>
+                            <p class="text hilite">46EEK872</p>
+                            <p class="text lolite">46EEK872</p>
+                            <p class="text shadow">46EEK872</p>
+                        </div>
+                    </div>
+
+                    <div class="plate_container">
+                        <img id="rearPlate" class="plate" src="images/plates/0.png">
+
+                        <div id="rearPlateText" class="text_container">
+                            <!-- <p id="rearPlateText" class="text">46EEK872</p> -->
+                            <p class="text">46EEK872</p>
+                            <p class="text hilite">46EEK872</p>
+                            <p class="text lolite">46EEK872</p>
+                            <p class="text shadow">46EEK872</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="labels">
+                    <p>LOCKED</p>
+                    <p>LOCKED</p>
+                </div>
+            </div>
+        </div>
 
 		<div id="uiSettingsBox">
 			<div class="radar_settings">
@@ -189,6 +230,17 @@
                     </div>
 
                     <div id="remoteIncreaseScale" class="symbol plus"></div>
+                </div>
+
+                <div class="scaling">
+                    <div id="readerDecreaseScale" class="symbol minus"></div>
+
+                    <div class="info">
+                        <p>Reader Scale</p>
+                        <p id="readerScaleDisplay" class="multiplier">1.00x</p>
+                    </div>
+
+                    <div id="readerIncreaseScale" class="symbol plus"></div>
                 </div>
             </div>
             

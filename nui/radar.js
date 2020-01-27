@@ -47,7 +47,9 @@ const lockAudio =
 const elements = 
 {
 	radar: $( "#radarFrame" ),
-	remote: $( "#rc" ), 
+    remote: $( "#rc" ), 
+    plateReader: $( "#plateReaderFrame" ),
+
 	toggleDisplay: $( "#toggleDisplay" ), 
 	pwrBtn: $( "#pwrBtn" ), 
 
@@ -65,6 +67,24 @@ const elements =
         increase: $( "#remoteIncreaseScale" ),
 		decrease: $( "#remoteDecreaseScale" ),
 		display: $( "#remoteScaleDisplay" )
+    },
+
+    plateReaderScaling: {
+        increase: $( "#readerIncreaseScale" ),
+		decrease: $( "#readerDecreaseScale" ),
+		display: $( "#readerScaleDisplay" )
+    },
+
+    plates: {
+        front: {
+            text: $( "#frontPlateText" ),
+            img: $( "#frontPlate" )
+        },
+
+        rear: {
+            text: $( "#rearPlateText" ), 
+            img: $( "#rearPlate" )
+        }
     },
 
     safezoneSlider: $( "#safezone" ), 
@@ -147,6 +167,7 @@ const dirs =
 ------------------------------------------------------------------------------------*/
 elements.radar.hide(); 
 elements.remote.hide(); 
+// elements.plateReader.hide(); 
 elements.uiSettingsBox.hide(); 
 elements.keyLock.label.hide(); 
 
@@ -170,6 +191,11 @@ function setRadarVisible( state )
 function setRemoteVisible( state ) 
 {
 	state ? elements.remote.fadeIn() : elements.remote.fadeOut();
+}
+
+function setPlateReaderVisible( state )
+{
+    state ? elements.plateReader.fadeIn() : elements.plateReader.fadeOut(); 
 }
 
 function setLight( ant, cat, item, state )
@@ -219,6 +245,15 @@ function setAntennaDirs( ant, dir, fastDir )
 
 	setLight( ant, "dirs", "fwdFast", fastDir == dirs.closing );
 	setLight( ant, "dirs", "bwdFast", fastDir == dirs.away );
+}
+
+function setPlate( cam, plate, index )
+{
+    elements.plates[cam].img.attr( "src", "images/plates/" + index + ".png" );
+
+    elements.plates[cam].text.find( "p" ).each( function( i, obj ) {
+        $( this ).html( plate );
+    } );
 }
 
 
@@ -427,6 +462,12 @@ function sendSaveData()
                 scale: radarScale
             },
 
+            plateReader: {
+                left: elements.plateReader.css( "left" ),
+                top: elements.plateReader.css( "top" ),
+                scale: readerScale
+            },
+
             safezone: safezone 
         }
 
@@ -436,8 +477,8 @@ function sendSaveData()
 
 function loadUiSettings( data )
 {
-    // Iterate through "remote" and "radar"
-    for ( let setting of [ "remote", "radar" ] ) 
+    // Iterate through "remote", "radar" and "plateReader"
+    for ( let setting of [ "remote", "radar", "plateReader" ] ) 
     {
         // Iterate through the settings
         for ( let i of [ "left", "top" ] )
@@ -450,9 +491,10 @@ function loadUiSettings( data )
         setScaleAndDisplay( elements[setting], data[setting].scale, elements[setting + "Scaling"].display ); 
     }
 
-    // Update the remote and radar scale variables
+    // Update the remote, radar and reader scale variables
     remoteScale = data.remote.scale; 
     radarScale = data.radar.scale; 
+    readerScale = data.plateReader.scale;
 
     // Set the safezone and update the display
     elements.safezoneSlider.val( data.safezone );
@@ -465,13 +507,15 @@ function loadUiSettings( data )
 ------------------------------------------------------------------------------------*/
 var remoteScale = 1.0;
 var remoteMoving = false; 
-var remoteLastOffset = [ 0, 0 ]; 
 var remoteOffset = [ 0, 0 ]; 
 
 var radarScale = 1.0;
 var radarMoving = false; 
-var radarLastOffset = [ 0, 0 ]; 
 var radarOffset = [ 0, 0 ]; 
+
+var readerScale = 1.0; 
+var readerMoving = false;
+var readerOffset = [ 0, 0 ]; 
 
 var windowWidth = 0; 
 var windowHeight = 0; 
@@ -479,7 +523,7 @@ var safezone = 0;
 
 // Close the UI settings window when the 'Close' button is pressed
 elements.closeUiBtn.click( function() {
-	setUISettingsVisible( false, true );
+	setUISettingsVisible( false );
 } )
 
 // Set the remote scale buttons to change the remote's scale 
@@ -500,6 +544,15 @@ elements.radarScaling.decrease.click( function() {
     radarScale = changeEleScale( elements.radar, radarScale, -0.05, elements.radarScaling.display ); 
 } )
 
+// Set the reader scale buttons to change the reader's scale 
+elements.plateReaderScaling.increase.click( function() {
+    readerScale = changeEleScale( elements.plateReader, readerScale, 0.05, elements.plateReaderScaling.display ); 
+} )
+
+elements.plateReaderScaling.decrease.click( function() {
+    readerScale = changeEleScale( elements.plateReader, readerScale, -0.05, elements.plateReaderScaling.display ); 
+} )
+
 // Remote mouse down and up event
 elements.remote.mousedown( function( event ) {
     remoteMoving = true; 
@@ -518,10 +571,20 @@ elements.radar.mousedown( function( event ) {
     radarOffset = getOffset( offset, event.clientX, event.clientY );
 } )
 
+// Plate reader mouse down and up event
+elements.plateReader.mousedown( function( event ) {
+    readerMoving = true; 
+
+    let offset = $( this ).offset();
+
+    readerOffset = getOffset( offset, event.clientX, event.clientY );
+} )
+
 $( document ).mouseup( function( event ) {
     // Reset the remote and radar moving variables
     remoteMoving = false; 
     radarMoving = false; 
+    readerMoving = false;
 } )
 
 $( document ).mousemove( function( event ) {
@@ -540,6 +603,13 @@ $( document ).mousemove( function( event ) {
         event.preventDefault(); 
 
         calculatePos( elements.radar, x, y, windowWidth, windowHeight, radarOffset, radarScale, safezone );
+    }
+
+    if ( readerMoving )
+    {
+        event.preventDefault(); 
+
+        calculatePos( elements.plateReader, x, y, windowWidth, windowHeight, readerOffset, readerScale, safezone );
     }
 } )
 
@@ -582,12 +652,12 @@ function calculatePos( ele, x, y, w, h, offset, scale, safezone )
     let topLockGap = topPos + eleHeightPerctHalf;
 
     // Lock pos check 
-    if ( leftLockGap >= 48.0 && leftLockGap <= 52.0 ) 
+    if ( leftLockGap >= 49.0 && leftLockGap <= 51.0 ) 
     {
         leftPos = 50.0 - eleWidthPerctHalf; 
     }
 
-    if ( topLockGap >= 48.0 && topLockGap <= 52.0 ) 
+    if ( topLockGap >= 49.0 && topLockGap <= 51.0 ) 
     {
         topPos = 50.0 - eleHeightPerctHalf; 
     }
@@ -610,10 +680,9 @@ function getOffset( offset, x, y )
     ]
 }
 
-function setUISettingsVisible( state, remote )
+function setUISettingsVisible( state )
 {
 	state ? elements.uiSettingsBox.fadeIn() : elements.uiSettingsBox.fadeOut(); 
-	// if ( remote ) { setRemoteVisible( !state ); }
 }
 
 function hideUISettings()
@@ -630,7 +699,6 @@ function changeEleScale( ele, scaleVar, amount, display )
     display.html( scale.toFixed( 2 ) + "x" );
 
     // Tell the system the UI has been edited
-    // !uiEdited ? uiEdited = true : null; 
     setUiHasBeenEdited( true ); 
 
     return scale; 
@@ -680,7 +748,7 @@ function closeRemote()
 {
     sendData( "closeRemote", null );
 	setRemoteVisible( false );
-    setUISettingsVisible( false, false );
+    setUISettingsVisible( false );
     
     sendSaveData(); 
 }
@@ -714,11 +782,10 @@ window.addEventListener( "message", function( event ) {
             break;
 		case "openRemote":
             setRemoteVisible( true );
-            // uiEdited = false;
             setUiHasBeenEdited( false ); 
 			break; 
-		case "toggleDisplay":
-			setRadarVisible( item.state );
+		case "setRadarDisplayState":
+            setRadarVisible( item.state );
 			break; 
 		case "radarPower":
 			radarPower( item.state );
@@ -756,6 +823,9 @@ window.addEventListener( "message", function( event ) {
         case "displayKeyLock":
             displayKeyLock( item.state );
             break; 
+        case "changePlate":
+            setPlate( item.cam, item.plate, item.index );
+            break;
 		default:
 			break;
 	}

@@ -19,6 +19,7 @@ files {
     "nui/jquery-3.4.1.min.js", 
     "nui/radar.js",
     "nui/images/*",
+    "nui/images/plates/*",
     "nui/fonts/*",
     "nui/sounds/*"
 }

@@ -13,6 +13,26 @@
 	src: url( "fonts/Heebo-Regular.ttf" );
 }
 
+@font-face {
+    font-family: "Plate-Font";
+    src: url( "fonts/plate-font.ttf" );
+}
+
+@font-face {
+    font-family: "Plate-Font-Hilite";
+    src: url( "fonts/plate-font-hilite.ttf" );
+}
+
+@font-face {
+    font-family: "Plate-Font-Lolite";
+    src: url( "fonts/plate-font-lolite.ttf" );
+}
+
+@font-face {
+    font-family: "Plate-Font-Shadow";
+    src: url( "fonts/plate-font-Shadow.ttf" );
+}
+
 * {
 	font-family: 'Heebo', Verdana, Geneva, Tahoma, sans-serif;
 	font-size: 13px;
@@ -48,7 +68,7 @@ button:focus { outline: none; }
 	z-index: 1;
 }
 
-.frame_border {
+#radarFrame .frame_border {
 	width: 685px;
 	height: 210px;
 
@@ -543,25 +563,22 @@ button:focus { outline: none; }
 		line-height: 62px;
 	}
 
-	#rc .vol_ps_container {
+	#rc .plate_reader_and_help_container {
 		width: 90%;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		justify-items: center;
 	}
-		#rc .vol_ps_container .vol_and_test, 
-		#rc .vol_ps_container .ps_blank {
+		#rc .plate_reader_and_help_container .plate_reader, 
+		#rc .plate_reader_and_help_container .help {
 			width: 80px;
 			height: 55px;
 			border-radius: 7px;
 		}
 
-		#rc .vol_ps_container .hold {
-			border-bottom: 2px solid rgb( 0, 0, 0 );
-		}
-
-		#rc .vol_ps_container .ps_blank {
-			padding: 0 10px;
+		#rc .plate_reader_and_help_container .help {
+            padding: 0 10px;
+            font-size: 15px;
 		}
 	
 	#rc .light {
@@ -580,11 +597,145 @@ button:focus { outline: none; }
 
 	#rc .blue {
 		background-color: rgb( 84, 210, 255 );
-	}
+    }
+    
+#plateReaderFrame {
+    width: 500px;
+    height: 200px;
+
+    position: absolute;
+    margin: auto;
+
+    top: calc( 50% - ( 200px / 2 ) );
+    left: calc( 50% - ( 500px / 2 ) );
+
+    background-image: url( "images/pr_frame.png" );
+
+    transition: transform 0.5s;
+
+    /* Settings for scaling */
+	transform: scale( 1.0 );
+	transform-origin: 0 0;
+
+    /* background-color: rgb(70, 70, 70);
+    box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 ); */
+}
+    #plateReaderFrame .frame_border {
+        width: 465px;
+        height: 175px;
+
+        position: absolute;
+        margin: auto;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        background-color: rgb( 20, 22, 18 );
+
+        border-radius: 5px;
+
+        /* clip-path: polygon( 20px 2px, 665px 2px, 682px 30%, 682px 70%, 665px 208px, 20px 208px, 3px 70%, 3px 30% ); */
+    }
+
+#plateReader {
+    width: 460px;
+    height: 170px;
+
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background-image: url( "images/pr_bg.png" );
+
+    box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 ); 
+
+    display: grid;
+    grid-template-rows: 30px 1fr 30px;
+    align-content: center;
+}
+    #plateReader .labels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-content: center;
+    }
+        #plateReader .labels .title {
+            color: rgb( 255, 255, 255 );
+        }
+        
+        #plateReader .labels p {
+            margin: 0;
+            text-align: center;
+            font-size: 18px;
+        }
+
+    #plateReader .plates {
+        width: 100%;
+        height: 100%;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-content: center;
+        justify-items: center;
+    }
+        #plateReader .plates .plate_container {
+            width: 90%;
+            height: 100%;
+
+            display: grid;
+            grid-template-columns: 1fr;
+            justify-content: center;
+        }
+            #plateReader .plates .plate_container .plate {
+                display: block;
+                max-width: 100%; 
+                height: auto;
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            #plateReader .plates .plate_container .text_container {
+                grid-column: 1;
+                grid-row: 1;
+
+                display: grid;
+                grid-template-columns: 1fr;
+                justify-content: center;
+            }
+                #plateReader .plates .plate_container .text_container .text {
+                    display: block;
+                    font-family: "Plate-Font";
+                    font-size: 58px;
+                    text-align: center;
+                    letter-spacing: -3px;
+                    color: rgb(0, 0, 163);
+                    padding-top: 5px;
+                    margin: 0;
+                    grid-column: 1;
+                    grid-row: 1;
+                }
+
+                #plateReader .plates .plate_container .text_container .hilite {
+                    font-family: "Plate-Font-Hilite";
+                    color: rgb( 93, 65, 255 );
+                }
+
+                #plateReader .plates .plate_container .text_container .lolite {
+                    font-family: "Plate-Font-Lolite";
+                    color: rgb( 255, 255, 255 );
+                }
+
+                #plateReader .plates .plate_container .text_container .shadow {
+                    font-family: "Plate-Font-Shadow";
+                    color: rgb( 100, 100, 100 );
+                }
 
 #uiSettingsBox {
 	width: 250px;
-	height: 325px;
+	height: 375px;
 
 	position: absolute;
 	margin: auto;
@@ -617,7 +768,7 @@ button:focus { outline: none; }
     }
     
     #uiSettingsBox .scaling_container {
-        height: 150px;
+        height: 225px;
         display: grid;
         grid-template-rows: 1fr 1fr;
     }

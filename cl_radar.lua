@@ -77,6 +77,84 @@ Citizen.CreateThread( function()
 	end 
 end )
 
+--[[----------------------------------------------------------------------------------
+	Plate reader variables
+
+	NOTE - This is not a config, do not touch anything unless you know what
+	you are actually doing. 
+----------------------------------------------------------------------------------]]--
+READER = {}
+READER.vars = 
+{
+    -- Whether or not the radar's UI is visible 
+	displayed = true,
+
+	-- Whether or not the radar should be hidden, e.g. the display is active but the player then steps
+	-- out of their vehicle
+    hidden = false,
+    
+    cams = {
+        ["front"] = {
+            plate = nil, 
+            index = nil 
+        }, 
+
+        ["rear"] = {
+            plate = nil, 
+            index = nil 
+        }
+    }
+}
+
+function READER:SetPlate( cam, plate )
+    self.vars.cams[cam].plate = plate 
+end 
+
+function READER:SetIndex( cam, index )
+    self.vars.cams[cam].index = index 
+end 
+
+function READER:CanPerformMainTask()
+    return self.vars.displayed and not self.vars.hidden
+end 
+
+function READER:GetCamFromNum( relPos )
+    if ( relPos == 1 ) then 
+        return "front"
+    elseif ( relPos == -1 ) then 
+        return "rear"
+    end 
+end 
+
+function READER:Main()
+    if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then 
+        for i = 1, -1, -2 do 
+            local start = GetEntityCoords( PLY.veh )
+            local offset = GetOffsetFromEntityInWorldCoords( PLY.veh, 0.0, ( 50.0 * i ), 0.0 )
+            local veh = UTIL:GetVehicleInDirection( PLY.veh, start, offset )
+            
+            if ( DoesEntityExist( veh ) and IsEntityAVehicle( veh ) ) then 
+                local plate = GetVehicleNumberPlateText( veh )
+                local index = GetVehicleNumberPlateTextIndex( veh )
+
+                local cam = self:GetCamFromNum( i )
+
+                self:SetPlate( cam, plate )
+                self:SetIndex( cam, index )
+
+                SendNUIMessage( { _type = "changePlate", cam = cam, plate = plate, index = index } )
+            end 
+        end 
+    end 
+end 
+
+Citizen.CreateThread( function()
+    while ( true ) do
+        READER:Main()
+
+        Citizen.Wait( 500 )
+    end 
+end )
 
 --[[----------------------------------------------------------------------------------
 	Radar variables
@@ -273,7 +351,7 @@ function RADAR:ToggleDisplayState()
 	self.vars.displayed = not self.vars.displayed 
 
 	-- Send the toggle message to the NUI side 
-	SendNUIMessage( { _type = "toggleDisplay", state = self:GetDisplayState() } )
+	SendNUIMessage( { _type = "setRadarDisplayState", state = self:GetDisplayState() } )
 end 
 
 -- Gets the display state
@@ -1547,10 +1625,10 @@ end )
 function RADAR:RunDisplayValidationCheck()
 	if ( ( ( PLY.veh == 0 or ( PLY.veh > 0 and not PLY.vehClassValid ) ) and self:GetDisplayState() and not self:GetDisplayHidden() ) or IsPauseMenuActive() and self:GetDisplayState() ) then
 		self:SetDisplayHidden( true ) 
-		SendNUIMessage( { _type = "toggleDisplay", state = false } )
+		SendNUIMessage( { _type = "setRadarDisplayState", state = false } )
 	elseif ( PLY.veh > 0 and PLY.vehClassValid and PLY.inDriverSeat and self:GetDisplayState() and self:GetDisplayHidden() ) then 
 		self:SetDisplayHidden( false ) 
-		SendNUIMessage( { _type = "toggleDisplay", state = true } )
+		SendNUIMessage( { _type = "setRadarDisplayState", state = true } )
 	end 
 end
 

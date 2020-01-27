@@ -53,7 +53,7 @@ function UTIL:Values( xs )
 end
 
 function UTIL:GetVehicleInDirection( entFrom, coordFrom, coordTo )
-	local rayHandle = StartShapeTestCapsule( coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 20.0, 10, entFrom, 7 )
+	local rayHandle = StartShapeTestCapsule( coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 5.0, 10, entFrom, 7 )
 	local _, hitEntity, endCoords, surfaceNormal, vehicle = GetShapeTestResult( rayHandle )
 	return vehicle
 end
