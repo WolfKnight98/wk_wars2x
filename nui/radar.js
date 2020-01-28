@@ -78,11 +78,15 @@ const elements =
     plates: {
         front: {
             text: $( "#frontPlateText" ),
+            fill: $( "#frontPlateTextFill" ),
+            lolite: $( "#frontPlateTextLolite" ),
             img: $( "#frontPlate" )
         },
 
         rear: {
             text: $( "#rearPlateText" ), 
+            fill: $( "#rearPlateTextFill" ), 
+            lolite: $( "#rearPlateTextLolite" ),
             img: $( "#rearPlate" )
         }
     },
@@ -249,9 +253,20 @@ function setAntennaDirs( ant, dir, fastDir )
 
 function setPlate( cam, plate, index )
 {
-    elements.plates[cam].img.attr( "src", "images/plates/" + index + ".png" );
+    // Get the plate items
+    let pl = elements.plates[cam]; 
 
-    elements.plates[cam].text.find( "p" ).each( function( i, obj ) {
+    // Change the plate image 
+    pl.img.attr( "src", "images/plates/" + index + ".png" );
+
+    // Change the plate text colour depending on the plate itself
+    ( index == 1 || index == 2 ) ? pl.fill.removeClass( "plate_blue" ).addClass( "plate_yellow" ) : pl.fill.removeClass( "plate_yellow" ).addClass( "plate_blue" ); 
+    
+    // If the plate is black or blue then we hide the lolite effect 
+    ( index == 1 || index == 2 ) ? pl.lolite.hide() : pl.lolite.show(); 
+
+    // Update all of the p elements with the new plate 
+    pl.text.find( "p" ).each( function( i, obj ) {
         $( this ).html( plate );
     } );
 }

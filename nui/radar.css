@@ -118,7 +118,15 @@ button:focus { outline: none; }
 		transform: translateX( -1px ); 
 		background-image: url( "images/bg_right.png" );
 		background-repeat: no-repeat;
-	}
+    }
+    
+.plate_blue {
+    color: rgb(0, 0, 163);
+}
+
+.plate_yellow {
+    color: rgb(255, 255, 0);
+}
 
 .arrow {
 	width: 11px;
@@ -705,13 +713,13 @@ button:focus { outline: none; }
                 grid-template-columns: 1fr;
                 justify-content: center;
             }
-                #plateReader .plates .plate_container .text_container .text {
+                #plateReader .plates .plate_container .text_container p {
                     display: block;
                     font-family: "Plate-Font";
                     font-size: 58px;
                     text-align: center;
                     letter-spacing: -3px;
-                    color: rgb(0, 0, 163);
+                    /* color: rgb(0, 0, 163); */
                     padding-top: 5px;
                     margin: 0;
                     grid-column: 1;

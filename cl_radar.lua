@@ -106,8 +106,16 @@ READER.vars =
     }
 }
 
+function READER:GetPlate( cam )
+    return self.vars[cam].plate 
+end 
+
 function READER:SetPlate( cam, plate )
     self.vars.cams[cam].plate = plate 
+end 
+
+function READER:GetIndex( cam )
+    return self.vars[cam].index
 end 
 
 function READER:SetIndex( cam, index )
@@ -139,10 +147,12 @@ function READER:Main()
 
                 local cam = self:GetCamFromNum( i )
 
-                self:SetPlate( cam, plate )
-                self:SetIndex( cam, index )
+                if ( self:GetPlate( cam ) ~= plate ) then 
+                    self:SetPlate( cam, plate )
+                    self:SetIndex( cam, index )
 
-                SendNUIMessage( { _type = "changePlate", cam = cam, plate = plate, index = index } )
+                    SendNUIMessage( { _type = "changePlate", cam = cam, plate = plate, index = index } )
+                end 
             end 
         end 
     end 
@@ -155,6 +165,7 @@ Citizen.CreateThread( function()
         Citizen.Wait( 500 )
     end 
 end )
+
 
 --[[----------------------------------------------------------------------------------
 	Radar variables
