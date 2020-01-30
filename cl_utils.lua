@@ -92,7 +92,7 @@ function UTIL:DrawDebugText( x, y, scale, centre, text )
 end
 
 function UTIL:DrawDebugSphere( x, y, z, r, col )
-	if ( RADAR.config.debug_mode ) then 
+	if ( CONFIG.debug_mode ) then 
 		local col = col or { 255, 255, 255, 255 }
 
 		DrawMarker( 28, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, r, r, r, col[1], col[2], col[3], col[4], false, true, 2, false, false, false, false )
@@ -100,7 +100,7 @@ function UTIL:DrawDebugSphere( x, y, z, r, col )
 end
 
 function UTIL:DrawDebugLine( startP, endP, col )
-	if ( RADAR.config.debug_mode ) then 
+	if ( CONFIG.debug_mode ) then 
 		local col = col or { 255, 255, 255, 255 }
 
 		DrawLine( startP, endP, col[1], col[2], col[3], col[4] )
@@ -108,7 +108,7 @@ function UTIL:DrawDebugLine( startP, endP, col )
 end 
 
 function UTIL:DebugPrint( text )
-	if ( RADAR.config.debug_mode ) then 
+	if ( CONFIG.debug_mode ) then 
 		print( text )
 	end 
 end 

@@ -50,7 +50,7 @@ end )
 --[[----------------------------------------------------------------------------------
 	Player info variables
 ----------------------------------------------------------------------------------]]--
-local PLY = 
+PLY = 
 {
     ped = PlayerPedId(),
     veh = nil,
@@ -77,95 +77,6 @@ Citizen.CreateThread( function()
 	end 
 end )
 
---[[----------------------------------------------------------------------------------
-	Plate reader variables
-
-	NOTE - This is not a config, do not touch anything unless you know what
-	you are actually doing. 
-----------------------------------------------------------------------------------]]--
-READER = {}
-READER.vars = 
-{
-    -- Whether or not the radar's UI is visible 
-	displayed = true,
-
-	-- Whether or not the radar should be hidden, e.g. the display is active but the player then steps
-	-- out of their vehicle
-    hidden = false,
-    
-    cams = {
-        ["front"] = {
-            plate = nil, 
-            index = nil 
-        }, 
-
-        ["rear"] = {
-            plate = nil, 
-            index = nil 
-        }
-    }
-}
-
-function READER:GetPlate( cam )
-    return self.vars[cam].plate 
-end 
-
-function READER:SetPlate( cam, plate )
-    self.vars.cams[cam].plate = plate 
-end 
-
-function READER:GetIndex( cam )
-    return self.vars[cam].index
-end 
-
-function READER:SetIndex( cam, index )
-    self.vars.cams[cam].index = index 
-end 
-
-function READER:CanPerformMainTask()
-    return self.vars.displayed and not self.vars.hidden
-end 
-
-function READER:GetCamFromNum( relPos )
-    if ( relPos == 1 ) then 
-        return "front"
-    elseif ( relPos == -1 ) then 
-        return "rear"
-    end 
-end 
-
-function READER:Main()
-    if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then 
-        for i = 1, -1, -2 do 
-            local start = GetEntityCoords( PLY.veh )
-            local offset = GetOffsetFromEntityInWorldCoords( PLY.veh, 0.0, ( 50.0 * i ), 0.0 )
-            local veh = UTIL:GetVehicleInDirection( PLY.veh, start, offset )
-            
-            if ( DoesEntityExist( veh ) and IsEntityAVehicle( veh ) ) then 
-                local plate = GetVehicleNumberPlateText( veh )
-                local index = GetVehicleNumberPlateTextIndex( veh )
-
-                local cam = self:GetCamFromNum( i )
-
-                if ( self:GetPlate( cam ) ~= plate ) then 
-                    self:SetPlate( cam, plate )
-                    self:SetIndex( cam, index )
-
-                    SendNUIMessage( { _type = "changePlate", cam = cam, plate = plate, index = index } )
-                end 
-            end 
-        end 
-    end 
-end 
-
-Citizen.CreateThread( function()
-    while ( true ) do
-        READER:Main()
-
-        Citizen.Wait( 500 )
-    end 
-end )
-
 
 --[[----------------------------------------------------------------------------------
 	Radar variables
@@ -173,6 +84,7 @@ end )
 	NOTE - This is not a config, do not touch anything unless you know what
 	you are actually doing. 
 ----------------------------------------------------------------------------------]]--
+RADAR = {}
 RADAR.vars = 
 {
 	-- Whether or not the radar's UI is visible 
@@ -195,9 +107,6 @@ RADAR.vars =
 		-- Sensitivty for each radar mode, this changes how far the antennas will detect vehicles
 		["same"] = 3, 
 		["opp"] = 3, 
-
-		-- Future feature!
-		-- ["alert"] = true,
 
 		-- The volume of the audible beep 
         ["beep"] = 1.0,
@@ -458,7 +367,7 @@ end
 
 -- Returns if the fast limit option should be available for the radar
 function RADAR:IsFastLimitAllowed()
-	return self.config.allow_fast_limit
+	return CONFIG.allow_fast_limit
 end
 
 -- Only create the functions if the fast limit config option is enabled
@@ -1351,7 +1260,7 @@ end
 	NUI callback
 ----------------------------------------------------------------------------------]]--
 -- Runs when the "Toggle Display" button is pressed on the remote control 
-RegisterNUICallback( "toggleDisplay", function()
+RegisterNUICallback( "toggleRadarDisplay", function()
 	-- Toggle the display state 
 	RADAR:ToggleDisplayState()
 end )
@@ -1649,7 +1558,7 @@ Citizen.CreateThread( function()
 	while ( true ) do 
 		RADAR:RunDisplayValidationCheck()
 
-		Citizen.Wait( 100 )
+		Citizen.Wait( 500 )
 	end 
 end )
 
@@ -1669,32 +1578,42 @@ Citizen.CreateThread( function()
 	end 
 end )
 
-function RADAR:RunControlManager()
+function RunControlManager()
 	-- 'Z' key, toggles debug mode 
 	--[[ if ( IsDisabledControlJustPressed( 1, 20 ) ) then 
 		self.config.debug_mode = not self.config.debug_mode
 	end ]]
     
-    if ( not self:GetKeyLockState() ) then 
+    if ( not RADAR:GetKeyLockState() ) then 
         -- Opens the remote control 
-        if ( IsDisabledControlJustPressed( 1, self.config.remote_control_key ) ) then 
-            self:OpenRemote()
+        if ( IsDisabledControlJustPressed( 1, CONFIG.remote_control_key ) ) then 
+            RADAR:OpenRemote()
         end 
 
         -- Locks speed from front antenna
-        if ( IsDisabledControlJustPressed( 1, self.config.front_lock_key ) ) then 
-            self:LockAntennaSpeed( "front" )
+        if ( IsDisabledControlJustPressed( 1, CONFIG.front_lock_key ) ) then 
+            RADAR:LockAntennaSpeed( "front" )
         end 
 
         -- Locks speed from rear antenna
-        if ( IsDisabledControlJustPressed( 1, self.config.rear_lock_key ) ) then 
-            self:LockAntennaSpeed( "rear" )
+        if ( IsDisabledControlJustPressed( 1, CONFIG.rear_lock_key ) ) then 
+            RADAR:LockAntennaSpeed( "rear" )
+        end 
+
+        -- Locks front plate reader
+        if ( IsDisabledControlJustPressed( 1, CONFIG.plate_front_lock_key ) ) then 
+            READER:LockCam( "front" )
+        end 
+
+        -- Locks front plate reader
+        if ( IsDisabledControlJustPressed( 1, CONFIG.plate_rear_lock_key ) ) then 
+            READER:LockCam( "rear" )
         end 
     end 
     
     -- Toggles the key lock state 
-    if ( IsDisabledControlJustPressed( 1, self.config.key_lock_key ) ) then 
-		self:ToggleKeyLock()
+    if ( IsDisabledControlJustPressed( 1, CONFIG.key_lock_key ) ) then 
+		RADAR:ToggleKeyLock()
     end 
 
 	-- Shortcut to restart the resource
@@ -1706,7 +1625,7 @@ end
 -- Control manager 
 Citizen.CreateThread( function()
 	while ( true ) do 
-		RADAR:RunControlManager()
+		RunControlManager()
 
 		Citizen.Wait( 0 )
 	end 

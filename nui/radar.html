@@ -114,7 +114,7 @@
 		</div>
 
 		<div id="rc">
-			<button id="toggleDisplay" data-nuitype="toggleDisplay" class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
+			<button id="toggleDisplay" data-nuitype="toggleRadarDisplay" class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
 
 			<p class="label">FRONT ANTENNA</p>
 
@@ -196,14 +196,30 @@
                 </div>
 
                 <div class="labels">
-                    <p>LOCKED</p>
-                    <p>LOCKED</p>
+                    <p id="frontPlateLock">LOCKED</p>
+                    <p id="rearPlateLock">LOCKED</p>
                 </div>
             </div>
         </div>
 
+        <div id="plateReaderBox">
+            <div class="header">
+				<p class="title">Plate Reader</p>
+            </div>
+
+            <div class="container">
+                <button id="togglePlateReader" data-nuitype="togglePlateReaderDisplay" class="btn">Toggle Display</button>
+
+                <input id="boloText" type="text" maxlength="8" placeholder="12ABC345" onkeypress="checkPlateInput(event)" class="plate_input"/>
+
+                <button id="setBoloPlate" class="btn">Set BOLO Plate</button>
+            </div>
+
+            <button id="closePlateReaderSettings" class="close">CLOSE</button>
+        </div>
+
 		<div id="uiSettingsBox">
-			<div class="radar_settings">
+			<div class="header">
 				<p class="title">UI Settings</p>
 			</div>
 

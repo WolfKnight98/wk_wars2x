@@ -50,12 +50,18 @@ const elements =
     remote: $( "#rc" ), 
     plateReader: $( "#plateReaderFrame" ),
 
-	toggleDisplay: $( "#toggleDisplay" ), 
+	// toggleDisplay: $( "#toggleDisplay" ), 
 	pwrBtn: $( "#pwrBtn" ), 
 
 	uiSettingsBtn: $( "#uiSettings" ), 
 	uiSettingsBox: $( "#uiSettingsBox" ), 
-	closeUiBtn: $( "#closeUiSettings" ),
+    closeUiBtn: $( "#closeUiSettings" ),
+    
+    plateReaderBtn: $( "#plateReaderBtn" ), 
+    plateReaderBox: $( "#plateReaderBox" ), 
+    boloText: $( "#boloText" ), 
+    setBoloBtn: $( "#setBoloPlate" ), 
+    closePrBtn: $( "#closePlateReaderSettings" ),
 
 	radarScaling: {
 		increase: $( "#radarIncreaseScale" ),
@@ -80,14 +86,16 @@ const elements =
             text: $( "#frontPlateText" ),
             fill: $( "#frontPlateTextFill" ),
             lolite: $( "#frontPlateTextLolite" ),
-            img: $( "#frontPlate" )
+            img: $( "#frontPlate" ), 
+            lock: $( "#frontPlateLock" )
         },
 
         rear: {
             text: $( "#rearPlateText" ), 
             fill: $( "#rearPlateTextFill" ), 
             lolite: $( "#rearPlateTextLolite" ),
-            img: $( "#rearPlate" )
+            img: $( "#rearPlate" ), 
+            lock: $( "#rearPlateLock" )
         }
     },
 
@@ -171,12 +179,17 @@ const dirs =
 ------------------------------------------------------------------------------------*/
 elements.radar.hide(); 
 elements.remote.hide(); 
-// elements.plateReader.hide(); 
+elements.plateReader.hide(); 
+elements.plateReaderBox.hide(); 
 elements.uiSettingsBox.hide(); 
 elements.keyLock.label.hide(); 
 
 elements.uiSettingsBtn.click( function() {
-	setUISettingsVisible( true, true );
+    setEleVisible( elements.uiSettingsBox, true ); 
+} )
+
+elements.plateReaderBtn.click( function() {
+    setEleVisible( elements.plateReaderBox, true ); 
 } )
 
 elements.pwrBtn.click( function() {
@@ -187,19 +200,9 @@ elements.pwrBtn.click( function() {
 /*------------------------------------------------------------------------------------
 	Setters
 ------------------------------------------------------------------------------------*/
-function setRadarVisible( state )
+function setEleVisible( ele, state )
 {
-	state ? elements.radar.fadeIn() : elements.radar.fadeOut();
-}
-
-function setRemoteVisible( state ) 
-{
-	state ? elements.remote.fadeIn() : elements.remote.fadeOut();
-}
-
-function setPlateReaderVisible( state )
-{
-    state ? elements.plateReader.fadeIn() : elements.plateReader.fadeOut(); 
+    state ? ele.fadeIn() : ele.fadeOut(); 
 }
 
 function setLight( ant, cat, item, state )
@@ -249,6 +252,17 @@ function setAntennaDirs( ant, dir, fastDir )
 
 	setLight( ant, "dirs", "fwdFast", fastDir == dirs.closing );
 	setLight( ant, "dirs", "bwdFast", fastDir == dirs.away );
+}
+
+function setPlateLock( cam, state )
+{
+    let obj = elements.plates[cam].lock; 
+
+	if ( state ) {
+        obj.addClass( "active" ); 
+	} else {
+        obj.removeClass( "active" );
+	}
 }
 
 function setPlate( cam, plate, index )
@@ -516,6 +530,20 @@ function loadUiSettings( data )
     elements.safezoneSlider.trigger( "input" ); 
 }
 
+elements.setBoloBtn.click( function() {
+    let plate = elements.boloText.val();
+    sendData( "setBoloPlate", plate ); 
+} )
+
+function checkPlateInput( event )
+{
+    let valid = /[A-Z0-9"?!£$%^&*()+\=\-_\[\]\{\};:'@#~,<.>/?|\\ ]/g.test( event.key ); 
+
+    if ( !valid ) {
+        event.preventDefault(); 
+    }
+}
+
 
 /*------------------------------------------------------------------------------------
 	UI scaling and positioning 
@@ -538,7 +566,11 @@ var safezone = 0;
 
 // Close the UI settings window when the 'Close' button is pressed
 elements.closeUiBtn.click( function() {
-	setUISettingsVisible( false );
+    setEleVisible( elements.uiSettingsBox, false );
+} )
+
+elements.closePrBtn.click( function() {
+    setEleVisible( elements.plateReaderBox, false ); 
 } )
 
 // Set the remote scale buttons to change the remote's scale 
@@ -695,11 +727,6 @@ function getOffset( offset, x, y )
     ]
 }
 
-function setUISettingsVisible( state )
-{
-	state ? elements.uiSettingsBox.fadeIn() : elements.uiSettingsBox.fadeOut(); 
-}
-
 function hideUISettings()
 {
 	if ( !elements.uiSettingsBox.is( ":hidden" ) ) {
@@ -743,7 +770,8 @@ function clamp( num, min, max )
 	Button click event assigning 
 ------------------------------------------------------------------------------------*/
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
-elements.remote.find( "button" ).each( function( i, obj ) {
+// elements.remote.find( "button" ).each( function( i, obj ) {
+$( "body" ).find( "button" ).each( function( i, obj ) {
 	if ( $( this ).attr( "data-nuitype" ) ) {
 		$( this ).click( function() { 
 			let type = $( this ).data( "nuitype" ); 
@@ -762,8 +790,9 @@ elements.remote.find( "button" ).each( function( i, obj ) {
 function closeRemote()
 {
     sendData( "closeRemote", null );
-	setRemoteVisible( false );
-    setUISettingsVisible( false );
+
+    setEleVisible( elements.remote, false );
+    setEleVisible( elements.uiSettingsBox, false ); 
     
     sendSaveData(); 
 }
@@ -786,7 +815,7 @@ $( document ).contextmenu( function() {
 ------------------------------------------------------------------------------------*/
 window.addEventListener( "message", function( event ) {
 	var item = event.data; 
-	var type = event.data._type; 
+    var type = event.data._type; 
 
 	switch ( type ) {
 		case "updatePathName":
@@ -796,11 +825,11 @@ window.addEventListener( "message", function( event ) {
             loadUiSettings( item.data );
             break;
 		case "openRemote":
-            setRemoteVisible( true );
+            setEleVisible( elements.remote, true ); 
             setUiHasBeenEdited( false ); 
 			break; 
 		case "setRadarDisplayState":
-            setRadarVisible( item.state );
+            setEleVisible( elements.radar, item.state ); 
 			break; 
 		case "radarPower":
 			radarPower( item.state );
@@ -838,9 +867,15 @@ window.addEventListener( "message", function( event ) {
         case "displayKeyLock":
             displayKeyLock( item.state );
             break; 
+        case "setReaderDisplayState":
+            setEleVisible( elements.plateReader, item.state ); 
+            break; 
         case "changePlate":
             setPlate( item.cam, item.plate, item.index );
             break;
+        case "lockPlate":
+            setPlateLock( item.cam, item.state ); 
+            break; 
 		default:
 			break;
 	}
