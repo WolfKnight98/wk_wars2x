@@ -1578,12 +1578,7 @@ Citizen.CreateThread( function()
 	end 
 end )
 
-function RunControlManager()
-	-- 'Z' key, toggles debug mode 
-	--[[ if ( IsDisabledControlJustPressed( 1, 20 ) ) then 
-		self.config.debug_mode = not self.config.debug_mode
-	end ]]
-    
+function RunControlManager()    
     if ( not RADAR:GetKeyLockState() ) then 
         -- Opens the remote control 
         if ( IsDisabledControlJustPressed( 1, CONFIG.remote_control_key ) ) then 

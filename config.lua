@@ -36,6 +36,3 @@ CONFIG.plate_rear_lock_key = 109
 -- When enabled, the player will be able to define a fast limit within the radar's menu, when a vehicle 
 -- exceeds the fast limit, it will be locked into the fast box. Default setting is disabled to maintain realism
 CONFIG.allow_fast_limit = true 
-
--- Debug mode
-CONFIG.debug_mode = false 
