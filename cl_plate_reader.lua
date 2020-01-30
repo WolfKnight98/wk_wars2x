@@ -39,17 +39,6 @@ READER.vars =
     }
 }
 
--- Runs when the "Toggle Display" button is pressed on the plate reder box 
-RegisterNUICallback( "togglePlateReaderDisplay", function()
-	-- Toggle the display state 
-	READER:ToggleDisplayState()
-end )
-
--- Runs when the "Toggle Display" button is pressed on the plate reder box 
-RegisterNUICallback( "setBoloPlate", function( plate, cb )
-    READER:SetBoloPlate( plate )
-end )
-
 -- Gets the display state
 function READER:GetDisplayState()
 	return self.vars.displayed
@@ -96,6 +85,7 @@ end
 
 function READER:SetBoloPlate( plate )
     self.vars.boloPlate = plate 
+    UTIL:Notify( "BOLO plate set to: " .. plate )
 end 
 
 function READER:GetCamLocked( cam )
@@ -123,6 +113,17 @@ function READER:GetCamFromNum( relPos )
     end 
 end 
 
+-- Runs when the "Toggle Display" button is pressed on the plate reder box 
+RegisterNUICallback( "togglePlateReaderDisplay", function()
+	-- Toggle the display state 
+	READER:ToggleDisplayState()
+end )
+
+-- Runs when the "Toggle Display" button is pressed on the plate reder box 
+RegisterNUICallback( "setBoloPlate", function( plate, cb )
+    READER:SetBoloPlate( plate )
+end )
+
 function READER:Main()
     if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then 
         for i = 1, -1, -2 do 
@@ -141,7 +142,6 @@ function READER:Main()
                     self:SetIndex( cam, index )
 
                     if ( plate == self:GetBoloPlate() ) then 
-                        UTIL:Notify( "DEBUG: BOLO plate hit!" )
                         self:LockCam( cam )
                     end 
 
