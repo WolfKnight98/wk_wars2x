@@ -9,9 +9,9 @@ fx_version 'adamant'
 game 'gta5'
 
 name 'Wraith ARS 2X'
-description 'An advanced radar system for FiveM'
+description 'Police radar and plate reader system for FiveM'
 author 'WolfKnight'
-version 'beta3b'
+version 'beta4'
 
 files {
     "nui/radar.html", 
