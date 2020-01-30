@@ -806,7 +806,7 @@ button:focus { outline: none; }
             padding: 0;
             padding-bottom: 15px;
             margin-bottom: -15px;
-            border: 3px solid rgb( 0, 0, 0 );
+            /* border: 3px solid rgb( 0, 0, 0 ); */
         }
 
     #plateReaderBox .close {
@@ -843,7 +843,9 @@ button:focus { outline: none; }
 	bottom: 0;
 	left: 0;
 
-	background-color: rgb( 50, 54, 45 );
+    /* background-color: rgb( 50, 54, 45 ); */
+    background: linear-gradient( to bottom, rgb( 70, 70, 70 ), rgb( 45, 45, 45 ) );
+    border: 3px solid rgb( 0, 0, 0 );
 
 	z-index: 3;
 }
