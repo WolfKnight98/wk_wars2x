@@ -569,6 +569,7 @@ elements.closeUiBtn.click( function() {
     setEleVisible( elements.uiSettingsBox, false );
 } )
 
+// Close the plate reader settings window when the 'Close' button is pressed
 elements.closePrBtn.click( function() {
     setEleVisible( elements.plateReaderBox, false ); 
 } )
@@ -792,6 +793,7 @@ function closeRemote()
     sendData( "closeRemote", null );
 
     setEleVisible( elements.remote, false );
+    setEleVisible( elements.plateReaderBox, false ); 
     setEleVisible( elements.uiSettingsBox, false ); 
     
     sendSaveData(); 
@@ -818,12 +820,18 @@ window.addEventListener( "message", function( event ) {
     var type = event.data._type; 
 
 	switch ( type ) {
+        // System events 
 		case "updatePathName":
 			resourceName = item.pathName
             break;
         case "loadUiSettings":
             loadUiSettings( item.data );
             break;
+        case "displayKeyLock":
+            displayKeyLock( item.state );
+            break; 
+
+        // Radar events
 		case "openRemote":
             setEleVisible( elements.remote, true ); 
             setUiHasBeenEdited( false ); 
@@ -857,16 +865,9 @@ window.addEventListener( "message", function( event ) {
 			break;
 		case "settingUpdate":
 			settingUpdate( item.antennaData ); 
-			break; 
-		case "audio":
-			playAudio( item.name, item.vol ); 
             break; 
-        case "lockAudio":
-            playLockAudio( item.ant, item.dir, item.vol ); 
-            break; 
-        case "displayKeyLock":
-            displayKeyLock( item.state );
-            break; 
+
+        // Plate reader events
         case "setReaderDisplayState":
             setEleVisible( elements.plateReader, item.state ); 
             break; 
@@ -876,6 +877,16 @@ window.addEventListener( "message", function( event ) {
         case "lockPlate":
             setPlateLock( item.cam, item.state ); 
             break; 
+            
+        // Audio events
+		case "audio":
+			playAudio( item.name, item.vol ); 
+            break; 
+        case "lockAudio":
+            playLockAudio( item.ant, item.dir, item.vol ); 
+            break; 
+        
+        // default
 		default:
 			break;
 	}
