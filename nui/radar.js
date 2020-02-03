@@ -63,6 +63,10 @@ const elements =
     setBoloBtn: $( "#setBoloPlate" ), 
     closePrBtn: $( "#closePlateReaderSettings" ),
 
+    openHelp: $( "#helpBtn" ), 
+    helpWindow: $( "#helpWindow" ), 
+    closeHelp: $( "#closeHelp" ), 
+
 	radarScaling: {
 		increase: $( "#radarIncreaseScale" ),
 		decrease: $( "#radarDecreaseScale" ),
@@ -183,6 +187,7 @@ elements.plateReader.hide();
 elements.plateReaderBox.hide(); 
 elements.uiSettingsBox.hide(); 
 elements.keyLock.label.hide(); 
+elements.helpWindow.hide(); 
 
 elements.uiSettingsBtn.click( function() {
     setEleVisible( elements.uiSettingsBox, true ); 
@@ -190,6 +195,14 @@ elements.uiSettingsBtn.click( function() {
 
 elements.plateReaderBtn.click( function() {
     setEleVisible( elements.plateReaderBox, true ); 
+} )
+
+elements.openHelp.click( function() {
+    setEleVisible( elements.helpWindow, true ); 
+} )
+
+elements.closeHelp.click( function() {
+    setEleVisible( elements.helpWindow, false ); 
 } )
 
 elements.pwrBtn.click( function() {
@@ -726,13 +739,6 @@ function getOffset( offset, x, y )
         offset.left - x, 
         offset.top - y
     ]
-}
-
-function hideUISettings()
-{
-	if ( !elements.uiSettingsBox.is( ":hidden" ) ) {
-		elements.uiSettingsBox.hide(); 
-	}
 }
 
 function changeEleScale( ele, scaleVar, amount, display )
