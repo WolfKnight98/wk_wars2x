@@ -65,6 +65,7 @@ const elements =
 
     openHelp: $( "#helpBtn" ), 
     helpWindow: $( "#helpWindow" ), 
+    helpWeb: $( "#helpWeb" ), 
     closeHelp: $( "#closeHelp" ), 
 
 	radarScaling: {
@@ -199,10 +200,12 @@ elements.plateReaderBtn.click( function() {
 
 elements.openHelp.click( function() {
     setEleVisible( elements.helpWindow, true ); 
+    loadHelp( true );
 } )
 
 elements.closeHelp.click( function() {
     setEleVisible( elements.helpWindow, false ); 
+    loadHelp( false ); 
 } )
 
 elements.pwrBtn.click( function() {
@@ -216,6 +219,10 @@ elements.pwrBtn.click( function() {
 function setEleVisible( ele, state )
 {
     state ? ele.fadeIn() : ele.fadeOut(); 
+
+    if ( state ) {
+        ele.blur();
+    }
 }
 
 function setLight( ant, cat, item, state )
@@ -557,6 +564,15 @@ function checkPlateInput( event )
     }
 }
 
+function loadHelp( state )
+{
+    if ( state ) {
+        elements.helpWeb.attr( "src", "https://wolfknight98.github.io/wk_wars2x_web/manual.pdf" ); 
+    } else {
+        elements.helpWeb.attr( "src", "about:blank" ); 
+    }
+}
+
 
 /*------------------------------------------------------------------------------------
 	UI scaling and positioning 
@@ -798,9 +814,12 @@ function closeRemote()
 {
     sendData( "closeRemote", null );
 
-    setEleVisible( elements.remote, false );
     setEleVisible( elements.plateReaderBox, false ); 
     setEleVisible( elements.uiSettingsBox, false ); 
+    setEleVisible( elements.helpWindow, false );
+    loadHelp( false ); 
+
+    setEleVisible( elements.remote, false );
     
     sendSaveData(); 
 }
