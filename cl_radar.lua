@@ -1603,7 +1603,7 @@ end )
 
 function RunControlManager()
 	-- Make sure only the keyboard works
-	if ( not IsInputDisabled( 0 ) ) then 
+	if ( IsInputDisabled( 0 ) ) then 
 		if ( not RADAR:GetKeyLockState() ) then 
 			-- Opens the remote control 
 			if ( IsDisabledControlJustPressed( 1, CONFIG.remote_control_key ) ) then 
