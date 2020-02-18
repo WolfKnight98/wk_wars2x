@@ -113,10 +113,10 @@ RADAR.vars =
 		["opp"] = 3, 
 
 		-- The volume of the audible beep 
-		["beep"] = 1.0,
+		["beep"] = 0.6,
 		
 		-- The volume of the verbal lock confirmation 
-		["voice"] = 1.0,
+		["voice"] = 0.6,
 
 		-- The speed unit used in conversions
 		["speedType"] = "mph"
@@ -130,8 +130,8 @@ RADAR.vars =
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
-		{ displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 6, settingText = "beep" },
-		{ displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 6, settingText = "voice" },
+		{ displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" },
+		{ displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "voice" },
 		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = 1, settingText = "speedType" }
 	},
 
@@ -170,7 +170,7 @@ RADAR.vars =
 
 	-- The maximum distance that the radar system's ray traces can go, changing this will change the max
 	-- distance in-game, but I wouldn't really put it more than 500.0
-	maxCheckDist = 400.0,
+	maxCheckDist = 350.0,
 
 	-- Cached dynamic vehicle sphere sizes, automatically populated when the system is running 
 	sphereSizes = {}, 
@@ -1601,37 +1601,40 @@ Citizen.CreateThread( function()
 	end 
 end )
 
-function RunControlManager()    
-	if ( not RADAR:GetKeyLockState() ) then 
-		-- Opens the remote control 
-		if ( IsDisabledControlJustPressed( 1, CONFIG.remote_control_key ) ) then 
-			RADAR:OpenRemote()
-		end 
+function RunControlManager()
+	-- Make sure only the keyboard works
+	if ( not IsInputDisabled( 0 ) ) then 
+		if ( not RADAR:GetKeyLockState() ) then 
+			-- Opens the remote control 
+			if ( IsDisabledControlJustPressed( 1, CONFIG.remote_control_key ) ) then 
+				RADAR:OpenRemote()
+			end 
 
-		-- Locks speed from front antenna
-		if ( IsDisabledControlJustPressed( 1, CONFIG.front_lock_key ) ) then 
-			RADAR:LockAntennaSpeed( "front" )
-		end 
+			-- Locks speed from front antenna
+			if ( IsDisabledControlJustPressed( 1, CONFIG.front_lock_key ) ) then 
+				RADAR:LockAntennaSpeed( "front" )
+			end 
 
-		-- Locks speed from rear antenna
-		if ( IsDisabledControlJustPressed( 1, CONFIG.rear_lock_key ) ) then 
-			RADAR:LockAntennaSpeed( "rear" )
-		end 
+			-- Locks speed from rear antenna
+			if ( IsDisabledControlJustPressed( 1, CONFIG.rear_lock_key ) ) then 
+				RADAR:LockAntennaSpeed( "rear" )
+			end 
 
-		-- Locks front plate reader
-		if ( IsDisabledControlJustPressed( 1, CONFIG.plate_front_lock_key ) ) then 
-			READER:LockCam( "front" )
-		end 
+			-- Locks front plate reader
+			if ( IsDisabledControlJustPressed( 1, CONFIG.plate_front_lock_key ) ) then 
+				READER:LockCam( "front" )
+			end 
 
-		-- Locks front plate reader
-		if ( IsDisabledControlJustPressed( 1, CONFIG.plate_rear_lock_key ) ) then 
-			READER:LockCam( "rear" )
+			-- Locks front plate reader
+			if ( IsDisabledControlJustPressed( 1, CONFIG.plate_rear_lock_key ) ) then 
+				READER:LockCam( "rear" )
+			end 
 		end 
-	end 
-	
-	-- Toggles the key lock state 
-	if ( IsDisabledControlJustPressed( 1, CONFIG.key_lock_key ) ) then 
-		RADAR:ToggleKeyLock()
+		
+		-- Toggles the key lock state 
+		if ( IsDisabledControlJustPressed( 1, CONFIG.key_lock_key ) ) then 
+			RADAR:ToggleKeyLock()
+		end 
 	end 
 
 	-- Shortcut to restart the resource
