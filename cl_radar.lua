@@ -35,16 +35,20 @@ end )
 ----------------------------------------------------------------------------------]]--
 local spawned = false 
 
+-- Runs every time the player spawns, but the additional check means it only runs the first time
+-- the player spawns
 AddEventHandler( "playerSpawned", function()
-    if ( not spawned ) then 
-        TriggerServerEvent( "wk:getUiData" )
-        spawned = true
-    end 
+	if ( not spawned ) then 
+		-- Ask the server to get the player's saved UI data
+		TriggerServerEvent( "wk:getUiData" )
+		spawned = true
+	end 
 end )
 
+-- Grabs the saved UI data sent by the server and forwards it to the NUI side 
 RegisterNetEvent( "wk:loadUiData" )
 AddEventHandler( "wk:loadUiData", function( data )
-    SendNUIMessage( { _type = "loadUiSettings", data = data } )
+	SendNUIMessage( { _type = "loadUiSettings", data = data } )
 end )
 
 --[[----------------------------------------------------------------------------------
@@ -52,10 +56,10 @@ end )
 ----------------------------------------------------------------------------------]]--
 PLY = 
 {
-    ped = PlayerPedId(),
-    veh = nil,
-    inDriverSeat = false,
-    vehClassValid = false
+	ped = PlayerPedId(),
+	veh = nil,
+	inDriverSeat = false,
+	vehClassValid = false
 }
 
 -- Used to check if the player is in a position where the radar should be allowed operation 
@@ -109,10 +113,10 @@ RADAR.vars =
 		["opp"] = 3, 
 
 		-- The volume of the audible beep 
-        ["beep"] = 1.0,
-        
-        -- The volume of the verbal lock confirmation 
-        ["voice"] = 1.0,
+		["beep"] = 1.0,
+		
+		-- The volume of the verbal lock confirmation 
+		["voice"] = 1.0,
 
 		-- The speed unit used in conversions
 		["speedType"] = "mph"
@@ -126,8 +130,8 @@ RADAR.vars =
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
-        { displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 6, settingText = "beep" },
-        { displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 6, settingText = "voice" },
+		{ displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 6, settingText = "beep" },
+		{ displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 6, settingText = "voice" },
 		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = 1, settingText = "speedType" }
 	},
 
@@ -193,10 +197,10 @@ RADAR.vars =
 
 	-- The wait time for the ray trace system, this changes dynamically based on if the player's vehicle is stationary 
 	-- or not
-    threadWaitTime = 500, 
-    
-    -- Key lock, when true, prevents any of the radar's key events from working, like the ELS key lock 
-    keyLock = false 
+	threadWaitTime = 500, 
+	
+	-- Key lock, when true, prevents any of the radar's key events from working, like the ELS key lock 
+	keyLock = false 
 }
 
 -- Speed conversion values
@@ -411,19 +415,19 @@ end
 
 -- Toggles the internal key lock state, which stops any of the radar's key binds from working
 function RADAR:ToggleKeyLock()
-    -- Check the player state is valid
-    if ( PLY:VehicleStateValid() ) then 
-        -- Toggle the key lock variable 
-        self.vars.keyLock = not self.vars.keyLock
+	-- Check the player state is valid
+	if ( PLY:VehicleStateValid() ) then 
+		-- Toggle the key lock variable 
+		self.vars.keyLock = not self.vars.keyLock
 
-        -- Tell the NUI side to display the key lock message
-        SendNUIMessage( { _type = "displayKeyLock", state = self:GetKeyLockState() } )
-    end
+		-- Tell the NUI side to display the key lock message
+		SendNUIMessage( { _type = "displayKeyLock", state = self:GetKeyLockState() } )
+	end
 end 
 
 -- Returns the key lock state 
 function RADAR:GetKeyLockState()
-    return self.vars.keyLock
+	return self.vars.keyLock
 end 
 
 
@@ -626,12 +630,12 @@ end
 -- much further away (400+ units). Also, as my system uses sphere intersections, each sphere can have a different
 -- radius, which means that larger vehicles can have larger spheres, and smaller vehicles can have smaller spheres. 
 function RADAR:GetLineHitsSphereAndDir( c, radius, rs, re )
-    -- Take the vector3's and turn them into vector2's, this way all of the calculations below are for an 
-    -- infinite cylinder rather than a sphere, which also means that vehicles can be detected even when on
-    -- an incline!   
-    local rayStart = vector2( rs.x, rs.y )
-    local rayEnd = vector2( re.x, re.y )
-    local centre = vector2( c.x, c.y )
+	-- Take the vector3's and turn them into vector2's, this way all of the calculations below are for an 
+	-- infinite cylinder rather than a sphere, which also means that vehicles can be detected even when on
+	-- an incline!   
+	local rayStart = vector2( rs.x, rs.y )
+	local rayEnd = vector2( re.x, re.y )
+	local centre = vector2( c.x, c.y )
 
 	-- First we get the normalised ray, this way we then know the direction the ray is going 
 	local rayNorm = norm( rayEnd - rayStart )
@@ -674,7 +678,7 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 
 	-- Calculate the distance between the target vehicle and the start point of the ray trace, note how we don't 
 	-- use GetDistanceBetweenCoords or Vdist, the method below still returns the same result with less cpu time 
-    local dist = #( pos - s )
+	local dist = #( pos - s )
 
 	-- We only perform a trace on the target vehicle if it exists, isn't the player's vehicle, and the distance is 
 	-- less than the max distance defined by the system 
@@ -683,10 +687,10 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 		local entSpeed = GetEntitySpeed( veh )
 
 		-- Check that the target vehicle is within the line of sight of the player's vehicle 
-        local visible = HasEntityClearLosToEntity( plyVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
-        
-        -- Get the pitch of the player's vehicle
-        local pitch = GetEntityPitch( plyVeh )
+		local visible = HasEntityClearLosToEntity( plyVeh, veh, 15 ) -- 13 seems okay, 15 too (doesn't grab ents through ents)
+		
+		-- Get the pitch of the player's vehicle
+		local pitch = GetEntityPitch( plyVeh )
 
 		-- Now we check that the target vehicle is moving and is visible 
 		if ( entSpeed > 0.1 and ( pitch > -35 and pitch < 35 ) and visible ) then 
@@ -928,10 +932,10 @@ function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
 		self:SetAntennaSpeedIsLocked( ant, true )
 
 		-- Send a message to the NUI side to play the beep sound with the current volume setting
-        SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-        
-        -- Send a message to the NUI side to play the lock audio with the current voice volume setting 
-        SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = RADAR:GetSettingValue( "voice" ) } )
+		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+		
+		-- Send a message to the NUI side to play the lock audio with the current voice volume setting 
+		SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = RADAR:GetSettingValue( "voice" ) } )
 	end
 end 
 
@@ -966,10 +970,10 @@ end
 function RADAR:LockAntennaSpeed( ant )
 	-- Only lock a speed if the antenna is on and the UI is displayed
 	if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() and self:IsAntennaTransmitting( ant ) ) then 
-        -- Check if the antenna doesn't have a locked speed, if it doesn't then we lock in the speed, otherwise we 
-        -- reset the lock 
+		-- Check if the antenna doesn't have a locked speed, if it doesn't then we lock in the speed, otherwise we 
+		-- reset the lock 
 		if ( not self:IsAntennaSpeedLocked( ant ) ) then 
-            -- Set up a temporary table with 3 nil values, this way if the system isn't able to get a speed or
+			-- Set up a temporary table with 3 nil values, this way if the system isn't able to get a speed or
 			-- direction, the speed lock function won't work 
 			local data = { nil, nil, nil }
 
@@ -986,7 +990,7 @@ function RADAR:LockAntennaSpeed( ant )
 			end
 
 			-- Lock in the speed data for the antenna
-            self:SetAntennaSpeedLock( ant, data[1], data[2], data[3] )
+			self:SetAntennaSpeedLock( ant, data[1], data[2], data[3] )
 		else 
 			self:ResetAntennaSpeedLock( ant )
 		end 
@@ -1039,8 +1043,8 @@ function RADAR:InsertCapturedVehicleData( t, rt )
 end 
 
 --[[
-    These need to be changed so a ray type can be set too, otherwise in its current state, messes up vehicle 
-    detection. 
+	These need to be changed so a ray type can be set too, otherwise in its current state, messes up vehicle 
+	detection. 
 
 -- Sets the given value to true in the temp vehicles table, it is a test system used to reduce ray traces
 -- on vehicles that have already been hit by another trace. Currently not implemented fully, as it doesn't 
@@ -1342,7 +1346,7 @@ end )
 
 -- Runs when the JavaScript side sends the UI data for saving 
 RegisterNUICallback( "saveUiData", function( data, cb )
-    TriggerServerEvent( "wk:saveUiData", data )
+	TriggerServerEvent( "wk:saveUiData", data )
 end )
 
 
@@ -1526,15 +1530,21 @@ end
 
 -- Main thread
 Citizen.CreateThread( function()
+	-- Remove the NUI focus just in case
 	SetNuiFocus( false, false )
 
+	-- Run the function to cache the number of rays, this way a hard coded number is never needed
 	RADAR:CacheNumRays()
+	
+	-- Update the end coordinates for the ray traces based on the config, again, reduced hard coding
 	RADAR:UpdateRayEndCoords()
 
+	-- If the fast limit feature is allowed, create the config in the radar variables
 	if ( RADAR:IsFastLimitAllowed() ) then 
 		RADAR:CreateFastLimitConfig()
 	end 
 
+	-- Run the main radar function 
 	while ( true ) do
 		RADAR:Main()
 
@@ -1542,6 +1552,9 @@ Citizen.CreateThread( function()
 	end
 end )
 
+-- This function is pretty much straight from WraithRS, it does the job so I didn't see the point in not 
+-- using it. Hides the radar UI when certain criteria is met, e.g. in pause menu or stepped out ot the 
+-- patrol vehicle 
 function RADAR:RunDisplayValidationCheck()
 	if ( ( ( PLY.veh == 0 or ( PLY.veh > 0 and not PLY.vehClassValid ) ) and self:GetDisplayState() and not self:GetDisplayHidden() ) or IsPauseMenuActive() and self:GetDisplayState() ) then
 		self:SetDisplayHidden( true ) 
@@ -1552,69 +1565,79 @@ function RADAR:RunDisplayValidationCheck()
 	end 
 end
 
+-- Runs the display validation check for the radar
 Citizen.CreateThread( function() 
 	Citizen.Wait( 100 )
 
 	while ( true ) do 
+		-- Run the check 
 		RADAR:RunDisplayValidationCheck()
 
+		-- Wait half a second 
 		Citizen.Wait( 500 )
 	end 
 end )
 
 -- Update the vehicle pool every 3 seconds
 function RADAR:UpdateVehiclePool()
+	-- Only update the vehicle pool if we need to 
 	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
+		-- Get the active vehicle set
 		local vehs = self:GetAllVehicles()
+		
+		-- Update the vehicle pool 
 		self:SetVehiclePool( vehs )
 	end 
 end 
 
+-- Runs the vehicle pool updater
 Citizen.CreateThread( function() 
 	while ( true ) do
+		-- Update the vehicle pool 
 		RADAR:UpdateVehiclePool()
 
+		-- Wait 3 seconds
 		Citizen.Wait( 3000 )
 	end 
 end )
 
 function RunControlManager()    
-    if ( not RADAR:GetKeyLockState() ) then 
-        -- Opens the remote control 
-        if ( IsDisabledControlJustPressed( 1, CONFIG.remote_control_key ) ) then 
-            RADAR:OpenRemote()
-        end 
+	if ( not RADAR:GetKeyLockState() ) then 
+		-- Opens the remote control 
+		if ( IsDisabledControlJustPressed( 1, CONFIG.remote_control_key ) ) then 
+			RADAR:OpenRemote()
+		end 
 
-        -- Locks speed from front antenna
-        if ( IsDisabledControlJustPressed( 1, CONFIG.front_lock_key ) ) then 
-            RADAR:LockAntennaSpeed( "front" )
-        end 
+		-- Locks speed from front antenna
+		if ( IsDisabledControlJustPressed( 1, CONFIG.front_lock_key ) ) then 
+			RADAR:LockAntennaSpeed( "front" )
+		end 
 
-        -- Locks speed from rear antenna
-        if ( IsDisabledControlJustPressed( 1, CONFIG.rear_lock_key ) ) then 
-            RADAR:LockAntennaSpeed( "rear" )
-        end 
+		-- Locks speed from rear antenna
+		if ( IsDisabledControlJustPressed( 1, CONFIG.rear_lock_key ) ) then 
+			RADAR:LockAntennaSpeed( "rear" )
+		end 
 
-        -- Locks front plate reader
-        if ( IsDisabledControlJustPressed( 1, CONFIG.plate_front_lock_key ) ) then 
-            READER:LockCam( "front" )
-        end 
+		-- Locks front plate reader
+		if ( IsDisabledControlJustPressed( 1, CONFIG.plate_front_lock_key ) ) then 
+			READER:LockCam( "front" )
+		end 
 
-        -- Locks front plate reader
-        if ( IsDisabledControlJustPressed( 1, CONFIG.plate_rear_lock_key ) ) then 
-            READER:LockCam( "rear" )
-        end 
-    end 
-    
-    -- Toggles the key lock state 
-    if ( IsDisabledControlJustPressed( 1, CONFIG.key_lock_key ) ) then 
+		-- Locks front plate reader
+		if ( IsDisabledControlJustPressed( 1, CONFIG.plate_rear_lock_key ) ) then 
+			READER:LockCam( "rear" )
+		end 
+	end 
+	
+	-- Toggles the key lock state 
+	if ( IsDisabledControlJustPressed( 1, CONFIG.key_lock_key ) ) then 
 		RADAR:ToggleKeyLock()
-    end 
+	end 
 
 	-- Shortcut to restart the resource
-	if ( IsDisabledControlJustPressed( 1, 167 ) ) then 
+	--[[ if ( IsDisabledControlJustPressed( 1, 167 ) ) then 
 		ExecuteCommand( "restart wk_wars2x" )
-	end
+	end ]]
 end 
 
 -- Control manager 

@@ -14,6 +14,7 @@
 var resourceName; 
 var uiEdited = false;
 
+// All of the audio file names
 const audioNames = 
 {
     // Beeps
@@ -29,6 +30,7 @@ const audioNames =
     away: "away.ogg"
 }
 
+// Defines which audio needs to play for which direction 
 const lockAudio = 
 {
     front: { 
@@ -50,7 +52,6 @@ const elements =
     remote: $( "#rc" ), 
     plateReader: $( "#plateReaderFrame" ),
 
-	// toggleDisplay: $( "#toggleDisplay" ), 
 	pwrBtn: $( "#pwrBtn" ), 
 
 	uiSettingsBtn: $( "#uiSettings" ), 
@@ -163,6 +164,7 @@ const elements =
 	}
 }
 
+// Antenna mode values
 const modes = 
 {
 	off: 0, 
@@ -171,6 +173,7 @@ const modes =
 	both: 3
 }
 
+// Antenna direction values
 const dirs = 
 {
 	none: 0, 
@@ -190,45 +193,45 @@ elements.uiSettingsBox.hide();
 elements.keyLock.label.hide(); 
 elements.helpWindow.hide(); 
 
+// Sets the action for the "UI SETTINGS" button on the remote to open the UI settings box
 elements.uiSettingsBtn.click( function() {
     setEleVisible( elements.uiSettingsBox, true ); 
 } )
 
+// Sets the action for the "PLATE READER" button on the remote to open the plate reader box
 elements.plateReaderBtn.click( function() {
     setEleVisible( elements.plateReaderBox, true ); 
 } )
 
+// Sets the action for the "HELP" button on the remote to open the help window and load the web page 
 elements.openHelp.click( function() {
     setEleVisible( elements.helpWindow, true ); 
     loadHelp( true );
 } )
 
+// Sets the action for the "Close Help" button under the help window to close the help window and unload the web page 
 elements.closeHelp.click( function() {
     setEleVisible( elements.helpWindow, false ); 
     loadHelp( false ); 
-} )
-
-elements.pwrBtn.click( function() {
-	togglePower();
 } )
 
 
 /*------------------------------------------------------------------------------------
 	Setters
 ------------------------------------------------------------------------------------*/
+// Sets the visibility of an element to the given state 
 function setEleVisible( ele, state )
 {
     state ? ele.fadeIn() : ele.fadeOut(); 
-
-    if ( state ) {
-        ele.blur();
-    }
 }
 
+// Changes the class of the given element so it looks lit up 
 function setLight( ant, cat, item, state )
 {
+    // Grab the obj element from the elements table
 	let obj = elements.antennas[ant][cat][item]; 
 
+    // Either add the active class or remove it 
 	if ( state ) {
         obj.addClass( cat == "dirs" ? "active_arrow" : "active" ); 
 	} else {
@@ -236,48 +239,72 @@ function setLight( ant, cat, item, state )
 	}
 }
 
+// Sets the XMIT state of an antenna based on the passed state, makes the fast box display "HLd"
+// when the state is false
 function setAntennaXmit( ant, state )
 {
+    // Set the light state of the antenna's XMIT icon
 	setLight( ant, "modes", "xmit", state ); 
 
+    // Clear the antenna's directional arrows and speeds, display "HLd" in the fast box
 	if ( !state ) {
 		clearDirs( ant ); 
 		elements.antennas[ant].targetSpeed.html( "¦¦¦" );
-		elements.antennas[ant].fastSpeed.html( "HLd" ); 
+        elements.antennas[ant].fastSpeed.html( "HLd" ); 
+        
+    // Blank the fast box when the antenna is set to transmit 
 	} else {
 		elements.antennas[ant].fastSpeed.html( "¦¦¦" ); 
 	}
 }
 
+// Sets the mode lights for the given antenna
 function setAntennaMode( ant, mode )
 {
-	setLight( ant, "modes", "same", mode == modes.same );
+    // Light up the 'same' led if the given mode is the same mode, otherwise blank it 
+    setLight( ant, "modes", "same", mode == modes.same );
+    
+    // Light up the 'opp' led if the given mode is the opp mode, otherwise blank it 
 	setLight( ant, "modes", "opp", mode == modes.opp );
 }
 
+// Sets the fast light for the given antenna
 function setAntennaFastMode( ant, state )
 {
+    // Lighten or dull the fast led based on the given state
 	setLight( ant, "fast", "fastLabel", state );
 }
 
+// Sets the lock light for the given antenna
 function setAntennaLock( ant, state )
 {
+    // Lighten or dull the lock led based on the given state
     setLight( ant, "fast", "lockLabel", state ); 
 }
 
+// Sets the directional arrows light for the given antenna
 function setAntennaDirs( ant, dir, fastDir )
 {
-	setLight( ant, "dirs", "fwd", dir == dirs.closing );
+    // Target forward
+    setLight( ant, "dirs", "fwd", dir == dirs.closing );
+    
+    // Target backward 
 	setLight( ant, "dirs", "bwd", dir == dirs.away );
 
-	setLight( ant, "dirs", "fwdFast", fastDir == dirs.closing );
+    // Fast forward
+    setLight( ant, "dirs", "fwdFast", fastDir == dirs.closing );
+    
+    // Fast backward
 	setLight( ant, "dirs", "bwdFast", fastDir == dirs.away );
 }
 
+// sets the plate lock light for the given plate reader
 function setPlateLock( cam, state )
 {
+    // Get the plate reader lock object 
     let obj = elements.plates[cam].lock; 
 
+    // Add or remove the active class
 	if ( state ) {
         obj.addClass( "active" ); 
 	} else {
@@ -285,6 +312,7 @@ function setPlateLock( cam, state )
 	}
 }
 
+// Sets the license text and plate image of the given plate reader
 function setPlate( cam, plate, index )
 {
     // Get the plate items
@@ -309,40 +337,55 @@ function setPlate( cam, plate, index )
 /*------------------------------------------------------------------------------------
 	Clearing functions 
 ------------------------------------------------------------------------------------*/
+// Clears the same, opp, fast, and lock leds for the given antenna
 function clearModes( ant )
 {
+    // Iterate through the modes and clear them 
 	for ( let i in elements.antennas[ant].modes )
 	{
 		elements.antennas[ant].modes[i].removeClass( "active" ); 
 	}
 
+    // Iterate through the fast leds and clear them 
 	for ( let a in elements.antennas[ant].fast )
 	{
 		elements.antennas[ant].fast[a].removeClass( "active" ); 
 	}
 }
 
+// Clears the directional arrows for the given antenna
 function clearDirs( ant )
 {
+    // Iterate through the directional arrows and clear them
 	for ( let i in elements.antennas[ant].dirs )
 	{
 		elements.antennas[ant].dirs[i].removeClass( "active_arrow" ); 
 	}
 }
 
+// Clears all of the elements of the given antenna
 function clearAntenna( ant )
 {
-	clearModes( ant );
+    // Clear the modes 
+    clearModes( ant );
+    
+    // Clear the directional arrows
 	clearDirs( ant );
 
-	elements.antennas[ant].targetSpeed.html( "¦¦¦" );
+    // Blank the target speed box 
+    elements.antennas[ant].targetSpeed.html( "¦¦¦" );
+    
+    // Blank the fast speed box
 	elements.antennas[ant].fastSpeed.html( "¦¦¦" );
 }
 
+// Clears all the elements on the radar's UI
 function clearEverything()
 {
+    // Blank the patrol speed
 	elements.patrolSpeed.html( "¦¦¦" ); 
 
+    // Blank both the antennas
 	for ( let i in elements.antennas ) 
 	{
 		clearAntenna( i ); 
@@ -353,24 +396,26 @@ function clearEverything()
 /*------------------------------------------------------------------------------------
 	Radar power functions
 ------------------------------------------------------------------------------------*/
-function togglePower()
-{
-	sendData( "togglePower", null ); 
-}
-
+// Simulates the radar unit powering up by lighting all of the elements 
 function poweringUp()
 {
+    // Set the patrol speed container to be fully lit
 	elements.patrolSpeed.html( "888" ); 
 
+    // Iterate through the front and rear antenna elements
 	for ( let i of [ "front", "rear" ] )
 	{
+        // Get the antenna object to shorten the target reference
 		let e = elements.antennas[i];
 
+        // Set the target and fast speed box to be fully lit
 		e.targetSpeed.html( "888" ); 
 		e.fastSpeed.html( "888" ); 
 
+        // Iterate through the rest of the antenna's elements 
 		for ( let a of [ "dirs", "modes", "fast" ] )
 		{
+            // Iterate through the objects for the current category and add the active class
 			for ( let obj in e[a] )
 			{
 				a == "dirs" ? e[a][obj].addClass( "active_arrow" ) : e[a][obj].addClass( "active" ); 
@@ -379,17 +424,23 @@ function poweringUp()
 	}
 } 
 
+// Simulates the 'fully powered' state of the radar unit 
 function poweredUp()
 {
+    // Completely clear everything
 	clearEverything(); 
 
+    // Activate the 'fast' led for both antennas, and make sure the xmit led is off
 	for ( let ant of [ "front", "rear" ] )
 	{
+        // Even though the clearEverything() function is called above, we run this so the fast window
+        // displays 'HLd'
 		setAntennaXmit( ant, false );
 		setAntennaFastMode( ant, true );    
 	}
 }
 
+// Runs the startup process or clears everything, the Lua side calls for the full powered up state
 function radarPower( state )
 {
 	state ? poweringUp() : clearEverything();
@@ -399,17 +450,26 @@ function radarPower( state )
 /*------------------------------------------------------------------------------------
 	Audio 
 ------------------------------------------------------------------------------------*/
+// Plays the given audio file name from the audioNames list at the given volume 
 function playAudio( name, vol )
 {
-	let audio = new Audio( "sounds/" + audioNames[name] );
-	audio.volume = vol; 
+    // Create the new audio object
+    let audio = new Audio( "sounds/" + audioNames[name] );
+    
+    // Set the volume 
+    audio.volume = vol; 
+    
+    // Play the audio clip 
 	audio.play();
 }
 
+// Plays the verbal lock, this is a separate from the function above as it plays two sounds with a delay
 function playLockAudio( ant, dir, vol )
 {
+    // Play the front/rear sound
     playAudio( ant, vol ); 
 
+    // If the vehicle was closing or away, play that sound too 
     if ( dir > 0 ) 
     {
         setTimeout( function() {
@@ -422,23 +482,31 @@ function playLockAudio( ant, dir, vol )
 /*------------------------------------------------------------------------------------
 	Radar updating  
 ------------------------------------------------------------------------------------*/
+// Updates patrol speed as well as the speeds and directional arrows for the given antenna
 function updateDisplays( ps, ants )
 {
+    // Update the patrol speed
 	elements.patrolSpeed.html( ps );
 
+    // Iterate through the antenna data 
 	for ( let ant in ants ) 
 	{
+        // Make sure there is actually data for the current antenna data
 		if ( ants[ant] != null ) {
+            // Grab the antenna element from the elements table
 			let e = elements.antennas[ant]; 
 
+            // Update the target and fast speeds
 			e.targetSpeed.html( ants[ant][0].speed ); 
 			e.fastSpeed.html( ants[ant][1].speed ); 
 
+            // Update the directional arrows
 			setAntennaDirs( ant, ants[ant][0].dir, ants[ant][1].dir );
 		}
 	}
 }
 
+// Updates all of the mode leds on the radar interface
 function settingUpdate( ants )
 {
 	for ( let ant in ants )
@@ -454,22 +522,30 @@ function settingUpdate( ants )
 /*------------------------------------------------------------------------------------
 	Misc
 ------------------------------------------------------------------------------------*/
+// Displays the given option text and current option value on the radar
 function menu( optionText, option )
 {
+    // Clear everything 
 	clearEverything(); 
 
+    // Set the target and fast box to the option text
 	elements.antennas.front.targetSpeed.html( optionText[0] );
 	elements.antennas.front.fastSpeed.html( optionText[1] );
 
+    // Set the patrol speed to the value 
 	elements.patrolSpeed.html( option );
 }
 
+// Makes the key lock label fade in then fade out after 2 seconds
 function displayKeyLock( state )
 {
+    // Set the state label text to enabled or disabled
     elements.keyLock.stateLabel.html( state ? "enabled" : "disabled" );
 
+    // Fade in the label 
     elements.keyLock.label.fadeIn();
 
+    // Make the label fade out after 2 seconds
     setTimeout( function() {
         elements.keyLock.label.fadeOut();
     }, 2000 ); 
@@ -484,18 +560,22 @@ function sendData( name, data ) {
 	} );
 }
 
+// Sets the ui edited variable to the given state, this is used in the UI save system 
 function setUiHasBeenEdited( state )
 {
     uiEdited = state; 
 }
 
+// Returns if the UI has been edited
 function hasUiBeenEdited()
 {
     return uiEdited;
 }
 
+// Gathers the UI data and sends it to the Lua side
 function sendSaveData()
 {
+    // Make sure we only collect and send the UI data if it has been edited 
     if ( hasUiBeenEdited() ) {
         let data = 
         {
@@ -520,10 +600,12 @@ function sendSaveData()
             safezone: safezone 
         }
 
+        // Send the data
         sendData( "saveUiData", data );
     }
 }
 
+// Loads the UI settings 
 function loadUiSettings( data )
 {
     // Iterate through "remote", "radar" and "plateReader"
@@ -550,20 +632,28 @@ function loadUiSettings( data )
     elements.safezoneSlider.trigger( "input" ); 
 }
 
+// Sets the on click function for the set BOLO plate button
 elements.setBoloBtn.click( function() {
+    // Grab the value of the text input box
     let plate = elements.boloText.val();
+
+    // Send the plate to the Lua side
     sendData( "setBoloPlate", plate ); 
 } )
 
+// Checks what the user is typing into the plate box
 function checkPlateInput( event )
 {
-    let valid = /[A-Z0-9"?!£$%^&*()+\=\-_\[\]\{\};:'@#~,<.>/?|\\ ]/g.test( event.key ); 
+    // See if what has been typed is a valid key, GTA only seems to like A-Z and 0-9
+    let valid = /[a-zA-Z0-9 ]/g.test( event.key ); 
 
+    // If the key is not valid, prevent the key from being input into the box
     if ( !valid ) {
         event.preventDefault(); 
     }
 }
 
+// Sets the src of the in-game help element, when true it loads the manual, when false it blanks the element
 function loadHelp( state )
 {
     if ( state ) {
@@ -575,7 +665,10 @@ function loadHelp( state )
 
 
 /*------------------------------------------------------------------------------------
-	UI scaling and positioning 
+    UI scaling and positioning 
+    
+    This whole bit could most likely be streamlined and made more efficient, it 
+    works for now though. Redo it at a later date.
 ------------------------------------------------------------------------------------*/
 var remoteScale = 1.0;
 var remoteMoving = false; 
@@ -794,7 +887,7 @@ function clamp( num, min, max )
 ------------------------------------------------------------------------------------*/
 // This runs when the JS file is loaded, loops through all of the remote buttons and assigns them an onclick function
 // elements.remote.find( "button" ).each( function( i, obj ) {
-$( "body" ).find( "button" ).each( function( i, obj ) {
+$( "body" ).find( "button, div" ).each( function( i, obj ) {
 	if ( $( this ).attr( "data-nuitype" ) ) {
 		$( this ).click( function() { 
 			let type = $( this ).data( "nuitype" ); 

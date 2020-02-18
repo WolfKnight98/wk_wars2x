@@ -8,8 +8,8 @@
 -- Do not touch this
 CONFIG = {}
 
--- Radar Control Panel key 
--- The default key to open the radar control panel is 166 (F5 - INPUT_SELECT_CHARACTER_MICHAEL)
+-- Remote control key 
+-- The default key to open the remote control is 166 (F5 - INPUT_SELECT_CHARACTER_MICHAEL)
 CONFIG.remote_control_key = 166
 
 -- Radar front antenna lock/unlock Key 

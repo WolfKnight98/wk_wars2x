@@ -7,33 +7,45 @@
 
 UTIL = {}
 
+-- Returns a number to a set number of decimal places
 function UTIL:Round( num, numDecimalPlaces )
 	return tonumber( string.format( "%." .. ( numDecimalPlaces or 0 ) .. "f", num ) )
 end 
 
+-- The custom font used for the digital displays have the ¦ symbol as an empty character, this function 
+-- takes a speed and returns a formatted speed that can be displayed on the radar 
 function UTIL:FormatSpeed( speed )
+	-- Return "Err" (Error) if the given speed is outside the 0-999 range 
 	if ( speed < 0 or speed > 999 ) then return "Err" end 
 
+	-- Convert the speed to a string 
 	local text = tostring( speed )
 	local pipes = ""
 
+	-- Create a string of pipes (¦) for the number of spaces
 	for i = 1, 3 - string.len( text ) do 
 		pipes = pipes .. "¦"
 	end 
 	
+	-- Return the formatted speed
 	return pipes .. text
 end 
 
+-- Returns a clamped numerical value based on the given parameters 
 function UTIL:Clamp( val, min, max )
+	-- Return the min value if the given value is less than the min
 	if ( val < min ) then 
 		return min 
+	-- Return the max value if the given value is larger than the max
 	elseif ( val > max ) then 
 		return max 
 	end 
 
+	-- Return the given value if it's between the min and max
 	return val 
 end 
 
+-- Returns if the given table is empty, includes numerical and non-numerical key values
 function UTIL:IsTableEmpty( t )
 	local c = 0 
 
@@ -52,12 +64,15 @@ function UTIL:Values( xs )
 	end
 end
 
+-- Old ray trace function for getting a vehicle in a specific direction from a start point
 function UTIL:GetVehicleInDirection( entFrom, coordFrom, coordTo )
-	local rayHandle = StartShapeTestCapsule( coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 5.0, 10, entFrom, 7 )
-	local _, hitEntity, endCoords, surfaceNormal, vehicle = GetShapeTestResult( rayHandle )
+	local rayHandle = StartShapeTestCapsule( coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 8.0, 10, entFrom, 7 )
+	local _, _, _, _, vehicle = GetShapeTestResult( rayHandle )
 	return vehicle
 end
 
+-- Returns if a target vehicle is coming towards or going away from the patrol vehicle, it has a range 
+-- so if a vehicle is sideways compared to the patrol vehicle, the directional arrows won't light up 
 function UTIL:GetEntityRelativeDirection( myAng, tarAng )
 	local angleDiff = math.abs( ( myAng - tarAng + 180 ) % 360 - 180 )
 
@@ -70,6 +85,7 @@ function UTIL:GetEntityRelativeDirection( myAng, tarAng )
 	return 0
 end
 
+-- Your everyday GTA notification function 
 function UTIL:Notify( text )
 	SetNotificationTextEntry( "STRING" )
 	AddTextComponentSubstringPlayerName( text )
@@ -90,28 +106,6 @@ function UTIL:DrawDebugText( x, y, scale, centre, text )
 	AddTextComponentString( text )
 	DrawText( x, y )
 end
-
-function UTIL:DrawDebugSphere( x, y, z, r, col )
-	if ( CONFIG.debug_mode ) then 
-		local col = col or { 255, 255, 255, 255 }
-
-		DrawMarker( 28, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, r, r, r, col[1], col[2], col[3], col[4], false, true, 2, false, false, false, false )
-	end
-end
-
-function UTIL:DrawDebugLine( startP, endP, col )
-	if ( CONFIG.debug_mode ) then 
-		local col = col or { 255, 255, 255, 255 }
-
-		DrawLine( startP, endP, col[1], col[2], col[3], col[4] )
-	end
-end 
-
-function UTIL:DebugPrint( text )
-	if ( CONFIG.debug_mode ) then 
-		print( text )
-	end 
-end 
 
 --[[The MIT License (MIT)
 

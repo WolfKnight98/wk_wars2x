@@ -5,6 +5,7 @@
 
 -----------------------------------------------------------------------]]--
 
+-- Branding!
 local label = 
 [[ 
   //
@@ -13,25 +14,38 @@ local label =
   ||     \ \  /\  / / __ __ _ _| |_| |__      /  \  | |__) | (___      ) |\ V / 
   ||      \ \/  \/ / '__/ _` | | __| '_ \    / /\ \ |  _  / \___ \    / /  > <  
   ||       \  /\  /| | | (_| | | |_| | | |  / ____ \| | \ \ ____) |  / /_ / . \ 
-  ||        \/  \/ |_|  \__,_|_|\__|_| |_| /_/    \_\_|  \_\_____/  |____/_/ \_\]]
+  ||        \/  \/ |_|  \__,_|_|\__|_| |_| /_/    \_\_|  \_\_____/  |____/_/ \_\
+  ||]]
 
+-- Returns the current version set in fxmanifest.lua
 function GetCurrentVersion()
 	return GetResourceMetadata( GetCurrentResourceName(), "version" )
 end 
 
+-- Grabs the latest version number from the web GitHub
 PerformHttpRequest( "https://wolfknight98.github.io/wk_wars2x_web/version.txt", function( err, text, headers )
-    Citizen.Wait( 2000 )
+	-- Wait to reduce spam 
+	Citizen.Wait( 2000 )
 
-    print( label )
+	-- Print the branding!
+	print( label )
 
+	-- Get the current resource version 
 	local curVer = GetCurrentVersion()
 	
-	print( "  ||\n  ||    Current version: " .. curVer )
-	print( "  ||    Latest version: " .. text .."\n  ||" )
-	
-	if ( text ~= curVer ) then
-		print( "  ||    ^1Your Wraith ARS 2X version is outdated, visit the FiveM forum post to get the latest version.\n^0  \\\\\n" )
-	else
-		print( "  ||    ^2Wraith ARS 2X is up to date!\n^0  ||\n  \\\\\n" )
-	end
+	if ( text ~= nil ) then 
+		-- Print out the current and latest version 
+		print( "  ||    Current version: " .. curVer )
+		print( "  ||    Latest version: " .. text .."\n  ||" )
+		
+		-- If the versions are different, print it out
+		if ( text ~= curVer ) then
+			print( "  ||    ^1Your Wraith ARS 2X version is outdated, visit the FiveM forum post to get the latest version.\n^0  \\\\\n" )
+		else
+			print( "  ||    ^2Wraith ARS 2X is up to date!\n^0  ||\n  \\\\\n" )
+		end
+	else 
+		-- In case the version can not be requested, print out an error message
+		print( "  ||    ^1There was an error getting the latest version information, if the issue persists contact WolfKnight#8586 on Discord.\n^0  ||\n  \\\\\n" )
+	end 
 end )

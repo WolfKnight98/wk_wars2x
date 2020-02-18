@@ -88,7 +88,6 @@ button:focus { outline: none; }
 	width: 675px;
 	height: 200px;
 
-	/* Temp centre */
 	position: absolute;
 	margin: auto;
 	top: 0;
@@ -160,8 +159,6 @@ button:focus { outline: none; }
 	grid-template-columns: 45px 50px 150px 35px 50px 135px 35px 135px;
 	gap: 0 0;
 
-	/* z-index: 2; */
-
 	box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 );
 }
 	#radar .label {
@@ -194,7 +191,6 @@ button:focus { outline: none; }
 			background: linear-gradient( to bottom, rgba( 230, 230, 230, 0.8 ), rgb( 40, 168, 40 ) 10%, rgb( 0, 134, 0 ) );
 			box-shadow: 0px 0px 3px 0px rgb( 80, 80, 80 );
 			text-align: center;
-			/* font-family: 'Heebo-Regular'; */
 			font-size: 14px;
 			color: rgb( 34, 34, 34 );
 			line-height: 45px;
@@ -372,20 +368,13 @@ button:focus { outline: none; }
 	}
 
 #rc {
-	/* width: 275px;
-	height: 750px; */
 	width: 315px;
 	height: 800px;
    
 	position: absolute;
-	/* top: 0;
-	bottom: 0;
-	left: 0;
-    right: 0; */
     top: calc( 50% - ( 800px / 2 ) );
     left: calc( 50% - ( 315px / 2 ) );
 	margin: auto;
-	/* padding-top: 25px; */
 	padding: 65px 30px 50px 30px;
 
 	display: grid;
@@ -394,12 +383,9 @@ button:focus { outline: none; }
 	align-items: center;
 
 	color: white;
-	/* background-color: rgb( 50, 50, 50 ); */
     background-image: url( "images/rc_bg.png" );
     
     transition: transform 0.5s;
-
-    /* clip-path: polygon( 5% 0, 95% 0, 100% 25%, 90% 100%, 10% 100%, 0 25% ); */
     
     /* Settings for scaling */
 	transform: scale( 1.0 );
@@ -414,8 +400,6 @@ button:focus { outline: none; }
 		padding: 0;
 
 		background-color: rgb( 200, 200, 200 ); 
-	
-		/* font-family: 'Heebo-Regular'; */
 
 		box-shadow: 2px 3px rgb( 100, 100, 100 );
 	}
@@ -495,10 +479,8 @@ button:focus { outline: none; }
 	}
 
 	#rc .label {
-		/* font-family: 'Heebo-Regular'; */
 		font-size: 20px;
 		letter-spacing: 1px;
-		/* margin: 5px 0; */
 	}
 
 	#rc .antenna_btns_container {
@@ -625,9 +607,6 @@ button:focus { outline: none; }
 	transform: scale( 1.0 );
 	transform-origin: 0 0;
 
-    /* background-color: rgb(70, 70, 70);
-    box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 ); */
-
     z-index: 1;
 }
     #plateReaderFrame .frame_border {
@@ -644,8 +623,6 @@ button:focus { outline: none; }
         background-color: rgb( 20, 22, 18 );
 
         border-radius: 5px;
-
-        /* clip-path: polygon( 20px 2px, 665px 2px, 682px 30%, 682px 70%, 665px 208px, 20px 208px, 3px 70%, 3px 30% ); */
     }
 
 #plateReader {
@@ -721,7 +698,6 @@ button:focus { outline: none; }
                     font-size: 58px;
                     text-align: center;
                     letter-spacing: -3px;
-                    /* color: rgb(0, 0, 163); */
                     padding-top: 5px;
                     margin: 0;
                     grid-column: 1;
@@ -754,11 +730,9 @@ button:focus { outline: none; }
     bottom: 0;
     left: 0;
 
-    /* background-color: rgb( 50, 54, 45 ); */
     background: linear-gradient( to bottom, rgb( 70, 70, 70 ), rgb( 45, 45, 45 ) );
     border: 3px solid rgb( 0, 0, 0 );
 
-    /* for testing */
     z-index: 4;
 }
     #plateReaderBox .title {
@@ -805,10 +779,10 @@ button:focus { outline: none; }
             font-family: "Plate-Font";
             text-align: center;
             font-size: 38px;
+            text-transform: uppercase;
             padding: 0;
             padding-bottom: 15px;
             margin-bottom: -15px;
-            /* border: 3px solid rgb( 0, 0, 0 ); */
         }
 
     #plateReaderBox .close {
@@ -843,9 +817,8 @@ button:focus { outline: none; }
 	top: 0;
 	right: 0;
 	bottom: 0;
-	left: 0;
-
-    /* background-color: rgb( 50, 54, 45 ); */
+    left: 0;
+    
     background: linear-gradient( to bottom, rgb( 70, 70, 70 ), rgb( 45, 45, 45 ) );
     border: 3px solid rgb( 0, 0, 0 );
 
@@ -872,10 +845,6 @@ button:focus { outline: none; }
 	
 	#uiSettingsBox .scaling {
 		height: 70px;
-
-		/* display: flex;
-		justify-content: space-evenly;
-        align-items: center; */
         
         display: grid;
         grid-template-columns: 1fr 2fr 1fr;
