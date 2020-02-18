@@ -115,7 +115,7 @@ function READER:LockCam( cam )
 
 		-- Play a beep 
 		if ( self:GetCamLocked( cam ) ) then 
-			SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+			SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "plateAudio" ) } )
 		end 
     end 
 end 
