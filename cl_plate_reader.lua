@@ -94,7 +94,7 @@ end
 
 -- Sets the bolo plate to the given plate 
 function READER:SetBoloPlate( plate )
-    self.vars.boloPlate = plate 
+    self.vars.boloPlate = plate
     UTIL:Notify( "BOLO plate set to: " .. plate )
 end 
 
@@ -113,8 +113,10 @@ function READER:LockCam( cam )
         -- Tell the NUI side to show/hide the lock icon 
         SendNUIMessage( { _type = "lockPlate", cam = cam, state = self:GetCamLocked( cam ) } )
 
-        -- Play a beep 
-        SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+		-- Play a beep 
+		if ( self:GetCamLocked( cam ) ) then 
+			SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+		end 
     end 
 end 
 
