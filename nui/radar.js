@@ -635,7 +635,7 @@ function loadUiSettings( data )
 // Sets the on click function for the set BOLO plate button
 elements.setBoloBtn.click( function() {
     // Grab the value of the text input box
-    let plate = elements.boloText.val();
+    let plate = elements.boloText.val().toUpperCase();
 
     // Send the plate to the Lua side
     sendData( "setBoloPlate", plate ); 
