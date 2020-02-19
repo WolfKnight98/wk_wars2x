@@ -66,7 +66,7 @@ end
 
 -- Old ray trace function for getting a vehicle in a specific direction from a start point
 function UTIL:GetVehicleInDirection( entFrom, coordFrom, coordTo )
-	local rayHandle = StartShapeTestCapsule( coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 8.0, 10, entFrom, 7 )
+	local rayHandle = StartShapeTestCapsule( coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 5.0, 10, entFrom, 7 )
 	local _, _, _, _, vehicle = GetShapeTestResult( rayHandle )
 	return vehicle
 end
