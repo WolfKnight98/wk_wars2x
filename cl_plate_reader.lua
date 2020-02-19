@@ -173,33 +173,43 @@ function READER:Main()
             
             -- Only proceed to read a plate if the hit entity is a valid vehicle and the current camera isn't locked
             if ( DoesEntityExist( veh ) and IsEntityAVehicle( veh ) and not self:GetCamLocked( cam ) ) then 
-                -- Get the licence plate text from the vehicle 
-                local plate = GetVehicleNumberPlateText( veh )
+                -- Get the heading of the player's vehicle and the hit vehicle
+                local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )
+                local tarH = UTIL:Round( GetEntityHeading( veh ), 0 )
 
-                -- Get the licence plate index from the vehicle 
-                local index = GetVehicleNumberPlateTextIndex( veh )
+                -- Get the relative direction between the player's vehicle and the hit vehicle
+                local dir = UTIL:GetEntityRelativeDirection( ownH, tarH )
 
-                -- Only update the stored plate if it's different, otherwise we'd keep sending a NUI message to update the displayed
-                -- plate and image even though they're the same 
-                if ( self:GetPlate( cam ) ~= plate ) then 
-                    -- Set the plate for the current reader
-                    self:SetPlate( cam, plate )
+                -- Only run the rest of the plate check code if we can see the front or rear of the vehicle
+                if ( dir > 0 ) then 
+                    -- Get the licence plate text from the vehicle 
+                    local plate = GetVehicleNumberPlateText( veh )
 
-                    -- Set the plate index for the current reader
-                    self:SetIndex( cam, index )
+                    -- Get the licence plate index from the vehicle 
+                    local index = GetVehicleNumberPlateTextIndex( veh )
 
-                    -- Automatically lock the plate if the scanned plate matches the BOLO
-                    if ( plate == self:GetBoloPlate() ) then 
-                        self:LockCam( cam, false )
+                    -- Only update the stored plate if it's different, otherwise we'd keep sending a NUI message to update the displayed
+                    -- plate and image even though they're the same 
+                    if ( self:GetPlate( cam ) ~= plate ) then 
+                        -- Set the plate for the current reader
+                        self:SetPlate( cam, plate )
 
-                        SendNUIMessage( { _type = "audio", name = "plate_hit", vol = RADAR:GetSettingValue( "plateAudio" ) } )
+                        -- Set the plate index for the current reader
+                        self:SetIndex( cam, index )
+
+                        -- Automatically lock the plate if the scanned plate matches the BOLO
+                        if ( plate == self:GetBoloPlate() ) then 
+                            self:LockCam( cam, false )
+
+                            SendNUIMessage( { _type = "audio", name = "plate_hit", vol = RADAR:GetSettingValue( "plateAudio" ) } )
+                        end 
+
+                        -- Send the plate information to the NUI side to update the UI
+                        SendNUIMessage( { _type = "changePlate", cam = cam, plate = plate, index = index } )
+
+                        -- Trigger the event so developers can hook into the scanner
+                        TriggerEvent( "wk:onPlateScanned", cam, plate, index )
                     end 
-
-                    -- Send the plate information to the NUI side to update the UI
-                    SendNUIMessage( { _type = "changePlate", cam = cam, plate = plate, index = index } )
-
-                    -- Trigger the event so developers can hook into the scanner
-                    TriggerEvent( "wk:onPlateScanned", cam, plate, index )
                 end 
             end 
         end 
