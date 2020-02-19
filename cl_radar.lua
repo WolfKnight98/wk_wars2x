@@ -1626,12 +1626,12 @@ function RunControlManager()
 
 			-- Locks front plate reader
 			if ( IsDisabledControlJustPressed( 1, CONFIG.plate_front_lock_key ) ) then 
-				READER:LockCam( "front" )
+				READER:LockCam( "front", true )
 			end 
 
 			-- Locks front plate reader
 			if ( IsDisabledControlJustPressed( 1, CONFIG.plate_rear_lock_key ) ) then 
-				READER:LockCam( "rear" )
+				READER:LockCam( "rear", true )
 			end 
 		end 
 		

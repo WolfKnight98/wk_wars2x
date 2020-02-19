@@ -27,7 +27,10 @@ const audioNames =
     front: "front.ogg", 
     rear: "rear.ogg", 
     closing: "closing.ogg", 
-    away: "away.ogg"
+    away: "away.ogg",
+
+    // Plate reader
+    plate_hit: "plate_hit.ogg"
 }
 
 // Defines which audio needs to play for which direction 
