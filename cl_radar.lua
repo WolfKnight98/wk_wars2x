@@ -1332,20 +1332,23 @@ end )
 
 -- Runs when the user presses the menu button on the remote control
 RegisterNUICallback( "menu", function()
-	-- As the menu button is a multipurpose button, we first check to see if the menu is already open
-	if ( RADAR:IsMenuOpen() ) then 
-		-- As the menu is already open, we then iterate to the next option in the settings list
-		RADAR:ChangeMenuIndex()
-	else 
-		-- Set the menu state to open, which will prevent anything else within the radar from working
-		RADAR:SetMenuState( true )
-		
-		-- Send an update to the NUI side
-		RADAR:SendMenuUpdate()
-	end
+    -- Only run the codw if the radar has power
+    if ( RADAR:IsPowerOn() ) then 
+        -- As the menu button is a multipurpose button, we first check to see if the menu is already open
+        if ( RADAR:IsMenuOpen() ) then 
+            -- As the menu is already open, we then iterate to the next option in the settings list
+            RADAR:ChangeMenuIndex()
+        else 
+            -- Set the menu state to open, which will prevent anything else within the radar from working
+            RADAR:SetMenuState( true )
+            
+            -- Send an update to the NUI side
+            RADAR:SendMenuUpdate()
+        end
 
-	-- Play the standard audio beep
-	SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+        -- Play the standard audio beep
+        SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+    end 
 end )
 
 -- Runs when the JavaScript side sends the UI data for saving 
