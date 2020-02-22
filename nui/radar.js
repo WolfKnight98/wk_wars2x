@@ -92,18 +92,20 @@ const elements =
 
     plates: {
         front: {
+            plate: $( "#frontPlate" ), 
             text: $( "#frontPlateText" ),
             fill: $( "#frontPlateTextFill" ),
             lolite: $( "#frontPlateTextLolite" ),
-            img: $( "#frontPlate" ), 
+            img: $( "#frontPlateImg" ), 
             lock: $( "#frontPlateLock" )
         },
 
         rear: {
+            plate: $( "#rearPlate" ),
             text: $( "#rearPlateText" ), 
             fill: $( "#rearPlateTextFill" ), 
             lolite: $( "#rearPlateTextLolite" ),
-            img: $( "#rearPlate" ), 
+            img: $( "#rearPlateImg" ), 
             lock: $( "#rearPlateLock" )
         }
     },
@@ -305,13 +307,20 @@ function setAntennaDirs( ant, dir, fastDir )
 function setPlateLock( cam, state )
 {
     // Get the plate reader lock object 
-    let obj = elements.plates[cam].lock; 
+    let obj = elements.plates[cam]; 
 
     // Add or remove the active class
 	if ( state ) {
-        obj.addClass( "active" ); 
+        obj.lock.addClass( "active" ); 
+
+        // Make the hit plate flash for 3 seconds, acts as a visual aid
+        obj.plate.addClass( "plate_hit" );
+
+        setTimeout( function() {
+            obj.plate.removeClass( "plate_hit" ); 
+        }, 3000 );
 	} else {
-        obj.removeClass( "active" );
+        obj.lock.removeClass( "active" );
 	}
 }
 

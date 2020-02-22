@@ -719,6 +719,16 @@ button:focus { outline: none; }
                     color: rgb( 100, 100, 100 );
                 }
 
+.plate_hit {
+    animation: plate_flash linear 0.75s infinite;
+}
+
+@keyframes plate_flash {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
+ 
 #plateReaderBox {
     width: 225px;
     height: 300px;
