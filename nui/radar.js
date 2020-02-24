@@ -649,8 +649,29 @@ elements.setBoloBtn.click( function() {
     // Grab the value of the text input box
     let plate = elements.boloText.val().toUpperCase();
 
-    // Send the plate to the Lua side
-    sendData( "setBoloPlate", plate ); 
+    // Gets the amount of whitespace there should be 
+    let spaceAmount = 8 - plate.length;
+
+    if ( spaceAmount > 0 ) 
+    {
+        // Splits the amount in half
+        let split = spaceAmount / 2; 
+
+        // Calculates how many whitespace characters there should be at the start and end of the string. As GTA
+        // formats a licence plate string by padding it, with the end of the string being biased compared to
+        // the start of the string. 
+        let startSpace = Math.floor( split ); 
+        let endSpace = Math.ceil( split ); 
+
+        // Add the padding to the string
+        let text = plate.padStart( plate.length + startSpace );
+        text = text.padEnd( text.length + endSpace );  
+
+        // Send the plate to the Lua side
+        sendData( "setBoloPlate", text ); 
+    } else {
+        sendData( "setBoloPlate", plate ); 
+    }
 } )
 
 // Checks what the user is typing into the plate box
