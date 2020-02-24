@@ -720,7 +720,7 @@ button:focus { outline: none; }
                 }
 
 .plate_hit {
-    animation: plate_flash linear 0.75s infinite;
+    animation: plate_flash linear 0.6s infinite;
 }
 
 @keyframes plate_flash {
