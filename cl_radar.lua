@@ -204,7 +204,11 @@ RADAR.vars =
 	threadWaitTime = 500, 
 	
 	-- Key lock, when true, prevents any of the radar's key events from working, like the ELS key lock 
-	keyLock = false 
+    keyLock = false, 
+    
+    -- Full keyboard, when true, the keybinds for the radar will be set to the keys on the numpad, when false, the
+    -- keybinds for the radar will be set to the number keys above WASD
+    fullKeyboard = true 
 }
 
 -- Speed conversion values
@@ -432,6 +436,32 @@ end
 -- Returns the key lock state 
 function RADAR:GetKeyLockState()
 	return self.vars.keyLock
+end 
+
+-- Toggles between the full and small keybinds
+function RADAR:ToggleFullKeyboard()
+    -- Check the player state is valid
+    if ( PLY:VehicleStateValid() ) then 
+        -- Toggle the full keyboard state
+        self.vars.fullKeyboard = not self.vars.fullKeyboard
+
+        -- Tell the NUI side to display the keybind message
+        SendNUIMessage( { _type = "displayKeybindChange", state = self:GetFullKeyboardState() } )
+    end 
+end 
+
+-- Returns the full keyboard state
+function RADAR:GetFullKeyboardState()
+    return self.vars.fullKeyboard
+end 
+
+-- Returns which keybind set to use
+function RADAR:GetKeybindType()
+    if ( self:GetFullKeyboardState() ) then 
+        return "full"
+    else 
+        return "small"
+    end 
 end 
 
 
@@ -1611,37 +1641,44 @@ end )
 function RunControlManager()
 	-- Make sure only the keyboard works
 	if ( IsInputDisabled( 0 ) ) then 
-		if ( not RADAR:GetKeyLockState() ) then 
+        if ( not RADAR:GetKeyLockState() ) then 
+            local keyType = RADAR:GetKeybindType()
+
 			-- Opens the remote control 
-			if ( IsDisabledControlJustPressed( 1, CONFIG.remote_control_key ) ) then 
+			if ( IsDisabledControlJustPressed( 1, CONFIG.keys.remote_control ) ) then 
 				RADAR:OpenRemote()
 			end 
 
 			-- Locks speed from front antenna
-			if ( IsDisabledControlJustPressed( 1, CONFIG.front_lock_key ) ) then 
+			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].front_lock ) ) then 
 				RADAR:LockAntennaSpeed( "front" )
 			end 
 
 			-- Locks speed from rear antenna
-			if ( IsDisabledControlJustPressed( 1, CONFIG.rear_lock_key ) ) then 
+			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].rear_lock ) ) then 
 				RADAR:LockAntennaSpeed( "rear" )
 			end 
 
 			-- Locks front plate reader
-			if ( IsDisabledControlJustPressed( 1, CONFIG.plate_front_lock_key ) ) then 
-				READER:LockCam( "front", true )
+			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].plate_front_lock ) ) then 
+				READER:LockCam( "front", true, false )
 			end 
 
 			-- Locks front plate reader
-			if ( IsDisabledControlJustPressed( 1, CONFIG.plate_rear_lock_key ) ) then 
-				READER:LockCam( "rear", true )
+			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].plate_rear_lock ) ) then 
+				READER:LockCam( "rear", true, false )
 			end 
 		end 
 		
 		-- Toggles the key lock state 
-		if ( IsDisabledControlJustPressed( 1, CONFIG.key_lock_key ) ) then 
+		if ( IsDisabledControlJustPressed( 1, CONFIG.keys.key_lock ) ) then 
 			RADAR:ToggleKeyLock()
-		end 
+        end 
+        
+        -- Toggles between the keybind types
+        if ( IsDisabledControlJustPressed( 1, CONFIG.keys.switch_keys ) ) then 
+			RADAR:ToggleFullKeyboard()
+        end 
 	end 
 
 	-- Shortcut to restart the resource

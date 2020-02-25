@@ -118,6 +118,11 @@ const elements =
         stateLabel: $( "#keyLockStateLabel" )
     },
 
+    keyBinds: {
+        label: $( "#keyBindsLabel" ), 
+        stateLabel: $( "#keyBindsStateLabel" )
+    },
+
 	patrolSpeed: $( "#patrolSpeed" ),
 
 	antennas: {
@@ -196,6 +201,7 @@ elements.plateReader.hide();
 elements.plateReaderBox.hide(); 
 elements.uiSettingsBox.hide(); 
 elements.keyLock.label.hide(); 
+elements.keyBinds.label.hide(); 
 elements.helpWindow.hide(); 
 
 // Sets the action for the "UI SETTINGS" button on the remote to open the UI settings box
@@ -304,7 +310,7 @@ function setAntennaDirs( ant, dir, fastDir )
 }
 
 // sets the plate lock light for the given plate reader
-function setPlateLock( cam, state )
+function setPlateLock( cam, state, isBolo )
 {
     // Get the plate reader lock object 
     let obj = elements.plates[cam]; 
@@ -313,12 +319,15 @@ function setPlateLock( cam, state )
 	if ( state ) {
         obj.lock.addClass( "active" ); 
 
-        // Make the hit plate flash for 3 seconds, acts as a visual aid
-        obj.plate.addClass( "plate_hit" );
+        // Only flash the plate if it was a BOLO plate 
+        if ( isBolo ) {
+            // Make the hit plate flash for 3 seconds, acts as a visual aid
+            obj.plate.addClass( "plate_hit" );
 
-        setTimeout( function() {
-            obj.plate.removeClass( "plate_hit" ); 
-        }, 3000 );
+            setTimeout( function() {
+                obj.plate.removeClass( "plate_hit" ); 
+            }, 3000 );
+        }
 	} else {
         obj.lock.removeClass( "active" );
 	}
@@ -560,6 +569,20 @@ function displayKeyLock( state )
     // Make the label fade out after 2 seconds
     setTimeout( function() {
         elements.keyLock.label.fadeOut();
+    }, 2000 ); 
+}
+
+function displayKeybindState( state )
+{
+// Set the state label text to enabled or disabled
+    elements.keyBinds.stateLabel.html( state ? "full keyboard" : "small keyboard" );
+
+    // Fade in the label 
+    elements.keyBinds.label.fadeIn();
+
+    // Make the label fade out after 2 seconds
+    setTimeout( function() {
+        elements.keyBinds.label.fadeOut();
     }, 2000 ); 
 }
 
@@ -981,6 +1004,9 @@ window.addEventListener( "message", function( event ) {
         case "displayKeyLock":
             displayKeyLock( item.state );
             break; 
+        case "displayKeybindChange":
+            displayKeybindState( item.state );
+            return; 
 
         // Radar events
 		case "openRemote":
@@ -1026,7 +1052,7 @@ window.addEventListener( "message", function( event ) {
             setPlate( item.cam, item.plate, item.index );
             break;
         case "lockPlate":
-            setPlateLock( item.cam, item.state ); 
+            setPlateLock( item.cam, item.state, item.isBolo ); 
             break; 
             
         // Audio events

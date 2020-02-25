@@ -104,14 +104,14 @@ function READER:GetCamLocked( cam )
 end 
 
 -- Locks the given reader
-function READER:LockCam( cam, playAudio )
+function READER:LockCam( cam, playAudio, isBolo )
     -- Check that plate readers can actually be locked
     if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then 
         -- Toggle the lock state 
         self.vars.cams[cam].locked = not self.vars.cams[cam].locked
 
         -- Tell the NUI side to show/hide the lock icon 
-        SendNUIMessage( { _type = "lockPlate", cam = cam, state = self:GetCamLocked( cam ) } )
+        SendNUIMessage( { _type = "lockPlate", cam = cam, state = self:GetCamLocked( cam ), isBolo = isBolo } )
 
 		-- Play a beep 
         if ( self:GetCamLocked( cam ) ) then 
@@ -199,7 +199,7 @@ function READER:Main()
 
                         -- Automatically lock the plate if the scanned plate matches the BOLO
                         if ( plate == self:GetBoloPlate() ) then 
-                            self:LockCam( cam, false )
+                            self:LockCam( cam, false, true )
 
                             SendNUIMessage( { _type = "audio", name = "plate_hit", vol = RADAR:GetSettingValue( "plateAudio" ) } )
                         end 
