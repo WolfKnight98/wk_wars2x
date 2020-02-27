@@ -957,12 +957,12 @@ button:focus { outline: none; }
 			background-color: rgb( 190, 190, 190 );
 			padding: 0;
         }
-        
+
 #keyLockLabel, #keyBindsLabel {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 300px;
+    bottom: 350px;
 
     text-align: center;
     font-size: 30px;
@@ -972,6 +972,10 @@ button:focus { outline: none; }
 
     z-index: 5;
 }
+    #keyBindsLabel {
+        bottom: 300px;
+    }
+
     #keyLockLabel span, #keyBindsLabel span {
         font-size: 30px;
     }
