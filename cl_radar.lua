@@ -106,23 +106,23 @@ RADAR.vars =
 	-- These are the settings that are used in the operator menu 
 	settings = {
 		-- Should the system calculate and display faster targets
-		["fastDisplay"] = true, 
+		["fastDisplay"] = CONFIG.menuDefaults["fastDisplay"], 
 
-		-- Sensitivty for each radar mode, this changes how far the antennas will detect vehicles
-		["same"] = 3, 
-		["opp"] = 3, 
+		-- Sensitivity for each radar mode, this changes how far the antennas will detect vehicles
+		["same"] = CONFIG.menuDefaults["same"], 
+		["opp"] = CONFIG.menuDefaults["opp"], 
 
 		-- The volume of the audible beep 
-		["beep"] = 0.6,
+		["beep"] = CONFIG.menuDefaults["beep"],
 		
 		-- The volume of the verbal lock confirmation 
-        ["voice"] = 0.6,
+        ["voice"] = CONFIG.menuDefaults["voice"],
         
         -- The volume of the plate reader audio 
-        ["plateAudio"] = 0.6, 
+        ["plateAudio"] = CONFIG.menuDefaults["plateAudio"], 
 
 		-- The speed unit used in conversions
-		["speedType"] = "mph"
+		["speedType"] = CONFIG.menuDefaults["speedType"]
 	},
 
 	-- These 3 variables are for the in-radar menu that can be accessed through the remote control, the menuOptions table 
@@ -130,13 +130,13 @@ RADAR.vars =
 	menuActive = false, 
 	currentOptionIndex = 1, 
 	menuOptions = {
-		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = 1, settingText = "fastDisplay" },
-		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "same" },
-		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 3, settingText = "opp" },
-		{ displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "beep" },
-        { displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "voice" },
-        { displayText = { "PLt", "AUd" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = 4, settingText = "plateAudio" },
-		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = 1, settingText = "speedType" }
+		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = -1, settingText = "fastDisplay" },
+		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "same" },
+		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "opp" },
+		{ displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "beep" },
+        { displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "voice" },
+        { displayText = { "PLt", "AUd" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "plateAudio" },
+		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = -1, settingText = "speedType" }
 	},
 
 	-- Player's vehicle speed, mainly used in the dynamic thread wait update 
@@ -375,6 +375,28 @@ function RADAR:OpenRemote()
 		-- Bring focus to the NUI side 
 		SetNuiFocus( true, true )
 	end
+end 
+
+-- Updates the operator menu option indexes, as the default menu values can be changed in the config, we 
+-- need to update the indexes otherwise the menu will display the wrong values
+function RADAR:UpdateOptionIndexes()
+    -- Iterate through each of the internal settings
+    for k, v in pairs( self.vars.settings ) do     
+        -- Iterate through all of the menu options
+        for i, t in pairs( self.vars.menuOptions ) do 
+            -- If the current menu option is the same as the current setting
+            if ( t.settingText == k ) then 
+                -- Iterate through the option values of the current menu option 
+                for oi, ov in pairs( t.options ) do 
+                    -- If the value of the current option set in the config matches the current value of
+                    -- the option value, then we update the option index variable
+                    if ( v == ov ) then 
+                        t.optionIndex = oi
+                    end 
+                end 
+            end 
+        end 
+    end 
 end 
 
 -- Returns if the fast limit option should be available for the radar
@@ -1574,7 +1596,10 @@ Citizen.CreateThread( function()
 	RADAR:CacheNumRays()
 	
 	-- Update the end coordinates for the ray traces based on the config, again, reduced hard coding
-	RADAR:UpdateRayEndCoords()
+    RADAR:UpdateRayEndCoords()
+    
+    -- Update the operator menu positions
+    RADAR:UpdateOptionIndexes()
 
 	-- If the fast limit feature is allowed, create the config in the radar variables
 	if ( RADAR:IsFastLimitAllowed() ) then 
