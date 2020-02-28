@@ -988,10 +988,22 @@ function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
 		self:SetAntennaSpeedIsLocked( ant, true )
 
 		-- Send a message to the NUI side to play the beep sound with the current volume setting
-		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+		SendNUIMessage( { _type = "audio", name = "beep", vol = self:GetSettingValue( "beep" ) } )
 		
 		-- Send a message to the NUI side to play the lock audio with the current voice volume setting 
-		SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = RADAR:GetSettingValue( "voice" ) } )
+        SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = self:GetSettingValue( "voice" ) } )
+        
+        -- Great Scott!
+        if ( speed == "¦88" and self:GetSettingValue( "speedType" ) == "mph" ) then 
+            math.randomseed( GetGameTimer() )
+
+            local chance = math.random()
+            
+            -- 15% chance
+            if ( chance <= 0.15 ) then 
+                SendNUIMessage( { _type = "audio", name = "speed_alert", vol = self:GetSettingValue( "beep" ) } )
+            end 
+        end 
 	end
 end 
 

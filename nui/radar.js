@@ -30,7 +30,10 @@ const audioNames =
     away: "away.ogg",
 
     // Plate reader
-    plate_hit: "plate_hit.ogg"
+    plate_hit: "plate_hit.ogg",
+
+    // Hmm 
+    speed_alert: "speed_alert.ogg"
 }
 
 // Defines which audio needs to play for which direction 
