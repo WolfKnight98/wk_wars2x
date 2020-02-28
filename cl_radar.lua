@@ -1351,53 +1351,59 @@ end )
 
 -- Runs when the user presses any of the antenna mode buttons on the remote
 RegisterNUICallback( "setAntennaMode", function( data ) 
-	-- As the mode buttons are used to exit the menu, we check for that 
-	if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
-		-- Set the internal menu state to be closed (false)
-		RADAR:SetMenuState( false )
-		
-		-- Send a setting update to the NUI side 
-		RADAR:SendSettingUpdate()
-		
-		-- Play a menu done beep 
-		SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
-	else
-		-- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
-		RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
-			-- Update the interface with the new mode 
-			SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
-			
-			-- Play a beep 
-			SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-		end )
-	end 
+    -- Only run the codw if the radar has power and is not powering up
+    if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
+        -- As the mode buttons are used to exit the menu, we check for that 
+        if ( RADAR:IsMenuOpen() ) then 
+            -- Set the internal menu state to be closed (false)
+            RADAR:SetMenuState( false )
+            
+            -- Send a setting update to the NUI side 
+            RADAR:SendSettingUpdate()
+            
+            -- Play a menu done beep 
+            SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
+        else
+            -- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
+            RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
+                -- Update the interface with the new mode 
+                SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+                
+                -- Play a beep 
+                SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+            end )
+        end 
+    end 
 end )
 
 -- Runs when the user presses either of the XMIT/HOLD buttons on the remote 
 RegisterNUICallback( "toggleAntenna", function( data ) 
-	-- As the xmit/hold buttons are used to change settings in the menu, we check for that 
-	if ( RADAR:IsPowerOn() and RADAR:IsMenuOpen() ) then 
-		-- Change the menu option based on which button is pressed
-		RADAR:ChangeMenuOption( data.value )
-		
-		-- Play a beep noise 
-		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-	else
-		-- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
-		RADAR:ToggleAntenna( data.value, function()
-			-- Update the interface with the new antenna transmit state
-			SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
-			
-			-- Play some audio specific to the transmit state
-			SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
-		end )
-	end 
+    -- Only run the codw if the radar has power and is not powering up
+    if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
+        -- As the xmit/hold buttons are used to change settings in the menu, we check for that 
+        if ( RADAR:IsMenuOpen() ) then 
+            -- Change the menu option based on which button is pressed
+            RADAR:ChangeMenuOption( data.value )
+            
+            -- Play a beep noise 
+            SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+        else
+            -- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
+            RADAR:ToggleAntenna( data.value, function()
+                -- Update the interface with the new antenna transmit state
+                SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+                
+                -- Play some audio specific to the transmit state
+                SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
+            end )
+        end 
+    end 
 end )
 
 -- Runs when the user presses the menu button on the remote control
 RegisterNUICallback( "menu", function()
-    -- Only run the codw if the radar has power
-    if ( RADAR:IsPowerOn() ) then 
+    -- Only run the codw if the radar has power and is not powering up
+    if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
         -- As the menu button is a multipurpose button, we first check to see if the menu is already open
         if ( RADAR:IsMenuOpen() ) then 
             -- As the menu is already open, we then iterate to the next option in the settings list
