@@ -1,3 +1,35 @@
+<!-----------------------------------------------------------------------------------------
+
+	Wraith ARS 2X
+	Created by WolfKnight
+	
+	For discussions, information on future updates, and more, join 
+	my Discord: https://discord.gg/fD4e6WD 
+	
+	MIT License
+
+	Copyright (c) 2020 WolfKnight
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+------------------------------------------------------------------------------------------>
+
 <!DOCTYPE html>
 
 <html>
@@ -6,7 +38,7 @@
 	</head>
 
 	<body>
-        <div id="radarFrame">
+		<div id="radarFrame">
 			<div class="frame_border"></div>
 
 			<div class="radar_container"> 
@@ -160,63 +192,63 @@
 			<button id="uiSettings" class="rounded_btn light blue">UI SETTINGS</button>
 
 			<p class="logo"><span class="large">Wraith</span> ARS 2X</p>
-        </div>
-        
-        <div id="plateReaderFrame">
-            <div class="frame_border"></div>
+		</div>
+		
+		<div id="plateReaderFrame">
+			<div class="frame_border"></div>
 
-            <div id="plateReader">
-                <div class="labels">
-                    <p class="title">FRONT</p>
-                    <p class="title">REAR</p>
-                </div>
+			<div id="plateReader">
+				<div class="labels">
+					<p class="title">FRONT</p>
+					<p class="title">REAR</p>
+				</div>
 
-                <div class="plates">
-                    <div id="frontPlate" class="plate_container">
-                        <img id="frontPlateImg" class="plate" src="images/plates/0.png">
-                        
-                        <div id="frontPlateText" class="text_container">
-                            <p id="frontPlateTextFill" class="plate_blue"></p>
-                            <p class="hilite"></p>
-                            <p id="frontPlateTextLolite" class="lolite"></p>
-                            <p class="shadow"></p>
-                        </div>
-                    </div>
+				<div class="plates">
+					<div id="frontPlate" class="plate_container">
+						<img id="frontPlateImg" class="plate" src="images/plates/0.png">
+						
+						<div id="frontPlateText" class="text_container">
+							<p id="frontPlateTextFill" class="plate_blue"></p>
+							<p class="hilite"></p>
+							<p id="frontPlateTextLolite" class="lolite"></p>
+							<p class="shadow"></p>
+						</div>
+					</div>
 
-                    <div id="rearPlate" class="plate_container">
-                        <img id="rearPlateImg" class="plate" src="images/plates/0.png">
+					<div id="rearPlate" class="plate_container">
+						<img id="rearPlateImg" class="plate" src="images/plates/0.png">
 
-                        <div id="rearPlateText" class="text_container">
-                            <p id="rearPlateTextFill" class="plate_blue"></p>
-                            <p class="hilite"></p>
-                            <p id="rearPlateTextLolite" class="lolite"></p>
-                            <p class="shadow"></p>
-                        </div>
-                    </div>
-                </div>
+						<div id="rearPlateText" class="text_container">
+							<p id="rearPlateTextFill" class="plate_blue"></p>
+							<p class="hilite"></p>
+							<p id="rearPlateTextLolite" class="lolite"></p>
+							<p class="shadow"></p>
+						</div>
+					</div>
+				</div>
 
-                <div class="labels">
-                    <p id="frontPlateLock">LOCKED</p>
-                    <p id="rearPlateLock">LOCKED</p>
-                </div>
-            </div>
-        </div>
+				<div class="labels">
+					<p id="frontPlateLock">LOCKED</p>
+					<p id="rearPlateLock">LOCKED</p>
+				</div>
+			</div>
+		</div>
 
-        <div id="plateReaderBox">
-            <div class="header">
+		<div id="plateReaderBox">
+			<div class="header">
 				<p class="title">Plate Reader</p>
-            </div>
+			</div>
 
-            <div class="container">
-                <button id="togglePlateReader" data-nuitype="togglePlateReaderDisplay" class="btn">Toggle Display</button>
+			<div class="container">
+				<button id="togglePlateReader" data-nuitype="togglePlateReaderDisplay" class="btn">Toggle Display</button>
 
-                <input id="boloText" type="text" maxlength="8" placeholder="12ABC345" onkeypress="checkPlateInput(event)" class="plate_input"/>
+				<input id="boloText" type="text" maxlength="8" placeholder="12ABC345" onkeypress="checkPlateInput(event)" class="plate_input"/>
 
-                <button id="setBoloPlate" class="btn">Set BOLO Plate</button>
-            </div>
+				<button id="setBoloPlate" class="btn">Set BOLO Plate</button>
+			</div>
 
-            <button id="closePlateReaderSettings" class="close">CLOSE</button>
-        </div>
+			<button id="closePlateReaderSettings" class="close">CLOSE</button>
+		</div>
 
 		<div id="uiSettingsBox">
 			<div class="header">
@@ -224,59 +256,58 @@
 			</div>
 
 			<div class="scaling_container">
-                <div class="scaling">
-                    <div id="radarDecreaseScale" class="symbol minus"></div>
+				<div class="scaling">
+					<div id="radarDecreaseScale" class="symbol minus"></div>
 
-                    <div class="info">
-                        <p>Radar Scale</p>
-                        <p id="radarScaleDisplay" class="multiplier">1.00x</p>
-                    </div>
+					<div class="info">
+						<p>Radar Scale</p>
+						<p id="radarScaleDisplay" class="multiplier">1.00x</p>
+					</div>
 
-                    <div id="radarIncreaseScale" class="symbol plus"></div>
-                </div>
+					<div id="radarIncreaseScale" class="symbol plus"></div>
+				</div>
 
-                <div class="scaling">
-                    <div id="remoteDecreaseScale" class="symbol minus"></div>
+				<div class="scaling">
+					<div id="remoteDecreaseScale" class="symbol minus"></div>
 
-                    <div class="info">
-                        <p>Remote Scale</p>
-                        <p id="remoteScaleDisplay" class="multiplier">1.00x</p>
-                    </div>
+					<div class="info">
+						<p>Remote Scale</p>
+						<p id="remoteScaleDisplay" class="multiplier">1.00x</p>
+					</div>
 
-                    <div id="remoteIncreaseScale" class="symbol plus"></div>
-                </div>
+					<div id="remoteIncreaseScale" class="symbol plus"></div>
+				</div>
 
-                <div class="scaling">
-                    <div id="readerDecreaseScale" class="symbol minus"></div>
+				<div class="scaling">
+					<div id="readerDecreaseScale" class="symbol minus"></div>
 
-                    <div class="info">
-                        <p>Reader Scale</p>
-                        <p id="readerScaleDisplay" class="multiplier">1.00x</p>
-                    </div>
+					<div class="info">
+						<p>Reader Scale</p>
+						<p id="readerScaleDisplay" class="multiplier">1.00x</p>
+					</div>
 
-                    <div id="readerIncreaseScale" class="symbol plus"></div>
-                </div>
-            </div>
-            
-            <div class="safezone_container">
-                <p>Safezone: <span id="safezoneDisplay">0px</span></p>
-                <input type="range" min="0" max="100" value="0" step="5" class="slider" id="safezone">
-            </div>
+					<div id="readerIncreaseScale" class="symbol plus"></div>
+				</div>
+			</div>
+			
+			<div class="safezone_container">
+				<p>Safezone: <span id="safezoneDisplay">0px</span></p>
+				<input type="range" min="0" max="100" value="0" step="5" class="slider" id="safezone">
+			</div>
 
 			<button id="closeUiSettings" class="close">CLOSE</button>
-        </div>
-        
-        <p id="keyLockLabel">Radar key lock <span id="keyLockStateLabel"></span></p>
-        <p id="keyBindsLabel">Radar keybinds set for a <span id="keyBindsStateLabel"></span></p>
+		</div>
+		
+		<p id="keyLockLabel">Radar key lock <span id="keyLockStateLabel"></span></p>
+		<p id="keyBindsLabel">Radar keybinds set for a <span id="keyBindsStateLabel"></span></p>
 
-        <div id="helpWindow">
-            <iframe id="helpWeb" src="about:blank"></iframe>
-            <button id="closeHelp" class="close">CLOSE HELP</button>
-        </div>
+		<div id="helpWindow">
+			<iframe id="helpWeb" src="about:blank"></iframe>
+			<button id="closeHelp" class="close">CLOSE HELP</button>
+		</div>
 
 		<!-- Load JavaScript files -->
-        <!-- <script src="nui://game/ui/jquery.js"></script> -->
-        <script src="jquery-3.4.1.min.js"></script>
+		<script src="jquery-3.4.1.min.js"></script>
 		<script src="radar.js"></script>
 	</body>
 </html>

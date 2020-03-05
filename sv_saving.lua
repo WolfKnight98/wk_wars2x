@@ -1,9 +1,34 @@
---[[-----------------------------------------------------------------------
+--[[---------------------------------------------------------------------------------------
 
 	Wraith ARS 2X
 	Created by WolfKnight
+	
+	For discussions, information on future updates, and more, join 
+	my Discord: https://discord.gg/fD4e6WD 
+	
+	MIT License
 
------------------------------------------------------------------------]]--
+	Copyright (c) 2020 WolfKnight
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+---------------------------------------------------------------------------------------]]--
 
 local DATASAVE = {}
 DATASAVE.dir = "saves"
@@ -18,6 +43,9 @@ DATASAVE.dir = "saves"
 --  - fivem
 --  - ip 
 DATASAVE.idType = "license"
+
+-- Whether or not to print messages
+DATASAVE.printMessages = true
 
 -- Saves the data for the given player into the saves folder within the resource
 function DATASAVE:SavePlayerData( src, data )
@@ -115,7 +143,9 @@ end
 
 -- Prints the given message with the resource name attached
 function DATASAVE:Print( msg )
-	print( "^3[wk_wars2x] ^0" .. msg .. "^0" )
+	if ( self.printMessages ) then 
+		print( "^3[wk_wars2x] ^0" .. msg .. "^0" )	
+	end 
 end 
 
 -- Serverside event for saving a player's UI data
@@ -146,5 +176,8 @@ AddEventHandler( "wk:getUiData", function()
 	else 
 		-- When player's first use the radar, they won't have saved UI data
 		DATASAVE:Print( "Player " .. GetPlayerName( source ) .. " (ID: " .. source .. ") doesn't have a UI settings file." )
+		
+		-- Tell the system to load the UI defaults for the client
+		TriggerClientEvent( "wk:setUiDefaults", source )
 	end 
 end )

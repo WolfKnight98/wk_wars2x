@@ -1,3 +1,35 @@
+/*-----------------------------------------------------------------------------------------
+
+	Wraith ARS 2X
+	Created by WolfKnight
+	
+	For discussions, information on future updates, and more, join 
+	my Discord: https://discord.gg/fD4e6WD 
+	
+	MIT License
+
+	Copyright (c) 2020 WolfKnight
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+-----------------------------------------------------------------------------------------*/
+
 @font-face {
 	font-family: "Seg-7";
 	src: url( "fonts/Segment7Standard.otf" );
@@ -14,30 +46,30 @@
 }
 
 @font-face {
-    font-family: "Plate-Font";
-    src: url( "fonts/plate-font.ttf" );
+	font-family: "Plate-Font";
+	src: url( "fonts/plate-font.ttf" );
 }
 
 @font-face {
-    font-family: "Plate-Font-Hilite";
-    src: url( "fonts/plate-font-hilite.ttf" );
+	font-family: "Plate-Font-Hilite";
+	src: url( "fonts/plate-font-hilite.ttf" );
 }
 
 @font-face {
-    font-family: "Plate-Font-Lolite";
-    src: url( "fonts/plate-font-lolite.ttf" );
+	font-family: "Plate-Font-Lolite";
+	src: url( "fonts/plate-font-lolite.ttf" );
 }
 
 @font-face {
-    font-family: "Plate-Font-Shadow";
-    src: url( "fonts/plate-font-Shadow.ttf" );
+	font-family: "Plate-Font-Shadow";
+	src: url( "fonts/plate-font-Shadow.ttf" );
 }
 
 * {
 	font-family: 'Heebo', Verdana, Geneva, Tahoma, sans-serif;
 	font-size: 13px;
-    box-sizing: border-box;
-    user-select: none;
+	box-sizing: border-box;
+	user-select: none;
 }
 
 body {
@@ -52,18 +84,18 @@ button:focus { outline: none; }
 	height: 230px;
 
 	position: absolute;
-    margin: auto;
-    
-    top: calc( ( 100% - 10px ) - 230px );
-    left: calc( ( 100% - 10px ) - 715px );
+	margin: auto;
+	
+	top: calc( ( 100% - 10px ) - 230px );
+	left: calc( ( 100% - 10px ) - 715px );
 
 	background-image: url( "images/frame.png" );
 
 	/* Settings for scaling */
 	transform: scale( 1.0 );
-    transform-origin: 0 0;
-    
-    transition: transform 0.5s;
+	transform-origin: 0 0;
+	
+	transition: transform 0.5s;
 
 	z-index: 2;
 }
@@ -117,14 +149,14 @@ button:focus { outline: none; }
 		transform: translateX( -1px ); 
 		background-image: url( "images/bg_right.png" );
 		background-repeat: no-repeat;
-    }
-    
+	}
+	
 .plate_blue {
-    color: rgb(0, 0, 163);
+	color: rgb(0, 0, 163);
 }
 
 .plate_yellow {
-    color: rgb(255, 255, 0);
+	color: rgb(255, 255, 0);
 }
 
 .arrow {
@@ -247,7 +279,10 @@ button:focus { outline: none; }
 			border: 2px solid rgb( 0, 0, 0 );
 			
 			margin: auto 0;
+
+			/* If you would like your strong target window to be solid rather than have a gradient, swap the comment for the 2 lines below */
 			background-color: rgb( 61, 18, 0 );
+			/* background: linear-gradient( to bottom, rgb( 52, 13, 1 ), rgb( 57, 16, 0 ) 40%, rgb( 65, 25, 4 ) 85% ); */
 		}   
 			#radar .speeds_container .display p {
 				grid-row-start: 1;
@@ -266,7 +301,10 @@ button:focus { outline: none; }
 		
 		#radar .speeds_container .fast {
 			height: 60px;
+
+			/* If you would like your fast target window to be solid rather than have a gradient, swap the comment for the 2 lines below */
 			background-color: rgb( 50, 0, 0 );
+			/* background: linear-gradient( to bottom, rgb( 40, 0, 0 ), rgb( 45, 0, 0 ) 40%, rgb( 50, 0, 0 ) 85% ); */
 		}
 			#radar .speeds_container .fast p {
 				font-size: 60px;
@@ -326,6 +364,7 @@ button:focus { outline: none; }
 			}
 
 		#radar .patrol_and_logo_container .display {
+			/* If you would like your patrol speed window to be solid rather than have a gradient, swap the comment for the 2 lines below */
 			background-color: rgb( 0, 57, 35 );
 			/* background: linear-gradient( to bottom, rgb( 0, 40, 29 ), rgb( 0, 46, 32 ) 40%, rgb( 1, 64, 27 ) 85% ); */
 		}
@@ -372,8 +411,8 @@ button:focus { outline: none; }
 	height: 800px;
    
 	position: absolute;
-    top: calc( 50% - ( 800px / 2 ) );
-    left: calc( 50% - ( 315px / 2 ) );
+	top: calc( 50% - ( 800px / 2 ) );
+	left: calc( 50% - ( 315px / 2 ) );
 	margin: auto;
 	padding: 65px 30px 50px 30px;
 
@@ -383,15 +422,15 @@ button:focus { outline: none; }
 	align-items: center;
 
 	color: white;
-    background-image: url( "images/rc_bg.png" );
-    
-    transition: transform 0.5s;
-    
-    /* Settings for scaling */
+	background-image: url( "images/rc_bg.png" );
+	
+	transition: transform 0.5s;
+	
+	/* Settings for scaling */
 	transform: scale( 1.0 );
 	transform-origin: 0 0;
 
-    z-index: 3;
+	z-index: 3;
 }
 	/* Button template classes */
 	#rc button {
@@ -567,8 +606,8 @@ button:focus { outline: none; }
 		}
 
 		#rc .plate_reader_and_help_container .help {
-            padding: 0 10px;
-            font-size: 15px;
+			padding: 0 10px;
+			font-size: 15px;
 		}
 	
 	#rc .light {
@@ -587,250 +626,250 @@ button:focus { outline: none; }
 
 	#rc .blue {
 		background-color: rgb( 84, 210, 255 );
-    }
-    
+	}
+	
 #plateReaderFrame {
-    width: 500px;
-    height: 200px;
+	width: 500px;
+	height: 200px;
 
-    position: absolute;
-    margin: auto;
+	position: absolute;
+	margin: auto;
 
-    top: calc( 50% - ( 200px / 2 ) );
-    left: calc( 50% - ( 500px / 2 ) );
+	top: calc( 50% - ( 200px / 2 ) );
+	left: calc( 50% - ( 500px / 2 ) );
 
-    background-image: url( "images/pr_frame.png" );
+	background-image: url( "images/pr_frame.png" );
 
-    transition: transform 0.5s;
+	transition: transform 0.5s;
 
-    /* Settings for scaling */
+	/* Settings for scaling */
 	transform: scale( 1.0 );
 	transform-origin: 0 0;
 
-    z-index: 1;
+	z-index: 1;
 }
-    #plateReaderFrame .frame_border {
-        width: 465px;
-        height: 175px;
+	#plateReaderFrame .frame_border {
+		width: 465px;
+		height: 175px;
 
-        position: absolute;
-        margin: auto;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+		position: absolute;
+		margin: auto;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
 
-        background-color: rgb( 20, 22, 18 );
+		background-color: rgb( 20, 22, 18 );
 
-        border-radius: 5px;
-    }
+		border-radius: 5px;
+	}
 
 #plateReader {
-    width: 460px;
-    height: 170px;
-
-    position: absolute;
-    margin: auto;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-    background-image: url( "images/pr_bg.png" );
-
-    box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 ); 
-
-    display: grid;
-    grid-template-rows: 30px 1fr 30px;
-    align-content: center;
-}
-    #plateReader .labels {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        align-content: center;
-    }
-        #plateReader .labels .title {
-            color: rgb( 255, 255, 255 );
-        }
-        
-        #plateReader .labels p {
-            margin: 0;
-            text-align: center;
-            font-size: 18px;
-        }
-
-    #plateReader .plates {
-        width: 100%;
-        height: 100%;
-
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        align-content: center;
-        justify-items: center;
-    }
-        #plateReader .plates .plate_container {
-            width: 90%;
-            height: 100%;
-
-            display: grid;
-            grid-template-columns: 1fr;
-            justify-content: center;
-        }
-            #plateReader .plates .plate_container .plate {
-                display: block;
-                max-width: 100%; 
-                height: auto;
-                grid-column: 1;
-                grid-row: 1;
-            }
-
-            #plateReader .plates .plate_container .text_container {
-                grid-column: 1;
-                grid-row: 1;
-
-                display: grid;
-                grid-template-columns: 1fr;
-                justify-content: center;
-            }
-                #plateReader .plates .plate_container .text_container p {
-                    display: block;
-                    font-family: "Plate-Font";
-                    font-size: 58px;
-                    text-align: center;
-                    letter-spacing: -3px;
-                    padding-top: 5px;
-                    margin: 0;
-                    grid-column: 1;
-                    grid-row: 1;
-                }
-
-                #plateReader .plates .plate_container .text_container .hilite {
-                    font-family: "Plate-Font-Hilite";
-                    color: rgb( 93, 65, 255 );
-                }
-
-                #plateReader .plates .plate_container .text_container .lolite {
-                    font-family: "Plate-Font-Lolite";
-                    color: rgb( 255, 255, 255 );
-                }
-
-                #plateReader .plates .plate_container .text_container .shadow {
-                    font-family: "Plate-Font-Shadow";
-                    color: rgb( 100, 100, 100 );
-                }
-
-.plate_hit {
-    animation: plate_flash linear 0.6s infinite;
-}
-
-@keyframes plate_flash {
-    0% { opacity: 1.0; }
-    50% { opacity: 0.0; }
-    100% { opacity: 1.0; }
-}
- 
-#plateReaderBox {
-    width: 225px;
-    height: 300px;
-
-    position: absolute;
-    margin: auto;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-    background: linear-gradient( to bottom, rgb( 70, 70, 70 ), rgb( 45, 45, 45 ) );
-    border: 3px solid rgb( 0, 0, 0 );
-
-    z-index: 4;
-}
-    #plateReaderBox .title {
-        text-align: center;
-        font-size: 20px;
-        padding: 5px 0;
-        margin: 0 auto;
-        color: rgb( 255, 255, 255 );
-        background-color: rgb( 20, 22, 18 );
-    }
-
-    #plateReaderBox .header {
-        width: 100%;
-    }
-
-    #plateReaderBox .container {
-        width: 100%;
-        height: 200px;
-
-        display: grid;
-        grid-template-rows: 60px 70px 60px;
-        align-items: center;
-        justify-items: center;
-    }
-        #plateReaderBox .container .btn {
-            width: 140px;
-            height: 35px;
-            border-radius: 10px;
-            font-size: 16px;
-            border: none;
-        }
-            #plateReaderBox .container .btn:hover {
-                background-color: rgb( 255, 255, 255 );
-            }
-
-            #plateReaderBox .container .btn:active {
-                background-color: rgb( 190, 190, 190 );
-                padding: 0;
-            }
-        
-        #plateReaderBox .container .plate_input {
-            width: 75%;
-            height: 50px;
-            font-family: "Plate-Font";
-            text-align: center;
-            font-size: 38px;
-            text-transform: uppercase;
-            padding: 0;
-            padding-bottom: 15px;
-            margin-bottom: -15px;
-        }
-
-    #plateReaderBox .close {
-        width: 80px;
-        height: 20px;
-
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 10px;
-        margin: auto;
-
-        border-radius: 10px;
-        border: none;
-        background-color: rgb( 225, 225, 225 );
-    }
-        #plateReaderBox .close:hover {
-            background-color: rgb( 255, 255, 255 );
-        }
-
-        #plateReaderBox .close:active {
-            background-color: rgb( 190, 190, 190 );
-            padding: 0;
-        }
-
-#uiSettingsBox {
-	width: 250px;
-	height: 375px;
+	width: 460px;
+	height: 170px;
 
 	position: absolute;
 	margin: auto;
 	top: 0;
 	right: 0;
 	bottom: 0;
-    left: 0;
-    
-    background: linear-gradient( to bottom, rgb( 70, 70, 70 ), rgb( 45, 45, 45 ) );
-    border: 3px solid rgb( 0, 0, 0 );
+	left: 0;
+
+	background-image: url( "images/pr_bg.png" );
+
+	box-shadow: inset 0px 20px 20px -15px rgba( 0, 0, 0, 0.4 ); 
+
+	display: grid;
+	grid-template-rows: 30px 1fr 30px;
+	align-content: center;
+}
+	#plateReader .labels {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-content: center;
+	}
+		#plateReader .labels .title {
+			color: rgb( 255, 255, 255 );
+		}
+		
+		#plateReader .labels p {
+			margin: 0;
+			text-align: center;
+			font-size: 18px;
+		}
+
+	#plateReader .plates {
+		width: 100%;
+		height: 100%;
+
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-content: center;
+		justify-items: center;
+	}
+		#plateReader .plates .plate_container {
+			width: 90%;
+			height: 100%;
+
+			display: grid;
+			grid-template-columns: 1fr;
+			justify-content: center;
+		}
+			#plateReader .plates .plate_container .plate {
+				display: block;
+				max-width: 100%; 
+				height: auto;
+				grid-column: 1;
+				grid-row: 1;
+			}
+
+			#plateReader .plates .plate_container .text_container {
+				grid-column: 1;
+				grid-row: 1;
+
+				display: grid;
+				grid-template-columns: 1fr;
+				justify-content: center;
+			}
+				#plateReader .plates .plate_container .text_container p {
+					display: block;
+					font-family: "Plate-Font";
+					font-size: 58px;
+					text-align: center;
+					letter-spacing: -3px;
+					padding-top: 5px;
+					margin: 0;
+					grid-column: 1;
+					grid-row: 1;
+				}
+
+				#plateReader .plates .plate_container .text_container .hilite {
+					font-family: "Plate-Font-Hilite";
+					color: rgb( 93, 65, 255 );
+				}
+
+				#plateReader .plates .plate_container .text_container .lolite {
+					font-family: "Plate-Font-Lolite";
+					color: rgb( 255, 255, 255 );
+				}
+
+				#plateReader .plates .plate_container .text_container .shadow {
+					font-family: "Plate-Font-Shadow";
+					color: rgb( 100, 100, 100 );
+				}
+
+.plate_hit {
+	animation: plate_flash linear 0.6s infinite;
+}
+
+@keyframes plate_flash {
+	0% { opacity: 1.0; }
+	50% { opacity: 0.0; }
+	100% { opacity: 1.0; }
+}
+ 
+#plateReaderBox {
+	width: 225px;
+	height: 300px;
+
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	background: linear-gradient( to bottom, rgb( 70, 70, 70 ), rgb( 45, 45, 45 ) );
+	border: 3px solid rgb( 0, 0, 0 );
+
+	z-index: 4;
+}
+	#plateReaderBox .title {
+		text-align: center;
+		font-size: 20px;
+		padding: 5px 0;
+		margin: 0 auto;
+		color: rgb( 255, 255, 255 );
+		background-color: rgb( 20, 22, 18 );
+	}
+
+	#plateReaderBox .header {
+		width: 100%;
+	}
+
+	#plateReaderBox .container {
+		width: 100%;
+		height: 200px;
+
+		display: grid;
+		grid-template-rows: 60px 70px 60px;
+		align-items: center;
+		justify-items: center;
+	}
+		#plateReaderBox .container .btn {
+			width: 140px;
+			height: 35px;
+			border-radius: 10px;
+			font-size: 16px;
+			border: none;
+		}
+			#plateReaderBox .container .btn:hover {
+				background-color: rgb( 255, 255, 255 );
+			}
+
+			#plateReaderBox .container .btn:active {
+				background-color: rgb( 190, 190, 190 );
+				padding: 0;
+			}
+		
+		#plateReaderBox .container .plate_input {
+			width: 75%;
+			height: 50px;
+			font-family: "Plate-Font";
+			text-align: center;
+			font-size: 38px;
+			text-transform: uppercase;
+			padding: 0;
+			padding-bottom: 15px;
+			margin-bottom: -15px;
+		}
+
+	#plateReaderBox .close {
+		width: 80px;
+		height: 20px;
+
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 10px;
+		margin: auto;
+
+		border-radius: 10px;
+		border: none;
+		background-color: rgb( 225, 225, 225 );
+	}
+		#plateReaderBox .close:hover {
+			background-color: rgb( 255, 255, 255 );
+		}
+
+		#plateReaderBox .close:active {
+			background-color: rgb( 190, 190, 190 );
+			padding: 0;
+		}
+
+#uiSettingsBox {
+	width: 250px;
+	height: 400px;
+
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	
+	background: linear-gradient( to bottom, rgb( 70, 70, 70 ), rgb( 45, 45, 45 ) );
+	border: 3px solid rgb( 0, 0, 0 );
 
 	z-index: 3;
 }
@@ -845,20 +884,20 @@ button:focus { outline: none; }
 
 	#uiSettingsBox .header {
 		width: 100%;
-    }
-    
-    #uiSettingsBox .scaling_container {
-        height: 225px;
-        display: grid;
-        grid-template-rows: 1fr 1fr 1fr;
-    }
+	}
+	
+	#uiSettingsBox .scaling_container {
+		height: 225px;
+		display: grid;
+		grid-template-rows: 1fr 1fr 1fr;
+	}
 	
 	#uiSettingsBox .scaling {
 		height: 70px;
-        
-        display: grid;
-        grid-template-columns: 1fr 2fr 1fr;
-        place-items: center center;
+		
+		display: grid;
+		grid-template-columns: 1fr 2fr 1fr;
+		place-items: center center;
 	}
 		#uiSettingsBox .scaling p {
 			font-size: 18px;
@@ -890,60 +929,60 @@ button:focus { outline: none; }
 
 		#uiSettingsBox .scaling .plus {
 			clip-path: polygon( 0 35%, 35% 35%, 35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65% );
-        }
-        
-    #uiSettingsBox .safezone_container {
-        width: 85%;
-        margin: 0 auto;
-    }
-        #uiSettingsBox .safezone_container p, 
-        #uiSettingsBox .safezone_container span {
-            font-size: 18px;
+		}
+		
+	#uiSettingsBox .safezone_container {
+		width: 85%;
+		margin: 0 auto;
+	}
+		#uiSettingsBox .safezone_container p, 
+		#uiSettingsBox .safezone_container span {
+			font-size: 18px;
 			margin: 0 auto;
 			text-align: center;
 			color: rgb( 255, 255, 255 );
-        }
+		}
 
-        #uiSettingsBox .safezone_container .slider {
-            width: 100%;
-            height: 10px;
-            margin: 10px 0;
+		#uiSettingsBox .safezone_container .slider {
+			width: 100%;
+			height: 10px;
+			margin: 10px 0;
 
-            border-radius: 5px;
+			border-radius: 5px;
 
-            -webkit-appearance: none;
+			-webkit-appearance: none;
 
-            background-color: rgb( 180, 180, 180 );
-        }
+			background-color: rgb( 180, 180, 180 );
+		}
 
-        #uiSettingsBox .safezone_container .slider:focus {
-            outline: none;
-        }
-            #uiSettingsBox .safezone_container .slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 15px;
-                height: 25px;
-                background: rgb( 84, 210, 255 );
-                cursor: pointer;
-            }
-              
-            #uiSettingsBox .safezone_container .slider::-moz-range-thumb {
-                width: 15px;
-                height: 25px;
-                background: rgb( 84, 210, 255 );
-                cursor: pointer;
-            }
+		#uiSettingsBox .safezone_container .slider:focus {
+			outline: none;
+		}
+			#uiSettingsBox .safezone_container .slider::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 15px;
+				height: 25px;
+				background: rgb( 84, 210, 255 );
+				cursor: pointer;
+			}
+			  
+			#uiSettingsBox .safezone_container .slider::-moz-range-thumb {
+				width: 15px;
+				height: 25px;
+				background: rgb( 84, 210, 255 );
+				cursor: pointer;
+			}
 
 	#uiSettingsBox .close {
 		width: 80px;
 		height: 20px;
 
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 30px;
-        margin: auto;
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 30px;
+		margin: auto;
 
 		border-radius: 10px;
 		border: none;
@@ -956,61 +995,61 @@ button:focus { outline: none; }
 		#uiSettingsBox .close:active {
 			background-color: rgb( 190, 190, 190 );
 			padding: 0;
-        }
+		}
 
 #keyLockLabel, #keyBindsLabel {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 350px;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 350px;
 
-    text-align: center;
-    font-size: 30px;
+	text-align: center;
+	font-size: 30px;
 
-    color: rgb(255, 255, 255);
-    text-shadow: 3px 2px 5px rgb( 0, 0, 0 );
+	color: rgb(255, 255, 255);
+	text-shadow: 3px 2px 5px rgb( 0, 0, 0 );
 
-    z-index: 5;
+	z-index: 5;
 }
-    #keyBindsLabel {
-        bottom: 300px;
-    }
+	#keyBindsLabel {
+		bottom: 300px;
+	}
 
-    #keyLockLabel span, #keyBindsLabel span {
-        font-size: 30px;
-    }
+	#keyLockLabel span, #keyBindsLabel span {
+		font-size: 30px;
+	}
 
 #helpWindow {
-    width: 75%;
-    height: 90%;
+	width: 75%;
+	height: 90%;
 
-    position: absolute;
-    margin: auto;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 
-    display: grid;
-    grid-template-rows: 90% 10%;
-    justify-items: center;
+	display: grid;
+	grid-template-rows: 90% 10%;
+	justify-items: center;
 
-    z-index: 6;
+	z-index: 6;
 }
-    #helpWindow iframe {
-        width: 100%;
-        height: 100%;
+	#helpWindow iframe {
+		width: 100%;
+		height: 100%;
 
-        display: block;
-    }
+		display: block;
+	}
 
-    #helpWindow .close {
+	#helpWindow .close {
 		width: 150px;
-        height: 50px;
-        
-        margin: auto;
+		height: 50px;
+		
+		margin: auto;
 
-        font-size: 18px;
+		font-size: 18px;
 
 		border-radius: 10px;
 		border: none;
@@ -1023,10 +1062,10 @@ button:focus { outline: none; }
 		#helpWindow .close:active {
 			background-color: rgb( 190, 190, 190 );
 			padding: 0;
-        }
+		}
 
 @media ( max-width: 1024px ) {
-    #helpWindow {
-        width: 80%;
-    }
+	#helpWindow {
+		width: 80%;
+	}
 }

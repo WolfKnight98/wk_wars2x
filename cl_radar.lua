@@ -1,9 +1,34 @@
---[[----------------------------------------------------------------------------------
+--[[---------------------------------------------------------------------------------------
 
 	Wraith ARS 2X
 	Created by WolfKnight
+	
+	For discussions, information on future updates, and more, join 
+	my Discord: https://discord.gg/fD4e6WD 
+	
+	MIT License
 
-----------------------------------------------------------------------------------]]--
+	Copyright (c) 2020 WolfKnight
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+---------------------------------------------------------------------------------------]]--
 
 -- Cache some of the main Lua functions and libraries 
 local next = next 
@@ -23,7 +48,7 @@ Citizen.SetTimeout( 1000, function()
 	local name = GetCurrentResourceName()
 
 	-- Print a little message in the client's console
-	print( "WK_WARS2X: Sending resource name (" .. name .. ") to JavaScript side." )
+	print( "[wk_wars2x]: Sending resource name (" .. name .. ") to JavaScript side." )
 
 	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
 	SendNUIMessage( { _type = "updatePathName", pathName = name } )
@@ -50,6 +75,12 @@ RegisterNetEvent( "wk:loadUiData" )
 AddEventHandler( "wk:loadUiData", function( data )
 	SendNUIMessage( { _type = "loadUiSettings", data = data } )
 end )
+
+RegisterNetEvent( "wk:setUiDefaults" )
+AddEventHandler( "wk:setUiDefaults", function()
+	SendNUIMessage( { _type = "setUiDefaults", data = CONFIG.uiDefaults } )
+end )
+
 
 --[[----------------------------------------------------------------------------------
 	Player info variables
@@ -116,10 +147,10 @@ RADAR.vars =
 		["beep"] = CONFIG.menuDefaults["beep"],
 		
 		-- The volume of the verbal lock confirmation 
-        ["voice"] = CONFIG.menuDefaults["voice"],
-        
-        -- The volume of the plate reader audio 
-        ["plateAudio"] = CONFIG.menuDefaults["plateAudio"], 
+		["voice"] = CONFIG.menuDefaults["voice"],
+		
+		-- The volume of the plate reader audio 
+		["plateAudio"] = CONFIG.menuDefaults["plateAudio"], 
 
 		-- The speed unit used in conversions
 		["speedType"] = CONFIG.menuDefaults["speedType"]
@@ -134,8 +165,8 @@ RADAR.vars =
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "opp" },
 		{ displayText = { "bEE", "P¦¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "beep" },
-        { displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "voice" },
-        { displayText = { "PLt", "AUd" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "plateAudio" },
+		{ displayText = { "VOI", "CE¦" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "voice" },
+		{ displayText = { "PLt", "AUd" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "plateAudio" },
 		{ displayText = { "Uni", "tS¦" }, optionsText = { "USA", "INT" }, options = { "mph", "kmh" }, optionIndex = -1, settingText = "speedType" }
 	},
 
@@ -158,6 +189,7 @@ RADAR.vars =
 			lockedType = nil        -- The locked type, 1 = strongest, 2 = fastest
 		}, 
 
+		-- Variables for the rear antenna
 		[ "rear" ] = {
 			xmit = false,			-- Whether the antenna is transmitting or in hold
 			mode = 0,				-- Current antenna mode, 0 = none, 1 = same, 2 = opp, 3 = same and opp 
@@ -204,11 +236,11 @@ RADAR.vars =
 	threadWaitTime = 500, 
 	
 	-- Key lock, when true, prevents any of the radar's key events from working, like the ELS key lock 
-    keyLock = false, 
-    
-    -- Full keyboard, when true, the keybinds for the radar will be set to the keys on the numpad, when false, the
-    -- keybinds for the radar will be set to the number keys above WASD
-    fullKeyboard = true 
+	keyLock = false, 
+	
+	-- Full keyboard, when true, the keybinds for the radar will be set to the keys on the numpad, when false, the
+	-- keybinds for the radar will be set to the number keys above WASD
+	fullKeyboard = true 
 }
 
 -- Speed conversion values
@@ -377,28 +409,6 @@ function RADAR:OpenRemote()
 	end
 end 
 
--- Updates the operator menu option indexes, as the default menu values can be changed in the config, we 
--- need to update the indexes otherwise the menu will display the wrong values
-function RADAR:UpdateOptionIndexes()
-    -- Iterate through each of the internal settings
-    for k, v in pairs( self.vars.settings ) do     
-        -- Iterate through all of the menu options
-        for i, t in pairs( self.vars.menuOptions ) do 
-            -- If the current menu option is the same as the current setting
-            if ( t.settingText == k ) then 
-                -- Iterate through the option values of the current menu option 
-                for oi, ov in pairs( t.options ) do 
-                    -- If the value of the current option set in the config matches the current value of
-                    -- the option value, then we update the option index variable
-                    if ( v == ov ) then 
-                        t.optionIndex = oi
-                    end 
-                end 
-            end 
-        end 
-    end 
-end 
-
 -- Returns if the fast limit option should be available for the radar
 function RADAR:IsFastLimitAllowed()
 	return CONFIG.allow_fast_limit
@@ -462,28 +472,28 @@ end
 
 -- Toggles between the full and small keybinds
 function RADAR:ToggleFullKeyboard()
-    -- Check the player state is valid
-    if ( PLY:VehicleStateValid() ) then 
-        -- Toggle the full keyboard state
-        self.vars.fullKeyboard = not self.vars.fullKeyboard
+	-- Check the player state is valid
+	if ( PLY:VehicleStateValid() ) then 
+		-- Toggle the full keyboard state
+		self.vars.fullKeyboard = not self.vars.fullKeyboard
 
-        -- Tell the NUI side to display the keybind message
-        SendNUIMessage( { _type = "displayKeybindChange", state = self:GetFullKeyboardState() } )
-    end 
+		-- Tell the NUI side to display the keybind message
+		SendNUIMessage( { _type = "displayKeybindChange", state = self:GetFullKeyboardState() } )
+	end 
 end 
 
 -- Returns the full keyboard state
 function RADAR:GetFullKeyboardState()
-    return self.vars.fullKeyboard
+	return self.vars.fullKeyboard
 end 
 
 -- Returns which keybind set to use
 function RADAR:GetKeybindType()
-    if ( self:GetFullKeyboardState() ) then 
-        return "full"
-    else 
-        return "small"
-    end 
+	if ( self:GetFullKeyboardState() ) then 
+		return "full"
+	else 
+		return "small"
+	end 
 end 
 
 
@@ -592,6 +602,28 @@ end
 -- Sends a message to the NUI side with updated information on what should be displayed for the menu 
 function RADAR:SendMenuUpdate()
 	SendNUIMessage( { _type = "menu", text = self:GetMenuOptionDisplayText(), option = self:GetMenuOptionText() } )
+end 
+
+-- Updates the operator menu option indexes, as the default menu values can be changed in the config, we 
+-- need to update the indexes otherwise the menu will display the wrong values
+function RADAR:UpdateOptionIndexes()
+	-- Iterate through each of the internal settings
+	for k, v in pairs( self.vars.settings ) do     
+		-- Iterate through all of the menu options
+		for i, t in pairs( self.vars.menuOptions ) do 
+			-- If the current menu option is the same as the current setting
+			if ( t.settingText == k ) then 
+				-- Iterate through the option values of the current menu option 
+				for oi, ov in pairs( t.options ) do 
+					-- If the value of the current option set in the config matches the current value of
+					-- the option value, then we update the option index variable
+					if ( v == ov ) then 
+						t.optionIndex = oi
+					end 
+				end 
+			end 
+		end 
+	end 
 end 
 
 
@@ -991,19 +1023,19 @@ function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
 		SendNUIMessage( { _type = "audio", name = "beep", vol = self:GetSettingValue( "beep" ) } )
 		
 		-- Send a message to the NUI side to play the lock audio with the current voice volume setting 
-        SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = self:GetSettingValue( "voice" ) } )
-        
-        -- Great Scott!
-        if ( speed == "¦88" and self:GetSettingValue( "speedType" ) == "mph" ) then 
-            math.randomseed( GetGameTimer() )
+		SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = self:GetSettingValue( "voice" ) } )
+		
+		-- Great Scott!
+		if ( speed == "¦88" and self:GetSettingValue( "speedType" ) == "mph" ) then 
+			math.randomseed( GetGameTimer() )
 
-            local chance = math.random()
-            
-            -- 15% chance
-            if ( chance <= 0.15 ) then 
-                SendNUIMessage( { _type = "audio", name = "speed_alert", vol = self:GetSettingValue( "beep" ) } )
-            end 
-        end 
+			local chance = math.random()
+			
+			-- 15% chance
+			if ( chance <= 0.15 ) then 
+				SendNUIMessage( { _type = "audio", name = "speed_alert", vol = self:GetSettingValue( "beep" ) } )
+			end 
+		end 
 	end
 end 
 
@@ -1109,28 +1141,6 @@ function RADAR:InsertCapturedVehicleData( t, rt )
 		end
 	end 
 end 
-
---[[
-	These need to be changed so a ray type can be set too, otherwise in its current state, messes up vehicle 
-	detection. 
-
--- Sets the given value to true in the temp vehicles table, it is a test system used to reduce ray traces
--- on vehicles that have already been hit by another trace. Currently not implemented fully, as it doesn't 
--- check for ray traces of different types, e.g. same or opp. 
-function RADAR:HasVehicleAlreadyBeenHit( key )
-	return self.vars.tempVehicleIDs[key]
-end 
-
--- Returns if a vehicle has already been hit by a ray trace 
-function RADAR:SetVehicleHasBeenHit( key )
-	self.vars.tempVehicleIDs[key] = true 
-end 
-
--- Resets the temporary vehicle ids table 
-function RADAR:ResetTempVehicleIDs()
-	self.vars.tempVehicleIDs = {}
-end 
-]]
 
 
 --[[----------------------------------------------------------------------------------
@@ -1351,74 +1361,74 @@ end )
 
 -- Runs when the user presses any of the antenna mode buttons on the remote
 RegisterNUICallback( "setAntennaMode", function( data ) 
-    -- Only run the codw if the radar has power and is not powering up
-    if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
-        -- As the mode buttons are used to exit the menu, we check for that 
-        if ( RADAR:IsMenuOpen() ) then 
-            -- Set the internal menu state to be closed (false)
-            RADAR:SetMenuState( false )
-            
-            -- Send a setting update to the NUI side 
-            RADAR:SendSettingUpdate()
-            
-            -- Play a menu done beep 
-            SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
-        else
-            -- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
-            RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
-                -- Update the interface with the new mode 
-                SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
-                
-                -- Play a beep 
-                SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-            end )
-        end 
-    end 
+	-- Only run the codw if the radar has power and is not powering up
+	if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
+		-- As the mode buttons are used to exit the menu, we check for that 
+		if ( RADAR:IsMenuOpen() ) then 
+			-- Set the internal menu state to be closed (false)
+			RADAR:SetMenuState( false )
+			
+			-- Send a setting update to the NUI side 
+			RADAR:SendSettingUpdate()
+			
+			-- Play a menu done beep 
+			SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
+		else
+			-- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
+			RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
+				-- Update the interface with the new mode 
+				SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+				
+				-- Play a beep 
+				SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+			end )
+		end 
+	end 
 end )
 
 -- Runs when the user presses either of the XMIT/HOLD buttons on the remote 
 RegisterNUICallback( "toggleAntenna", function( data ) 
-    -- Only run the codw if the radar has power and is not powering up
-    if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
-        -- As the xmit/hold buttons are used to change settings in the menu, we check for that 
-        if ( RADAR:IsMenuOpen() ) then 
-            -- Change the menu option based on which button is pressed
-            RADAR:ChangeMenuOption( data.value )
-            
-            -- Play a beep noise 
-            SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-        else
-            -- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
-            RADAR:ToggleAntenna( data.value, function()
-                -- Update the interface with the new antenna transmit state
-                SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
-                
-                -- Play some audio specific to the transmit state
-                SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
-            end )
-        end 
-    end 
+	-- Only run the codw if the radar has power and is not powering up
+	if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
+		-- As the xmit/hold buttons are used to change settings in the menu, we check for that 
+		if ( RADAR:IsMenuOpen() ) then 
+			-- Change the menu option based on which button is pressed
+			RADAR:ChangeMenuOption( data.value )
+			
+			-- Play a beep noise 
+			SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+		else
+			-- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
+			RADAR:ToggleAntenna( data.value, function()
+				-- Update the interface with the new antenna transmit state
+				SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+				
+				-- Play some audio specific to the transmit state
+				SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
+			end )
+		end 
+	end 
 end )
 
 -- Runs when the user presses the menu button on the remote control
 RegisterNUICallback( "menu", function()
-    -- Only run the codw if the radar has power and is not powering up
-    if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
-        -- As the menu button is a multipurpose button, we first check to see if the menu is already open
-        if ( RADAR:IsMenuOpen() ) then 
-            -- As the menu is already open, we then iterate to the next option in the settings list
-            RADAR:ChangeMenuIndex()
-        else 
-            -- Set the menu state to open, which will prevent anything else within the radar from working
-            RADAR:SetMenuState( true )
-            
-            -- Send an update to the NUI side
-            RADAR:SendMenuUpdate()
-        end
+	-- Only run the codw if the radar has power and is not powering up
+	if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
+		-- As the menu button is a multipurpose button, we first check to see if the menu is already open
+		if ( RADAR:IsMenuOpen() ) then 
+			-- As the menu is already open, we then iterate to the next option in the settings list
+			RADAR:ChangeMenuIndex()
+		else 
+			-- Set the menu state to open, which will prevent anything else within the radar from working
+			RADAR:SetMenuState( true )
+			
+			-- Send an update to the NUI side
+			RADAR:SendMenuUpdate()
+		end
 
-        -- Play the standard audio beep
-        SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-    end 
+		-- Play the standard audio beep
+		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+	end 
 end )
 
 -- Runs when the JavaScript side sends the UI data for saving 
@@ -1600,8 +1610,6 @@ function RADAR:Main()
 
 		-- Send the update to the NUI side
 		SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
-
-		-- self:ResetTempVehicleIDs()
 	end 
 end 
 
@@ -1614,10 +1622,10 @@ Citizen.CreateThread( function()
 	RADAR:CacheNumRays()
 	
 	-- Update the end coordinates for the ray traces based on the config, again, reduced hard coding
-    RADAR:UpdateRayEndCoords()
-    
-    -- Update the operator menu positions
-    RADAR:UpdateOptionIndexes()
+	RADAR:UpdateRayEndCoords()
+	
+	-- Update the operator menu positions
+	RADAR:UpdateOptionIndexes()
 
 	-- If the fast limit feature is allowed, create the config in the radar variables
 	if ( RADAR:IsFastLimitAllowed() ) then 
@@ -1684,8 +1692,8 @@ end )
 function RunControlManager()
 	-- Make sure only the keyboard works
 	if ( IsInputDisabled( 0 ) ) then 
-        if ( not RADAR:GetKeyLockState() ) then 
-            local keyType = RADAR:GetKeybindType()
+		if ( not RADAR:GetKeyLockState() ) then 
+			local keyType = RADAR:GetKeybindType()
 
 			-- Opens the remote control 
 			if ( IsDisabledControlJustPressed( 1, CONFIG.keys.remote_control ) ) then 
@@ -1716,18 +1724,13 @@ function RunControlManager()
 		-- Toggles the key lock state 
 		if ( IsDisabledControlJustPressed( 1, CONFIG.keys.key_lock ) ) then 
 			RADAR:ToggleKeyLock()
-        end 
-        
-        -- Toggles between the keybind types
-        if ( IsDisabledControlJustPressed( 1, CONFIG.keys.switch_keys ) ) then 
+		end 
+		
+		-- Toggles between the keybind types
+		if ( IsDisabledControlJustPressed( 1, CONFIG.keys.switch_keys ) ) then 
 			RADAR:ToggleFullKeyboard()
-        end 
+		end 
 	end 
-
-	-- Shortcut to restart the resource
-	--[[ if ( IsDisabledControlJustPressed( 1, 167 ) ) then 
-		ExecuteCommand( "restart wk_wars2x" )
-	end ]]
 end 
 
 -- Control manager 

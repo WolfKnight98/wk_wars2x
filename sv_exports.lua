@@ -30,40 +30,21 @@
 
 ---------------------------------------------------------------------------------------]]--
 
--- Define the FX Server version and game type
-fx_version "adamant"
-game "gta5"
+-- Although there is only one export at the moment, more may be added down the line. 
 
--- Define the resource metadata
-name "Wraith ARS 2X"
-description "Police radar and plate reader system for FiveM"
-author "WolfKnight"
-version "1.0.0"
+--[[---------------------------------------------------------------------------------------
+	Locks the designated plate reader camera for the given client. 
 
--- Include the files
-files {
-	"nui/radar.html", 
-	"nui/radar.css", 
-	"nui/jquery-3.4.1.min.js", 
-	"nui/radar.js",
-	"nui/images/*.png",
-	"nui/images/plates/*.png",
-	"nui/fonts/*.ttf",
-	"nui/fonts/Segment7Standard.otf",
-	"nui/sounds/*.ogg"
-}
-
--- Set the NUI page
-ui_page "nui/radar.html"
-
--- Run the server scripts
-server_script "sv_version_check.lua"
-server_script "sv_saving.lua"
-server_script "sv_exports.lua"
-server_export "TogglePlateLock"
-
--- Run the client scripts
-client_script "config.lua"
-client_script "cl_utils.lua"
-client_script "cl_radar.lua"
-client_script "cl_plate_reader.lua"
+	Parameters:
+		clientId:
+			The id of the client
+		cam:
+			The camera to lock, either "front" or "rear"
+		beepAudio:
+			Play an audible beep, either true or false
+		boloAudio:
+			Play the bolo lock sound, either true or false
+---------------------------------------------------------------------------------------]]--
+function TogglePlateLock( clientId, cam, beepAudio, boloAudio )
+	TriggerClientEvent( "wk:togglePlateLock", clientId, cam, beepAudio, boloAudio )
+end 
