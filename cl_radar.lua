@@ -45,10 +45,10 @@ local pairs = pairs
 ----------------------------------------------------------------------------------]]--
 Citizen.SetTimeout( 1000, function()
 	-- Get the name of the resource, for example the default name is 'wk_wars2x'
-	local name = GetCurrentResourceName()
+	local name = string.lower( GetCurrentResourceName() )
 
 	-- Print a little message in the client's console
-	print( "[wk_wars2x]: Sending resource name (" .. name .. ") to JavaScript side." )
+	print( "[WolfKnight's Wraith ARS 2X]: Sending resource name (" .. name .. ") to JavaScript side." )
 
 	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
 	SendNUIMessage( { _type = "updatePathName", pathName = name } )
