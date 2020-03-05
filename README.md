@@ -2,7 +2,6 @@
 The **Wraith ARS 2X** (Wraith Advanced Radar System) is a realistic police radar that takes heavy inspiration from the real Stalker DSR 2X radar system. It includes a plethora of features from the DSR 2X such as the new operator menu, to improve the realism and experience whilst using the newest instalment from the collection of Wraith radar systems. Previously with WraithRS, vehicle speeds were only displayed in the target window, with no priority to certain vehicles (such as large and slower vehicles, or smaller and faster vehicles). The Wraith ARS 2X tracks both large and faster, smaller targets and displays the speeds of both in the target windows, meaning the radar can track 4 different speeds with both antennas turned on and transmitting. Alongside the new radar system is also a plate reader that scans in front and behind the patrol vehicle, a BOLO plate can also be set, but developers can also hook into the scanner to link it into other resources. 
 
 ## Installation
----
 Installing the Wraith ARS 2X into your FiveM can be done by following the listed steps below. 
 1. Download the latest version of the resource from [here](https://github.com/WolfKnight98/wk_wars2x/releases)
 2. Open the zip file and place the `wk_wars2x` folder into your server's resource folder
@@ -11,7 +10,6 @@ Installing the Wraith ARS 2X into your FiveM can be done by following the listed
 It's now installed! When you boot your server you should see a Wraith ARS 2X message as well as the version check message. 
 
 ## Script configuration
----
 All of the configuration for the Wraith ARS 2X is done inside the `config.lua` file, below is a copy of the configuration file. All of the options have comments to describe what they do, along with the available options you can set. You have the ability to change the key binds for the large and small key set, the default operator menu options, and the default UI element scale and safezone. 
 ```lua
 -- Radar fast limit locking
@@ -120,3 +118,9 @@ CONFIG.uiDefaults =
 	safezone = 20 
 }
 ```
+
+## Suggestions
+If there is an improvement that you think should be made, open a pull request with your modified code, I will then review your request and either accept/deny it. Code in a pull request should be well formatted and commented, it will make it much easier for others to read and understand. In the event that you want to suggest something, but don't know how to code, open an issue with the enhancement tag. 
+
+## Reporting issues/bugs
+Open an issue if you encounter any problems with the resource, if applicable, try to include detailed information on the issue and how to reproduce it. This will make it much easier to find and fix. 
