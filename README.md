@@ -9,6 +9,19 @@ Installing the Wraith ARS 2X into your FiveM can be done by following the listed
 
 It's now installed! When you boot your server you should see a Wraith ARS 2X message as well as the version check message. 
 
+## Default key binds
+Although these can be viewed ingame through the operator manual, the default key binds are listed below. 
+| Action | Key |
+| :---: | :---: |
+| Open remote | F5 |
+| Close remote | ESC or right mouse button |
+| Lock front antenna | Numpad 8 (full) / 1 (small) |
+| Lock rear antenna | Numpad 5 (full) / 2 (small) |
+| Lock front plate | Numpad 9 (full) / 3 (small) |
+| Lock rear plate | Numpad 6 (full) / 4 (small) |
+| Toggle keylock | L |
+| Toggle key bind set | K |
+
 ## Script configuration
 All of the configuration for the Wraith ARS 2X is done inside the `config.lua` file, below is a copy of the configuration file. All of the options have comments to describe what they do, along with the available options you can set. You have the ability to change the key binds for the large and small key set, the default operator menu options, and the default UI element scale and safezone. 
 ```lua
@@ -120,7 +133,7 @@ CONFIG.uiDefaults =
 ```
 
 ## Suggestions
-If there is an improvement that you think should be made, open a pull request with your modified code, I will then review your request and either accept/deny it. Code in a pull request should be well formatted and commented, it will make it much easier for others to read and understand. In the event that you want to suggest something, but don't know how to code, open an issue with the enhancement tag. 
+If there is an improvement that you think should be made, open a pull request with your modified code, I will then review your request and either accept/deny it. Code in a pull request should be well formatted and commented, it will make it much easier for others to read and understand. In the event that you want to suggest something, but don't know how to code, open an issue with the enhancement tag and then fully describe your suggestion. 
 
 ## Reporting issues/bugs
 Open an issue if you encounter any problems with the resource, if applicable, try to include detailed information on the issue and how to reproduce it. This will make it much easier to find and fix. 
