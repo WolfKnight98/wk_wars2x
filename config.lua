@@ -50,7 +50,7 @@ CONFIG.keys =
 	key_lock = 182,
 
 	-- Radar keybinds switch 
-	-- The default to key to switch the bind set is (K - INPUT_REPLAY_SHOWHOTKEY)
+	-- The default key to switch the bind set is (K - INPUT_REPLAY_SHOWHOTKEY)
 	switch_keys = 311, 
 
 	-- Keys for a full size keyboard
@@ -129,9 +129,9 @@ CONFIG.uiDefaults =
 	-- Options: 0.25 - 2.5
 	scale =
 	{
-		radar = 1.5, 
-		remote = 1.5, 
-		plateReader = 1.5
+		radar = 1.0, 
+		remote = 1.0, 
+		plateReader = 1.0
 	}, 
 
 	-- The safezone size, must be a multiple of 5.
