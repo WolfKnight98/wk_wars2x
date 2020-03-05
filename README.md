@@ -11,16 +11,16 @@ It's now installed! When you boot your server you should see a Wraith ARS 2X mes
 
 ## Default key binds
 Although these can be viewed ingame through the operator manual, the default key binds are listed below. 
-| Action | Key |
-| :---: | :---: |
-| Open remote | F5 |
-| Close remote | ESC or right mouse button |
-| Lock front antenna | Numpad 8 (full) / 1 (small) |
-| Lock rear antenna | Numpad 5 (full) / 2 (small) |
-| Lock front plate | Numpad 9 (full) / 3 (small) |
-| Lock rear plate | Numpad 6 (full) / 4 (small) |
-| Toggle keylock | L |
-| Toggle key bind set | K |
+| Action              | Key                         |
+| ------------------- | --------------------------- |
+| Open remote         | F5                          |
+| Close remote        | ESC or right mouse button   |
+| Lock front antenna  | Numpad 8 (full) / 1 (small) |
+| Lock rear antenna   | Numpad 5 (full) / 2 (small) |
+| Lock front plate    | Numpad 9 (full) / 3 (small) |
+| Lock rear plate     | Numpad 6 (full) / 4 (small) |
+| Toggle keylock      | L                           |
+| Toggle key bind set | K                           |
 
 ## Script configuration
 All of the configuration for the Wraith ARS 2X is done inside the `config.lua` file, below is a copy of the configuration file. All of the options have comments to describe what they do, along with the available options you can set. You have the ability to change the key binds for the large and small key set, the default operator menu options, and the default UI element scale and safezone. 
