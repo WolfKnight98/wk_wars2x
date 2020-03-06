@@ -1719,16 +1719,16 @@ function RunControlManager()
 			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].plate_rear_lock ) ) then 
 				READER:LockCam( "rear", true, false )
 			end 
+
+			-- Toggles between the keybind types
+			if ( IsDisabledControlJustPressed( 1, CONFIG.keys.switch_keys ) ) then 
+				RADAR:ToggleFullKeyboard()
+			end 
 		end 
 		
 		-- Toggles the key lock state 
 		if ( IsDisabledControlJustPressed( 1, CONFIG.keys.key_lock ) ) then 
 			RADAR:ToggleKeyLock()
-		end 
-		
-		-- Toggles between the keybind types
-		if ( IsDisabledControlJustPressed( 1, CONFIG.keys.switch_keys ) ) then 
-			RADAR:ToggleFullKeyboard()
 		end 
 	end 
 end 
