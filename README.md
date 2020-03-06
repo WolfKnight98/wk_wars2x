@@ -11,16 +11,16 @@ It's now installed! When you boot your server you should see a Wraith ARS 2X mes
 
 ## Default key binds
 Although these can be viewed ingame through the operator manual, the default key binds are listed below. 
-| Action              | Key                         |
-| ------------------- | --------------------------- |
-| Open remote         | F5                          |
-| Close remote        | ESC or right mouse button   |
-| Lock front antenna  | Numpad 8 (full) / 1 (small) |
-| Lock rear antenna   | Numpad 5 (full) / 2 (small) |
-| Lock front plate    | Numpad 9 (full) / 3 (small) |
-| Lock rear plate     | Numpad 6 (full) / 4 (small) |
-| Toggle keylock      | L                           |
-| Toggle key bind set | K                           |
+| Action                     | Key                         |
+| -------------------------- | --------------------------- |
+| Open remote                | F5                          |
+| Close remote               | ESC or right mouse button   |
+| Lock/unlock front antenna  | Numpad 8 (full) / 1 (small) |
+| Lock/unlock rear antenna   | Numpad 5 (full) / 2 (small) |
+| Lock/unlock front plate    | Numpad 9 (full) / 3 (small) |
+| Lock/unlock rear plate     | Numpad 6 (full) / 4 (small) |
+| Toggle keylock             | L                           |
+| Toggle key bind set        | K                           |
 
 ## Changing the UI file save type
 As the UI can be moved and scaled, the system also saves the UI data as it is set by the user. By default, this identifier type uses `license` to name the JSON files saved in the `saves` folder. This can easily be changed by opening the `sv_saving.lua` file, then looking for the following line of code at the top:
