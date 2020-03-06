@@ -235,8 +235,6 @@ function READER:Main()
 						-- Automatically lock the plate if the scanned plate matches the BOLO
 						if ( plate == self:GetBoloPlate() ) then 
 							self:LockCam( cam, false, true )
-
-							-- SendNUIMessage( { _type = "audio", name = "plate_hit", vol = RADAR:GetSettingValue( "plateAudio" ) } )
 						end 
 
 						-- Send the plate information to the NUI side to update the UI
