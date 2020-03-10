@@ -11,16 +11,16 @@ It's now installed! When you boot your server you should see a Wraith ARS 2X mes
 
 ## Default key binds
 Although these can be viewed ingame through the operator manual, the default key binds are listed below. 
-| Action                     | Key                         |
-| -------------------------- | --------------------------- |
-| Open remote                | F5                          |
-| Close remote               | ESC or right mouse button   |
-| Lock/unlock front antenna  | Numpad 8 (full) / 1 (small) |
-| Lock/unlock rear antenna   | Numpad 5 (full) / 2 (small) |
-| Lock/unlock front plate    | Numpad 9 (full) / 3 (small) |
-| Lock/unlock rear plate     | Numpad 6 (full) / 4 (small) |
-| Toggle keylock             | L                           |
-| Toggle key bind set        | K                           |
+| Action                    | Key                         | Description |
+| ------------------------- | --------------------------- | ----------- |
+| Open remote               | F5                          | Opens the remote control, this only works if you are the driver of a police vehicle (must have the vehicle class VC_EMERGENCY). |
+| Close remote              | ESC or right mouse button   | Closes the remote/all of the displayed UI elements, and returns focus to the game. |
+| Lock/unlock front antenna | Numpad 8 (full) / 1 (small) | Locks the current speed of the front antenna. If there is a fast speed displayed, the system will lock the fast speed. Otherwise it will lock the strong speed. When you lock a speed, the radar will audibly tell you which antenna is being locked, and the relative direction of the target compared to the patrol vehicle (e.g. "Front Closing"). |
+| Lock/unlock rear antenna  | Numpad 5 (full) / 2 (small) | Locks the current speed of the rear antenna. If there is a fast speed displayed, the system will lock the fast speed. Otherwise it will lock the strong speed. When you lock a speed, the radar will audibly tell you which antenna is being locked, and the relative direction of the target compared to the patrol vehicle (e.g. "Rear Away"). |
+| Lock/unlock front plate   | Numpad 9 (full) / 3 (small) | Locks the plate currently caught by the front plate reader, an audible beep will also be heard unless the plate reader audio option in the operator menu is changed. |
+| Lock/unlock rear plate    | Numpad 6 (full) / 4 (small) | Locks the plate currently caught by the rear plate reader, an audible beep will also be heard unless the plate reader audio option in the operator menu is changed. |
+| Toggle keylock            | L                           | Toggles the keylock state. When enabled, none of the keybinds will work until keylock is toggled again. |
+| Toggle keybind set        | K                           | Toggles between the full and small keybind sets for locking/unlocking the radar/plate reader. |
 
 ## Changing the UI file save type
 As the UI can be moved and scaled, the system also saves the UI data as it is set by the user. By default, this identifier type uses `license` to name the JSON files saved in the `saves` folder. This can easily be changed by opening the `sv_saving.lua` file, then looking for the following line of code at the top:
