@@ -22,16 +22,6 @@ Although these can be viewed ingame through the operator manual, the default key
 | Toggle keylock            | L                           | Toggles the keylock state. When enabled, none of the keybinds will work until keylock is toggled again. |
 | Toggle keybind set        | K                           | Toggles between the full and small keybind sets for locking/unlocking the radar/plate reader. |
 
-## Changing the UI file save type
-As the UI can be moved and scaled, the system also saves the UI data as it is set by the user. By default, this identifier type uses `license` to name the JSON files saved in the `saves` folder. This can easily be changed by opening the `sv_saving.lua` file, then looking for the following line of code at the top:
-```lua
-DATASAVE.idType = "license"
-```
-All you need to do is change the value, so for example, if I wanted the save files to be saved using Steam IDs, I would change the code to look like this:
-```lua
-DATASAVE.idType = "steam"
-```
-
 ## Script configuration
 All of the configuration for the Wraith ARS 2X is done inside the `config.lua` file, below is a copy of the configuration file. All of the options have comments to describe what they do, along with the available options you can set. You have the ability to change the key binds for the large and small key set, the default operator menu options, and the default UI element scale and safezone. 
 ```lua

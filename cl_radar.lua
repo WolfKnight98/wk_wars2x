@@ -64,21 +64,20 @@ local spawned = false
 -- the player spawns
 AddEventHandler( "playerSpawned", function()
 	if ( not spawned ) then 
-		-- Ask the server to get the player's saved UI data
-		TriggerServerEvent( "wk:getUiData" )
+		-- Try and get the saved UI data
+		local uiData = GetResourceKvpString( "wk_wars2x_ui_data" )
+
+		-- If the data exists, then we send it off!
+		if ( uiData ~= nil ) then 
+			SendNUIMessage( { _type = "loadUiSettings", data = json.decode( uiData ) } )
+
+		-- If the data doesn't exist, then we send the defaults
+		else 
+			SendNUIMessage( { _type = "setUiDefaults", data = CONFIG.uiDefaults } )
+		end 
+
 		spawned = true
 	end 
-end )
-
--- Grabs the saved UI data sent by the server and forwards it to the NUI side 
-RegisterNetEvent( "wk:loadUiData" )
-AddEventHandler( "wk:loadUiData", function( data )
-	SendNUIMessage( { _type = "loadUiSettings", data = data } )
-end )
-
-RegisterNetEvent( "wk:setUiDefaults" )
-AddEventHandler( "wk:setUiDefaults", function()
-	SendNUIMessage( { _type = "setUiDefaults", data = CONFIG.uiDefaults } )
 end )
 
 
@@ -1433,7 +1432,7 @@ end )
 
 -- Runs when the JavaScript side sends the UI data for saving 
 RegisterNUICallback( "saveUiData", function( data, cb )
-	TriggerServerEvent( "wk:saveUiData", data )
+	SetResourceKvp( "wk_wars2x_ui_data", json.encode( data ) )
 end )
 
 
