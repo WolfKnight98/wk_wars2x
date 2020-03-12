@@ -78,7 +78,7 @@ AddEventHandler( "playerSpawned", function()
 		else 
 			SendNUIMessage( { _type = "setUiDefaults", data = CONFIG.uiDefaults } )
 
-			UTIL:Log( "Could not find ant saved UI settings data." )
+			UTIL:Log( "Could not find any saved UI settings data." )
 		end 
 
 		spawned = true
@@ -628,7 +628,7 @@ function RADAR:LoadOMData()
 
 		UTIL:Log( "Saved operator menu data loaded!" )
 	else 
-		UTIL:Log( "Could not find ant saved operator menu data." )
+		UTIL:Log( "Could not find any saved operator menu data." )
 	end 
 end 
 
