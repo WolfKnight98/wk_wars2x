@@ -408,6 +408,12 @@ function RADAR:OpenRemote()
 	end
 end 
 
+-- Event to open the remote
+RegisterNetEvent( "wk:openRemote" )
+AddEventHandler( "wk:openRemote", function()
+	RADAR:OpenRemote()
+end )
+
 -- Returns if the fast limit option should be available for the radar
 function RADAR:IsFastLimitAllowed()
 	return CONFIG.allow_fast_limit
