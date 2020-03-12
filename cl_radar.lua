@@ -48,7 +48,7 @@ Citizen.SetTimeout( 1000, function()
 	local name = string.lower( GetCurrentResourceName() )
 
 	-- Print a little message in the client's console
-	print( "[WolfKnight's Wraith ARS 2X]: Sending resource name (" .. name .. ") to JavaScript side." )
+	UTIL:Log( "Sending resource name (" .. name .. ") to JavaScript side." )
 
 	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
 	SendNUIMessage( { _type = "updatePathName", pathName = name } )
@@ -64,16 +64,21 @@ local spawned = false
 -- the player spawns
 AddEventHandler( "playerSpawned", function()
 	if ( not spawned ) then 
+		UTIL:Log( "Attempting to load saved UI settings data." )
+
 		-- Try and get the saved UI data
 		local uiData = GetResourceKvpString( "wk_wars2x_ui_data" )
 
 		-- If the data exists, then we send it off!
 		if ( uiData ~= nil ) then 
 			SendNUIMessage( { _type = "loadUiSettings", data = json.decode( uiData ) } )
-
+			
+			UTIL:Log( "Saved UI settings data loaded!" )
 		-- If the data doesn't exist, then we send the defaults
 		else 
 			SendNUIMessage( { _type = "setUiDefaults", data = CONFIG.uiDefaults } )
+
+			UTIL:Log( "Could not find ant saved UI settings data." )
 		end 
 
 		spawned = true
@@ -609,9 +614,29 @@ function RADAR:SendMenuUpdate()
 	SendNUIMessage( { _type = "menu", text = self:GetMenuOptionDisplayText(), option = self:GetMenuOptionText() } )
 end 
 
+-- Attempts to load the saved operator menu data 
+function RADAR:LoadOMData()
+	UTIL:Log( "Attempting to load saved operator menu data." )
+
+	-- Try and get the data
+	local rawData = GetResourceKvpString( "wk_wars2x_om_data" )
+
+	-- If the data exists, decode it and replace the operator menu table 
+	if ( rawData ~= nil ) then 
+		local omData = json.decode( rawData )
+		self.vars.settings = omData
+
+		UTIL:Log( "Saved operator menu data loaded!" )
+	else 
+		UTIL:Log( "Could not find ant saved operator menu data." )
+	end 
+end 
+
 -- Updates the operator menu option indexes, as the default menu values can be changed in the config, we 
 -- need to update the indexes otherwise the menu will display the wrong values
 function RADAR:UpdateOptionIndexes()
+	self:LoadOMData()
+
 	-- Iterate through each of the internal settings
 	for k, v in pairs( self.vars.settings ) do     
 		-- Iterate through all of the menu options
@@ -1394,6 +1419,10 @@ RegisterNUICallback( "setAntennaMode", function( data )
 			
 			-- Play a menu done beep 
 			SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
+
+			-- Save the operator menu values
+			local omData = json.encode( RADAR.vars.settings )
+			SetResourceKvp( "wk_wars2x_om_data", omData )
 		else
 			-- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
 			RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
@@ -1454,6 +1483,7 @@ end )
 
 -- Runs when the JavaScript side sends the UI data for saving 
 RegisterNUICallback( "saveUiData", function( data, cb )
+	UTIL:Log( "Saving updated UI settings data." )
 	SetResourceKvp( "wk_wars2x_ui_data", json.encode( data ) )
 end )
 

@@ -117,6 +117,10 @@ function UTIL:Notify( text )
 	DrawNotification( false, true )
 end
 
+function UTIL:Log( msg )
+	print( "[Wraith ARS 2X]: " .. msg )
+end 
+
 function UTIL:DrawDebugText( x, y, scale, centre, text )
 	SetTextFont( 4 )
 	SetTextProportional( 0 )
