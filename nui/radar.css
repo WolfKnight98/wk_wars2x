@@ -86,8 +86,8 @@ button:focus { outline: none; }
 	position: absolute;
 	margin: auto;
 	
-	top: calc( ( 100% - 10px ) - 230px );
-	left: calc( ( 100% - 10px ) - 715px );
+	top: calc( 100% - 230px );
+	left: calc( 100% - 715px );
 
 	background-image: url( "images/frame.png" );
 
@@ -636,7 +636,7 @@ button:focus { outline: none; }
 	margin: auto;
 
 	top: calc( 50% - ( 200px / 2 ) );
-	left: calc( 50% - ( 500px / 2 ) );
+	left: calc( 100% - 500px );
 
 	background-image: url( "images/pr_frame.png" );
 
