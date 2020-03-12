@@ -754,6 +754,22 @@ function RADAR:GetLineHitsSphereAndDir( c, radius, rs, re )
 	return false, nil 
 end 
 
+-- This function is used to check if the target vehicle is in the same general traffic flow as the player's vehicle
+-- is sitting. If the angle is too great, then the radar would have an incorrect return for the speed.
+function RADAR:IsVehicleInTraffic( tgtVeh, relPos )
+	local tgtHdg = GetEntityHeading( tgtVeh )
+	local plyHdg = GetEntityHeading( PLY.veh )
+
+	local hdgDiff = math.abs(tgtHdg - plyHdg)
+
+	if ( relPos == 1 and hdgDiff > 45 and hdgDiff < 135 ) then
+		return false
+	elseif ( relPos == -1 and hdgDiff > 45 and ( hdgDiff < 135 or hdgDiff > 215 ) ) then
+		return false
+	end
+	return true
+end
+
 -- This function is the main custom ray trace function, it performs most of the major tasks for checking a vehicle
 -- is valid and should be tested. It also makes use of the LOS native to make sure that we can only trace a vehicle
 -- if actually nas a direct line of sight with the player's vehicle, this way we don't pick up vehicles behind walls
@@ -787,8 +803,8 @@ function RADAR:ShootCustomRay( plyVeh, veh, s, e )
 			-- Check that the trace line intersects with the target vehicle's sphere
 			local hit, relPos = self:GetLineHitsSphereAndDir( pos, radius, s, e )
 
-			-- Return all of the information if the vehicle was hit
-			if ( hit ) then 
+			-- Return all of the information if the vehicle was hit and is in the flow of traffic
+			if ( hit and self:IsVehicleInTraffic( veh, relPos ) ) then 
 				return true, relPos, dist, entSpeed, size
 			end 
 		end
