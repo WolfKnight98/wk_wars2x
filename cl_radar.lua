@@ -417,8 +417,6 @@ function RADAR:OpenRemote()
 
 			if ( show == 0 ) then 
 				SendNUIMessage( { _type = "showNewUser" } )
-
-				SetResourceKvpInt( "wk_wars2x_new_user", 1 )
 			end 
 		end 
 
@@ -1499,6 +1497,11 @@ end )
 RegisterNUICallback( "saveUiData", function( data, cb )
 	UTIL:Log( "Saving updated UI settings data." )
 	SetResourceKvp( "wk_wars2x_ui_data", json.encode( data ) )
+end )
+
+-- Runs when the JavaScript side sends the quick start video has been watched
+RegisterNUICallback( "qsvWatched", function( data, cb )
+	SetResourceKvpInt( "wk_wars2x_new_user", 1 )
 end )
 
 
