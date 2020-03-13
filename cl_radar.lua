@@ -295,6 +295,9 @@ function RADAR:TogglePower()
 
 	-- Power is now turned on 
 	if ( self:IsPowerOn() ) then 
+		-- Also make sure the operator menu is inactive 
+		self:SetMenuState( false )
+		
 		-- Tell the system the radar is 'powering up'
 		self:SetPoweringUpState( true )
 
