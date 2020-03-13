@@ -1742,7 +1742,7 @@ end )
 
 function RunControlManager()
 	-- Make sure only the keyboard works
-	if ( IsInputDisabled( 0 ) ) then 
+	if ( IsInputDisabled( 0 ) and not IsPauseMenuActive() ) then 
 		if ( not RADAR:GetKeyLockState() ) then 
 			local keyType = RADAR:GetKeybindType()
 
