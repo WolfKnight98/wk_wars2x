@@ -1069,3 +1069,106 @@ button:focus { outline: none; }
 		width: 80%;
 	}
 }
+
+#quickStart {
+	width: 50%;
+	height: 62.5%;
+
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	display: grid;
+	grid-template-rows: 80% 20%;
+
+	z-index: 8;
+}
+	#quickStart iframe {
+		width: 100%;
+		height: 100%;
+	}
+
+	#quickStart .close {
+		width: 150px;
+		height: 50px;
+		
+		margin: auto;
+
+		font-size: 18px;
+
+		border-radius: 10px;
+		border: none;
+		background-color: rgb( 225, 225, 225 );
+	}
+		#quickStart .close:hover {
+			background-color: rgb( 255, 255, 255 );
+		}
+
+		#quickStart .close:active {
+			background-color: rgb( 190, 190, 190 );
+			padding: 0;
+		}
+
+@media ( max-width: 1280px ) {
+	#quickStart {
+		width: 80%;
+	}
+}
+
+#newUser {
+	width: 400px;
+	height: 150px;
+
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	background: linear-gradient( to bottom, rgb( 70, 70, 70 ), rgb( 45, 45, 45 ) );
+	border: 3px solid rgb( 0, 0, 0 );
+	color: rgb( 255, 255, 255 );
+
+	display: grid;
+	grid-template-columns: 20% 30% 30% 20%;
+	grid-template-rows: 65% 35%;
+	justify-items: center;
+	align-items: center;
+
+	z-index: 7;
+}
+	#newUser .msg {
+		grid-column: 1 / 5;
+		font-size: 18px;
+		text-align: center;
+		margin: 10px;
+	}
+
+	#newUser button {
+		width: 100px;
+		height: 30px;
+		font-size: 18px;
+		border-radius: 10px;
+		border: none;
+		background-color: rgb( 225, 225, 225 );
+	}
+		#newUser button:hover {
+			background-color: rgb( 255, 255, 255 );
+		}
+
+		#newUser button:active {
+			background-color: rgb( 190, 190, 190 );
+			padding: 0;
+		}
+
+	#newUser .btn_yes {
+		grid-column: 2;
+	}
+
+	#newUser .btn_no {
+		grid-column: 3;
+	}

@@ -411,6 +411,17 @@ function RADAR:OpenRemote()
 		-- Tell the NUI side to open the remote
 		SendNUIMessage( { _type = "openRemote" } )
 
+		if ( CONFIG.allow_quick_start_video ) then 
+			-- Display the new user popup if we can
+			local show = GetResourceKvpInt( "wk_wars2x_new_user" )
+
+			if ( show == 0 ) then 
+				SendNUIMessage( { _type = "showNewUser" } )
+
+				SetResourceKvpInt( "wk_wars2x_new_user", 1 )
+			end 
+		end 
+
 		-- Bring focus to the NUI side 
 		SetNuiFocus( true, true )
 	end

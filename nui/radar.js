@@ -97,6 +97,13 @@ const elements =
 	helpWeb: $( "#helpWeb" ), 
 	closeHelp: $( "#closeHelp" ), 
 
+	closeNewUser: $( "#closeNewUserMsg" ),
+	newUser: $( "#newUser" ),
+	openQsv: $( "#showQuickStartVideo" ),
+	qsvWindow: $( "#quickStart" ), 
+	qsvWeb: $( "#quickStartVideo" ),
+	closeQsv: $( "#closeQuickStart" ),
+
 	radarScaling: {
 		increase: $( "#radarIncreaseScale" ),
 		decrease: $( "#radarDecreaseScale" ),
@@ -228,6 +235,8 @@ elements.uiSettingsBox.hide();
 elements.keyLock.label.hide(); 
 elements.keyBinds.label.hide(); 
 elements.helpWindow.hide(); 
+elements.qsvWindow.hide();
+elements.newUser.hide(); 
 
 // Sets the action for the "UI SETTINGS" button on the remote to open the UI settings box
 elements.uiSettingsBtn.click( function() {
@@ -249,6 +258,24 @@ elements.openHelp.click( function() {
 elements.closeHelp.click( function() {
 	setEleVisible( elements.helpWindow, false ); 
 	loadHelp( false ); 
+} )
+
+// Sets the action for the "No" button on the new user popup to close the popup
+elements.closeNewUser.click( function() {
+	setEleVisible( elements.newUser, false ); 
+} )
+
+// Sets the action for the "Yes" button on the new user popup to open the quick start window and load the video
+elements.openQsv.click( function() {
+	setEleVisible( elements.newUser, false ); 
+	setEleVisible( elements.qsvWindow, true ); 
+	loadQuickStartVideo( true );
+} )
+
+// Sets the action for the "Close Video" button under the quick start window to close the quick start window and unload the video 
+elements.closeQsv.click( function() {
+	setEleVisible( elements.qsvWindow, false ); 
+	loadQuickStartVideo( false ); 
 } )
 
 
@@ -773,6 +800,15 @@ function loadHelp( state )
 	}
 }
 
+function loadQuickStartVideo( state )
+{
+	if ( state ) {
+		elements.qsvWeb.attr( "src", "https://www.youtube-nocookie.com/embed/B-6VD8pXNYE" ); 
+	} else {
+		elements.qsvWeb.attr( "src", "about:blank" ); 
+	}
+}
+
 
 /*------------------------------------------------------------------------------------
 	UI scaling and positioning 
@@ -1064,6 +1100,9 @@ window.addEventListener( "message", function( event ) {
 		case "displayKeybindChange":
 			displayKeybindState( item.state );
 			return; 
+		case "showNewUser":
+			setEleVisible( elements.newUser, true );
+			break; 
 
 		// Radar events
 		case "openRemote":

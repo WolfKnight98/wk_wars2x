@@ -38,6 +38,11 @@ CONFIG = {}
 -- exceeds the fast limit, it will be locked into the fast box. Default setting is disabled to maintain realism
 CONFIG.allow_fast_limit = false 
 
+-- In-game first time quick start video
+-- When enabled, the player will be asked if they'd like to view the quick start video the first time they 
+-- open the remote. 
+CONFIG.allow_quick_start_video = true 
+
 -- Sets all of the controls
 CONFIG.keys =
 {
