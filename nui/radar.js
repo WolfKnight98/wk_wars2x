@@ -276,6 +276,7 @@ elements.openQsv.click( function() {
 elements.closeQsv.click( function() {
 	setEleVisible( elements.qsvWindow, false ); 
 	loadQuickStartVideo( false ); 
+	sendData( "qsvWatched", null );
 } )
 
 
@@ -1056,7 +1057,10 @@ function closeRemote()
 	setEleVisible( elements.plateReaderBox, false ); 
 	setEleVisible( elements.uiSettingsBox, false ); 
 	setEleVisible( elements.helpWindow, false );
+	setEleVisible( elements.newUser, false );
+	setEleVisible( elements.qsvWindow, false ); 
 	loadHelp( false ); 
+	loadQuickStartVideo( false );
 
 	setEleVisible( elements.remote, false );
 	
