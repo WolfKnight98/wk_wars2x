@@ -1806,3 +1806,10 @@ Citizen.CreateThread( function()
 		Citizen.Wait( 0 )
 	end 
 end )
+
+-- Deletes all of the KVPs
+RegisterCommand( "reset_radar_data", function()
+	DeleteResourceKvp( "wk_wars2x_ui_data" )
+	DeleteResourceKvp( "wk_wars2x_om_data" )
+	DeleteResourceKvp( "wk_wars2x_new_user" )
+end, false )
