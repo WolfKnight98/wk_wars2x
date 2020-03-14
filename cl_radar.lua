@@ -1381,7 +1381,7 @@ function RADAR:GetVehiclesForAntenna()
 				for k, v in pairs( vehs[ant] ) do 
 					-- When we grab a vehicle for the fastest section, as it is like how the real system works, there are a few
 					-- additional checks that have to be made 
-					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= temp.veh and v.size < temp.size and v.speed + 1.0 > temp.speed ) then 
+					if ( self:CheckVehicleDataFitsMode( ant, v.rayType ) and v.veh ~= temp.veh and v.size < temp.size and v.speed > temp.speed + 1.0 ) then 
 						-- Set the result for the current antenna 
 						results[ant][2] = v 
 						break
