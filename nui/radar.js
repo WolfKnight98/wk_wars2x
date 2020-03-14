@@ -263,6 +263,7 @@ elements.closeHelp.click( function() {
 // Sets the action for the "No" button on the new user popup to close the popup
 elements.closeNewUser.click( function() {
 	setEleVisible( elements.newUser, false ); 
+	sendData( "qsvWatched", null );
 } )
 
 // Sets the action for the "Yes" button on the new user popup to open the quick start window and load the video
