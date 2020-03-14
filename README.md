@@ -28,7 +28,12 @@ All of the configuration for the Wraith ARS 2X is done inside the `config.lua` f
 -- Radar fast limit locking
 -- When enabled, the player will be able to define a fast limit within the radar's menu, when a vehicle 
 -- exceeds the fast limit, it will be locked into the fast box. Default setting is disabled to maintain realism
-CONFIG.allow_fast_limit = true 
+CONFIG.allow_fast_limit = false 
+
+-- In-game first time quick start video
+-- When enabled, the player will be asked if they'd like to view the quick start video the first time they 
+-- open the remote. 
+CONFIG.allow_quick_start_video = true 
 
 -- Sets all of the controls
 CONFIG.keys =
