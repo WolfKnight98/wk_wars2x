@@ -219,7 +219,11 @@ RADAR.vars =
 	capturedVehicles = {},
 
 	-- Table for temp id storage to stop unnecessary trace checks
-	tempVehicleIDs = {},
+	-- needs to be redone
+	-- tempVehicleIDs = {},
+
+	-- Table to store the valid vehicle models
+	validVehicles = {}, 
 
 	-- The current vehicle data for display 
 	activeVehicles = {},
@@ -1291,6 +1295,47 @@ function RADAR:GetVehSpeedConverted( speed )
 	return UTIL:Round( speed * self.speedConversions[unit], 0 )
 end 
 
+-- Returns the validity of the given vehicle model 
+function RADAR:GetVehicleValidity( key )
+	return self.vars.validVehicles[key]
+end 
+
+-- Sets the validity for the given vehicle model 
+function RADAR:SetVehicleValidity( key, validity )
+	self.vars.validVehicles[key] = validity 
+end 
+
+-- Returns if vehicle validity data exists for the given vehicle model 
+function RADAR:DoesVehicleValidityExist( key )
+	return self:GetVehicleValidity( key ) ~= nil 
+end 
+
+-- Returns if the given vehicle is valid, as we don't want the radar to detect boats, helicopters, or planes!
+function RADAR:IsVehicleValid( veh )
+	-- Get the model of the vehicle 
+	local mdl = GetEntityModel( veh )
+	
+	-- Create a key based on the model 
+	local key = tostring( mdl )
+
+	-- Check if the vehicle model is valid
+	local valid = self:GetVehicleValidity( key )
+
+	-- If the validity value hasn't been set for the vehicle model, then we do it now 
+	if ( valid == nil ) then 
+		-- If the model is not what we want, then set the validity to false
+		if ( IsThisModelABoat( mdl ) or IsThisModelAHeli( mdl ) or IsThisModelAPlane( mdl ) ) then 
+			self:SetVehicleValidity( key, false )
+			return false 
+		else 
+			self:SetVehicleValidity( key, true ) 
+			return true 
+		end 
+	end 
+
+	return valid 
+end 
+
 -- Gathers all of the vehicles in the local area of the player
 function RADAR:GetAllVehicles()
 	-- Create a temporary table
@@ -1298,8 +1343,10 @@ function RADAR:GetAllVehicles()
 
 	-- Iterate through vehicles
 	for v in UTIL:EnumerateVehicles() do
-		-- Insert the vehicle id into the temporary table 
-		table.insert( t, v )
+		if ( self:IsVehicleValid( v ) ) then 
+			-- Insert the vehicle id into the temporary table 
+			table.insert( t, v )
+		end 
 	end 
 
 	-- Return the table 
