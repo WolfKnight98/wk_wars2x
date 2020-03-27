@@ -1804,6 +1804,7 @@ Citizen.CreateThread( function()
 	end 
 end )
 
+
 -- Opens the remote control
 RegisterCommand('radar_remote', function()
 	if ( not RADAR:GetKeyLockState() ) then
@@ -1850,58 +1851,6 @@ RegisterCommand('radar_key_lock', function()
 end)
 RegisterKeyMapping("radar_key_lock", "Toggle Keybind Lock", "keyboard", CONFIG.keyDefaults.key_lock)
 
---[[ function RunControlManager()
-	-- Make sure only the keyboard works
-	if ( IsInputDisabled( 0 ) and not IsPauseMenuActive() ) then 
-		if ( not RADAR:GetKeyLockState() ) then 
-			local keyType = RADAR:GetKeybindType()
-
-			-- Opens the remote control 
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys.remote_control ) ) then 
-				RADAR:OpenRemote()
-			end 
-
-			-- Locks speed from front antenna
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].front_lock ) ) then 
-				RADAR:LockAntennaSpeed( "front" )
-			end 
-
-			-- Locks speed from rear antenna
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].rear_lock ) ) then 
-				RADAR:LockAntennaSpeed( "rear" )
-			end 
-
-			-- Locks front plate reader
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].plate_front_lock ) ) then 
-				READER:LockCam( "front", true, false )
-			end 
-
-			-- Locks front plate reader
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].plate_rear_lock ) ) then 
-				READER:LockCam( "rear", true, false )
-			end 
-
-			-- Toggles between the keybind types
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys.switch_keys ) ) then 
-				RADAR:ToggleFullKeyboard()
-			end 
-		end 
-		
-		-- Toggles the key lock state 
-		if ( IsDisabledControlJustPressed( 1, CONFIG.keys.key_lock ) ) then 
-			RADAR:ToggleKeyLock()
-		end 
-	end 
-end  ]]
-
--- Control manager 
---[[ Citizen.CreateThread( function()
-	while ( true ) do 
-		RunControlManager()
-
-		Citizen.Wait( 0 )
-	end 
-end ) ]]
 
 -- Deletes all of the KVPs
 RegisterCommand( "reset_radar_data", function()
