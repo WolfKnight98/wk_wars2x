@@ -43,58 +43,27 @@ CONFIG.allow_fast_limit = false
 -- open the remote. 
 CONFIG.allow_quick_start_video = true 
 
--- Sets all of the controls
-CONFIG.keys =
+-- Sets the defaults of all keybinds
+-- These keybinds can be changed by each person in their GTA Settings->Keybinds->FiveM
+CONFIG.keyDefaults =
 {
 	-- Remote control key 
-	-- The default key to open the remote control is 166 (F5 - INPUT_SELECT_CHARACTER_MICHAEL)
-	remote_control = 166,
+	remote_control = 'f5',
 
 	-- Radar key lock key 
-	-- The default key to enable/disable the radar key lock is 182 (L - INPUT_CELLPHONE_CAMERA_FOCUS_LOCK)
-	key_lock = 182,
+	key_lock = 'l',
 
-	-- Radar keybinds switch 
-	-- The default key to switch the bind set is (K - INPUT_REPLAY_SHOWHOTKEY)
-	switch_keys = 311, 
+	-- Radar front antenna lock/unlock Key
+	front_lock = 'numpad8',
 
-	-- Keys for a full size keyboard
-	[ "full" ] = {
-		-- Radar front antenna lock/unlock Key 
-		-- The default full keyboard key to lock/unlock the front antenna is 111 (Numpad 8 - INPUT_VEH_FLY_PITCH_UP_ONLY)
-		front_lock = 111,
+	-- Radar rear antenna lock/unlock Key
+	rear_lock = 'numpad5',
 
-		-- Radar rear antenna lock/unlock Key 
-		-- The default full keyboard key to lock/unlock the rear antenna is 112 (Numpad 5 - INPUT_VEH_FLY_PITCH_DOWN_ONLY)
-		rear_lock = 112,
+	-- Plate reader front lock/unlock Key
+	plate_front_lock = 'numpad9',
 
-		-- Plate reader front lock/unlock Key 
-		-- The default full keyboard key to lock/unlock the front plate reader is 118 (Numpad 9 - INPUT_VEH_FLY_SELECT_TARGET_RIGHT)
-		plate_front_lock = 118,
-
-		-- Plate reader rear lock/unlock Key 
-		-- The default full keyboard key to lock/unlock the rear plate reader is 109 (Numpad 6 - INPUT_VEH_FLY_ROLL_RIGHT_ONLY)
-		plate_rear_lock = 109
-	}, 
-
-	-- Keys for smaller keyboards 
-	[ "small" ] = {
-		-- Radar front antenna lock/unlock Key 
-		-- The default small keyboard key to lock/unlock the front antenna is 157 (1 - INPUT_SELECT_WEAPON_UNARMED)
-		front_lock = 157,
-
-		-- Radar rear antenna lock/unlock Key 
-		-- The default small keyboard key to lock/unlock the rear antenna is 158 (2 - INPUT_SELECT_WEAPON_MELEE)
-		rear_lock = 158,
-
-		-- Plate reader front lock/unlock Key 
-		-- The default small keyboard key to lock/unlock the front plate reader is 160 (3 - INPUT_SELECT_WEAPON_SHOTGUN)
-		plate_front_lock = 160,
-
-		-- Plate reader rear lock/unlock Key 
-		-- The default small keyboard key to lock/unlock the rear plate reader is 164 (4 - INPUT_SELECT_WEAPON_HEAVY)
-		plate_rear_lock = 164
-	}
+	-- Plate reader rear lock/unlock Key
+	plate_rear_lock = 'numpad6'
 }
 
 -- Here you can change the default values for the operator menu, do note, if any of these values are not

@@ -1804,7 +1804,53 @@ Citizen.CreateThread( function()
 	end 
 end )
 
-function RunControlManager()
+-- Opens the remote control
+RegisterCommand('radar_remote', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		RADAR:OpenRemote()
+	end
+end)
+RegisterKeyMapping("radar_remote", "Open Radar Remote", "keyboard", CONFIG.keyDefaults.remote_control)
+
+-- Locks speed from front antenna
+RegisterCommand('radar_fr_ant', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		RADAR:LockAntennaSpeed( "front" )
+	end
+end)
+RegisterKeyMapping("radar_fr_ant", "Front Antenna Lock", "keyboard", CONFIG.keyDefaults.front_lock)
+
+-- Locks speed from rear antenna
+RegisterCommand('radar_bk_ant', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		RADAR:LockAntennaSpeed( "rear" )
+	end
+end)
+RegisterKeyMapping("radar_bk_ant", "Rear Antenna Lock", "keyboard", CONFIG.keyDefaults.rear_lock)
+
+-- Locks front plate reader
+RegisterCommand('radar_fr_cam', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		READER:LockCam( "front", true, false )
+	end
+end)
+RegisterKeyMapping("radar_fr_cam", "Front Plate Reader Lock", "keyboard", CONFIG.keyDefaults.plate_front_lock)
+
+-- Locks rear plate reader
+RegisterCommand('radar_bk_cam', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		READER:LockCam( "rear", true, false )
+	end
+end)
+RegisterKeyMapping("radar_bk_cam", "Rear Plate Reader Lock", "keyboard", CONFIG.keyDefaults.plate_rear_lock)
+
+-- Toggles the key lock state
+RegisterCommand('radar_key_lock', function()
+	RADAR:ToggleKeyLock()
+end)
+RegisterKeyMapping("radar_key_lock", "Toggle Keybind Lock", "keyboard", CONFIG.keyDefaults.key_lock)
+
+--[[ function RunControlManager()
 	-- Make sure only the keyboard works
 	if ( IsInputDisabled( 0 ) and not IsPauseMenuActive() ) then 
 		if ( not RADAR:GetKeyLockState() ) then 
@@ -1846,16 +1892,16 @@ function RunControlManager()
 			RADAR:ToggleKeyLock()
 		end 
 	end 
-end 
+end  ]]
 
 -- Control manager 
-Citizen.CreateThread( function()
+--[[ Citizen.CreateThread( function()
 	while ( true ) do 
 		RunControlManager()
 
 		Citizen.Wait( 0 )
 	end 
-end )
+end ) ]]
 
 -- Deletes all of the KVPs
 RegisterCommand( "reset_radar_data", function()
