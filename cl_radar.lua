@@ -1804,58 +1804,53 @@ Citizen.CreateThread( function()
 	end 
 end )
 
-function RunControlManager()
-	-- Make sure only the keyboard works
-	if ( IsInputDisabled( 0 ) and not IsPauseMenuActive() ) then 
-		if ( not RADAR:GetKeyLockState() ) then 
-			local keyType = RADAR:GetKeybindType()
 
-			-- Opens the remote control 
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys.remote_control ) ) then 
-				RADAR:OpenRemote()
-			end 
+-- Opens the remote control
+RegisterCommand('radar_remote', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		RADAR:OpenRemote()
+	end
+end)
+RegisterKeyMapping("radar_remote", "Open Radar Remote", "keyboard", CONFIG.keyDefaults.remote_control)
 
-			-- Locks speed from front antenna
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].front_lock ) ) then 
-				RADAR:LockAntennaSpeed( "front" )
-			end 
+-- Locks speed from front antenna
+RegisterCommand('radar_fr_ant', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		RADAR:LockAntennaSpeed( "front" )
+	end
+end)
+RegisterKeyMapping("radar_fr_ant", "Front Antenna Lock", "keyboard", CONFIG.keyDefaults.front_lock)
 
-			-- Locks speed from rear antenna
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].rear_lock ) ) then 
-				RADAR:LockAntennaSpeed( "rear" )
-			end 
+-- Locks speed from rear antenna
+RegisterCommand('radar_bk_ant', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		RADAR:LockAntennaSpeed( "rear" )
+	end
+end)
+RegisterKeyMapping("radar_bk_ant", "Rear Antenna Lock", "keyboard", CONFIG.keyDefaults.rear_lock)
 
-			-- Locks front plate reader
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].plate_front_lock ) ) then 
-				READER:LockCam( "front", true, false )
-			end 
+-- Locks front plate reader
+RegisterCommand('radar_fr_cam', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		READER:LockCam( "front", true, false )
+	end
+end)
+RegisterKeyMapping("radar_fr_cam", "Front Plate Reader Lock", "keyboard", CONFIG.keyDefaults.plate_front_lock)
 
-			-- Locks front plate reader
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys[keyType].plate_rear_lock ) ) then 
-				READER:LockCam( "rear", true, false )
-			end 
+-- Locks rear plate reader
+RegisterCommand('radar_bk_cam', function()
+	if ( not RADAR:GetKeyLockState() ) then
+		READER:LockCam( "rear", true, false )
+	end
+end)
+RegisterKeyMapping("radar_bk_cam", "Rear Plate Reader Lock", "keyboard", CONFIG.keyDefaults.plate_rear_lock)
 
-			-- Toggles between the keybind types
-			if ( IsDisabledControlJustPressed( 1, CONFIG.keys.switch_keys ) ) then 
-				RADAR:ToggleFullKeyboard()
-			end 
-		end 
-		
-		-- Toggles the key lock state 
-		if ( IsDisabledControlJustPressed( 1, CONFIG.keys.key_lock ) ) then 
-			RADAR:ToggleKeyLock()
-		end 
-	end 
-end 
+-- Toggles the key lock state
+RegisterCommand('radar_key_lock', function()
+	RADAR:ToggleKeyLock()
+end)
+RegisterKeyMapping("radar_key_lock", "Toggle Keybind Lock", "keyboard", CONFIG.keyDefaults.key_lock)
 
--- Control manager 
-Citizen.CreateThread( function()
-	while ( true ) do 
-		RunControlManager()
-
-		Citizen.Wait( 0 )
-	end 
-end )
 
 -- Deletes all of the KVPs
 RegisterCommand( "reset_radar_data", function()
