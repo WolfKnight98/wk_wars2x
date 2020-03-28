@@ -1721,7 +1721,7 @@ Citizen.CreateThread( function()
 	while ( true ) do
 		RADAR:Main()
 
-		Citizen.Wait( 50 )
+		Citizen.Wait( 100 )
 	end
 end )
 
