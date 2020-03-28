@@ -777,13 +777,15 @@ function RADAR:IsVehicleInTraffic( tgtVeh, relPos )
 	local tgtHdg = GetEntityHeading( tgtVeh )
 	local plyHdg = GetEntityHeading( PLY.veh )
 
-	local hdgDiff = math.abs(tgtHdg - plyHdg)
+	-- Work out the heading difference, but also take into account extreme opposites (e.g. 5deg and 350deg)
+	local hdgDiff = math.abs( ( plyHdg - tgtHdg + 180 ) % 360 - 180 )
 
 	if ( relPos == 1 and hdgDiff > 45 and hdgDiff < 135 ) then
 		return false
 	elseif ( relPos == -1 and hdgDiff > 45 and ( hdgDiff < 135 or hdgDiff > 215 ) ) then
 		return false
 	end
+
 	return true
 end
 
