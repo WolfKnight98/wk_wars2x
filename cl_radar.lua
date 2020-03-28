@@ -244,11 +244,7 @@ RADAR.vars =
 	threadWaitTime = 500, 
 	
 	-- Key lock, when true, prevents any of the radar's key events from working, like the ELS key lock 
-	keyLock = false, 
-	
-	-- Full keyboard, when true, the keybinds for the radar will be set to the keys on the numpad, when false, the
-	-- keybinds for the radar will be set to the number keys above WASD
-	fullKeyboard = true 
+	keyLock = false
 }
 
 -- Speed conversion values
@@ -494,32 +490,6 @@ end
 -- Returns the key lock state 
 function RADAR:GetKeyLockState()
 	return self.vars.keyLock
-end 
-
--- Toggles between the full and small keybinds
-function RADAR:ToggleFullKeyboard()
-	-- Check the player state is valid
-	if ( PLY:VehicleStateValid() ) then 
-		-- Toggle the full keyboard state
-		self.vars.fullKeyboard = not self.vars.fullKeyboard
-
-		-- Tell the NUI side to display the keybind message
-		SendNUIMessage( { _type = "displayKeybindChange", state = self:GetFullKeyboardState() } )
-	end 
-end 
-
--- Returns the full keyboard state
-function RADAR:GetFullKeyboardState()
-	return self.vars.fullKeyboard
-end 
-
--- Returns which keybind set to use
-function RADAR:GetKeybindType()
-	if ( self:GetFullKeyboardState() ) then 
-		return "full"
-	else 
-		return "small"
-	end 
 end 
 
 

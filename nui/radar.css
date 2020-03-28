@@ -997,11 +997,11 @@ button:focus { outline: none; }
 			padding: 0;
 		}
 
-#keyLockLabel, #keyBindsLabel {
+#keyLockLabel {
 	position: absolute;
 	left: 0;
 	right: 0;
-	bottom: 350px;
+	bottom: 300px;
 
 	text-align: center;
 	font-size: 30px;
@@ -1011,11 +1011,7 @@ button:focus { outline: none; }
 
 	z-index: 5;
 }
-	#keyBindsLabel {
-		bottom: 300px;
-	}
-
-	#keyLockLabel span, #keyBindsLabel span {
+	#keyLockLabel span {
 		font-size: 30px;
 	}
 

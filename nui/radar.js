@@ -150,11 +150,6 @@ const elements =
 		stateLabel: $( "#keyLockStateLabel" )
 	},
 
-	keyBinds: {
-		label: $( "#keyBindsLabel" ), 
-		stateLabel: $( "#keyBindsStateLabel" )
-	},
-
 	patrolSpeed: $( "#patrolSpeed" ),
 
 	antennas: {
@@ -233,7 +228,6 @@ elements.plateReader.hide();
 elements.plateReaderBox.hide(); 
 elements.uiSettingsBox.hide(); 
 elements.keyLock.label.hide(); 
-elements.keyBinds.label.hide(); 
 elements.helpWindow.hide(); 
 elements.qsvWindow.hide();
 elements.newUser.hide(); 
@@ -623,20 +617,6 @@ function displayKeyLock( state )
 	// Make the label fade out after 2 seconds
 	setTimeout( function() {
 		elements.keyLock.label.fadeOut();
-	}, 2000 ); 
-}
-
-function displayKeybindState( state )
-{
-// Set the state label text to enabled or disabled
-	elements.keyBinds.stateLabel.html( state ? "full keyboard" : "small keyboard" );
-
-	// Fade in the label 
-	elements.keyBinds.label.fadeIn();
-
-	// Make the label fade out after 2 seconds
-	setTimeout( function() {
-		elements.keyBinds.label.fadeOut();
 	}, 2000 ); 
 }
 
@@ -1102,9 +1082,6 @@ window.addEventListener( "message", function( event ) {
 		case "displayKeyLock":
 			displayKeyLock( item.state );
 			break; 
-		case "displayKeybindChange":
-			displayKeybindState( item.state );
-			return; 
 		case "showNewUser":
 			setEleVisible( elements.newUser, true );
 			break; 
