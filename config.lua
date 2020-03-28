@@ -48,22 +48,22 @@ CONFIG.allow_quick_start_video = true
 CONFIG.keyDefaults =
 {
 	-- Remote control key 
-	remote_control = 'f5',
+	remote_control = "f5",
 
 	-- Radar key lock key 
-	key_lock = 'l',
+	key_lock = "l",
 
 	-- Radar front antenna lock/unlock Key
-	front_lock = 'numpad8',
+	front_lock = "numpad8",
 
 	-- Radar rear antenna lock/unlock Key
-	rear_lock = 'numpad5',
+	rear_lock = "numpad5",
 
 	-- Plate reader front lock/unlock Key
-	plate_front_lock = 'numpad9',
+	plate_front_lock = "numpad9",
 
 	-- Plate reader rear lock/unlock Key
-	plate_rear_lock = 'numpad6'
+	plate_rear_lock = "numpad6"
 }
 
 -- Here you can change the default values for the operator menu, do note, if any of these values are not
