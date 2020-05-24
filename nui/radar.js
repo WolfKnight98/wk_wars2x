@@ -620,6 +620,13 @@ function displayKeyLock( state )
 	}, 2000 ); 
 }
 
+// Prepare headers for HTTP requests
+$.ajaxSetup({
+	headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+    },
+ });
+
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
 	$.post( "https://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
@@ -1033,7 +1040,7 @@ $( "body" ).find( "button, div" ).each( function( i, obj ) {
 ------------------------------------------------------------------------------------*/
 function closeRemote()
 {
-	sendData( "closeRemote", {} );
+	sendData( "closeRemote", null );
 
 	setEleVisible( elements.plateReaderBox, false ); 
 	setEleVisible( elements.uiSettingsBox, false ); 
