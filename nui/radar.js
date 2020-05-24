@@ -622,7 +622,7 @@ function displayKeyLock( state )
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
-	$.post( "http://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
+	$.post( "https://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
 		if ( datab != "ok" ) {
 			console.log( datab );
 		}            
@@ -1033,7 +1033,7 @@ $( "body" ).find( "button, div" ).each( function( i, obj ) {
 ------------------------------------------------------------------------------------*/
 function closeRemote()
 {
-	sendData( "closeRemote", null );
+	sendData( "closeRemote", {} );
 
 	setEleVisible( elements.plateReaderBox, false ); 
 	setEleVisible( elements.uiSettingsBox, false ); 
