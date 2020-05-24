@@ -1419,25 +1419,28 @@ end
 	NUI callback
 ----------------------------------------------------------------------------------]]--
 -- Runs when the "Toggle Display" button is pressed on the remote control 
-RegisterNUICallback( "toggleRadarDisplay", function()
+RegisterNUICallback( "toggleRadarDisplay", function( data, cb )
 	-- Toggle the display state 
 	RADAR:ToggleDisplayState()
+	cb({})
 end )
 
 -- Runs when the user presses the power button on the radar ui 
-RegisterNUICallback( "togglePower", function()
+RegisterNUICallback( "togglePower", function( data, cb )
 	-- Toggle the radar's power 
 	RADAR:TogglePower()
+	cb({})
 end )
 
 -- Runs when the user presses the ESC or RMB when the remote is open 
-RegisterNUICallback( "closeRemote", function()
+RegisterNUICallback( "closeRemote", function( data, cb )
 	-- Remove focus to the NUI side 
 	SetNuiFocus( false, false )
+	cb({})
 end )
 
 -- Runs when the user presses any of the antenna mode buttons on the remote
-RegisterNUICallback( "setAntennaMode", function( data ) 
+RegisterNUICallback( "setAntennaMode", function( data, cb ) 
 	-- Only run the codw if the radar has power and is not powering up
 	if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
 		-- As the mode buttons are used to exit the menu, we check for that 
@@ -1464,11 +1467,12 @@ RegisterNUICallback( "setAntennaMode", function( data )
 				SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 			end )
 		end 
-	end 
+	end
+	cb({}) 
 end )
 
 -- Runs when the user presses either of the XMIT/HOLD buttons on the remote 
-RegisterNUICallback( "toggleAntenna", function( data ) 
+RegisterNUICallback( "toggleAntenna", function( data, cb ) 
 	-- Only run the codw if the radar has power and is not powering up
 	if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
 		-- As the xmit/hold buttons are used to change settings in the menu, we check for that 
@@ -1488,11 +1492,12 @@ RegisterNUICallback( "toggleAntenna", function( data )
 				SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
 			end )
 		end 
-	end 
+	end
+	cb({}) 
 end )
 
 -- Runs when the user presses the menu button on the remote control
-RegisterNUICallback( "menu", function()
+RegisterNUICallback( "menu", function( data, cb )
 	-- Only run the codw if the radar has power and is not powering up
 	if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
 		-- As the menu button is a multipurpose button, we first check to see if the menu is already open
@@ -1509,18 +1514,21 @@ RegisterNUICallback( "menu", function()
 
 		-- Play the standard audio beep
 		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-	end 
+	end
+	cb({}) 
 end )
 
 -- Runs when the JavaScript side sends the UI data for saving 
 RegisterNUICallback( "saveUiData", function( data, cb )
 	UTIL:Log( "Saving updated UI settings data." )
 	SetResourceKvp( "wk_wars2x_ui_data", json.encode( data ) )
+	cb({})
 end )
 
 -- Runs when the JavaScript side sends the quick start video has been watched
 RegisterNUICallback( "qsvWatched", function( data, cb )
 	SetResourceKvpInt( "wk_wars2x_new_user", 1 )
+	cb({})
 end )
 
 
