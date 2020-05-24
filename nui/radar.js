@@ -257,7 +257,7 @@ elements.closeHelp.click( function() {
 // Sets the action for the "No" button on the new user popup to close the popup
 elements.closeNewUser.click( function() {
 	setEleVisible( elements.newUser, false ); 
-	sendData( "qsvWatched", null );
+	sendData( "qsvWatched", {} );
 } )
 
 // Sets the action for the "Yes" button on the new user popup to open the quick start window and load the video
@@ -271,7 +271,7 @@ elements.openQsv.click( function() {
 elements.closeQsv.click( function() {
 	setEleVisible( elements.qsvWindow, false ); 
 	loadQuickStartVideo( false ); 
-	sendData( "qsvWatched", null );
+	sendData( "qsvWatched", {} );
 } )
 
 
@@ -1040,7 +1040,7 @@ $( "body" ).find( "button, div" ).each( function( i, obj ) {
 ------------------------------------------------------------------------------------*/
 function closeRemote()
 {
-	sendData( "closeRemote", null );
+	sendData( "closeRemote", {} );
 
 	setEleVisible( elements.plateReaderBox, false ); 
 	setEleVisible( elements.uiSettingsBox, false ); 
