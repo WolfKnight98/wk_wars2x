@@ -177,14 +177,14 @@ end )
 RegisterNUICallback( "togglePlateReaderDisplay", function( data, cb )
 	-- Toggle the display state 
 	READER:ToggleDisplayState()
-	cb({})
+	cb('ok')
 end )
 
 -- Runs when the "Set BOLO Plate" button is pressed on the plate reader box
 RegisterNUICallback( "setBoloPlate", function( plate, cb )
 	-- Set the BOLO plate 
 	READER:SetBoloPlate( plate )
-	cb({})
+	cb('ok')
 end )
 
 -- This is the main function that runs and scans all vehicles in front and behind the patrol vehicle
