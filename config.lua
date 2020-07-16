@@ -43,6 +43,15 @@ CONFIG.allow_fast_limit = false
 -- open the remote. 
 CONFIG.allow_quick_start_video = true 
 
+-- Allow passenger view
+-- When enabled, the front seat passenger will be able to view the radar and plate reader
+CONFIG.allow_passenger_view = true
+
+-- Allow passenger control
+-- Dependent on CONFIG.allow_passenger_view. When enabled, the front seat passenger will be able to open the 
+-- radar remote and control the radar and plate reader. 
+CONFIG.allow_passenger_control = true
+
 -- Sets the defaults of all keybinds
 -- These keybinds can be changed by each person in their GTA Settings->Keybinds->FiveM
 CONFIG.keyDefaults =
