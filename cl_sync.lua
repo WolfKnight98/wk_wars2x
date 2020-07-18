@@ -30,40 +30,25 @@
 
 ---------------------------------------------------------------------------------------]]--
 
--- Define the FX Server version and game type
-fx_version "bodacious"
-game "gta5"
-
--- Define the resource metadata
-name "Wraith ARS 2X"
-description "Police radar and plate reader system for FiveM"
-author "WolfKnight"
-version "1.2.4"
-
--- Include the files
-files {
-	"nui/radar.html", 
-	"nui/radar.css", 
-	"nui/jquery-3.4.1.min.js", 
-	"nui/radar.js",
-	"nui/images/*.png",
-	"nui/images/plates/*.png",
-	"nui/fonts/*.ttf",
-	"nui/fonts/Segment7Standard.otf",
-	"nui/sounds/*.ogg"
+local DECOR_TYPES = 
+{
+	FLOAT = 1, 
+	BOOL = 2, 
+	INT = 3
 }
 
--- Set the NUI page
-ui_page "nui/radar.html"
+SYNC = {}
 
--- Run the server scripts
-server_script "sv_version_check.lua"
-server_script "sv_exports.lua"
-server_export "TogglePlateLock"
+SYNC.decors = 
+{
+	{ "wk_wars2x__radarEnabled", DECOR_TYPES.BOOL },
+	{ "wk_wars2x__frontAntennaLocked", DECOR_TYPES.BOOL },
+	{ "wk_wars2x__rearAntennaLocked", DECOR_TYPES.BOOL }
+}
 
--- Run the client scripts
-client_script "config.lua"
-client_script "cl_utils.lua"
-client_script "cl_sync.lua"
-client_script "cl_radar.lua"
-client_script "cl_plate_reader.lua"
+-- Create a thread to register the decorators that will be used
+Citizen.CreateThread( function()
+	for _, v in pairs( SYNC.decors ) do 
+		DecorRegister( v[1], v[2] )
+	end 
+end )
