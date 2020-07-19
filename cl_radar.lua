@@ -94,12 +94,22 @@ PLY =
 	ped = PlayerPedId(),
 	veh = nil,
 	inDriverSeat = false,
+	inPassengerSeat = false, 
 	vehClassValid = false
 }
 
--- Used to check if the player is in a position where the radar should be allowed operation 
 function PLY:VehicleStateValid()
-	return DoesEntityExist( self.veh ) and self.veh > 0 and self.inDriverSeat and self.vehClassValid
+	return DoesEntityExist( self.veh ) and self.veh > 0 and self.vehClassValid
+end 
+
+-- Used to check if the player is in a position where the radar should be allowed operation 
+function PLY:IsDriver()
+	return self:VehicleStateValid() and self.inDriverSeat 
+end 
+
+-- Returns if the player is in the front passenger seat of an emergency vehicle 
+function PLY:IsPassenger()
+	return self:VehicleStateValid() and self.inPassengerSeat 
 end 
 
 -- The main purpose of this thread is to update the information about the local player, including their
@@ -110,6 +120,7 @@ Citizen.CreateThread( function()
 		PLY.ped = PlayerPedId()
 		PLY.veh = GetVehiclePedIsIn( PLY.ped, false )
 		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped 
+		PLY.inPassengerSeat = GetPedInVehicleSeat( PLY.veh, 0 ) == PLY.ped 
 		PLY.vehClassValid = GetVehicleClass( PLY.veh ) == 18
 
 		Citizen.Wait( 500 )
@@ -405,9 +416,10 @@ function RADAR:GetDisplayHidden()
 	return self.vars.hidden 
 end
 
--- Opens the remote only if the pause menu is not open and the player's vehicle state is valid
+-- Opens the remote only if the pause menu is not open and the player's vehicle state is valid, as the
+-- passenger can also open the remote, we check the config variable as well. 
 function RADAR:OpenRemote()
-	if ( not IsPauseMenuActive() and PLY:VehicleStateValid() ) then 
+	if ( not IsPauseMenuActive() and PLY:VehicleStateValid() and ( PLY:IsDriver() or ( PLY:IsPassenger() and self:IsPassengerViewAllowed() ) ) ) then 
 		-- Tell the NUI side to open the remote
 		SendNUIMessage( { _type = "openRemote" } )
 
@@ -430,6 +442,17 @@ RegisterNetEvent( "wk:openRemote" )
 AddEventHandler( "wk:openRemote", function()
 	RADAR:OpenRemote()
 end )
+
+-- Returns if the passenger can view the radar too 
+function RADAR:IsPassengerViewAllowed()
+	return CONFIG.allow_passenger_view
+end 
+
+-- Returns if the passenger can control the radar and plate reader, reliant on the passenger being 
+-- able to view the radar and plate reader too 
+function RADAR:IsPassengerControlAllowed()
+	return CONFIG.allow_passenger_view and CONFIG.allow_passenger_control
+end 
 
 -- Returns if the fast limit option should be available for the radar
 function RADAR:IsFastLimitAllowed()
