@@ -112,6 +112,12 @@ function PLY:IsPassenger()
 	return self:VehicleStateValid() and self.inPassengerSeat 
 end 
 
+-- Returns if the player can run radar, ensures their vehicle state is valid and that they are a driver or 
+-- a passenger (where valid)
+function PLY:CanRunRadar()
+	return self:VehicleStateValid() and ( self:IsDriver() or ( self:IsPassenger() and RADAR:IsPassengerViewAllowed() ) )
+end 
+
 -- The main purpose of this thread is to update the information about the local player, including their
 -- ped id, the vehicle id (if they're in one), whether they're in a driver seat, and if the vehicle's class
 -- is valid or not 
@@ -419,7 +425,7 @@ end
 -- Opens the remote only if the pause menu is not open and the player's vehicle state is valid, as the
 -- passenger can also open the remote, we check the config variable as well. 
 function RADAR:OpenRemote()
-	if ( not IsPauseMenuActive() and PLY:VehicleStateValid() and ( PLY:IsDriver() or ( PLY:IsPassenger() and self:IsPassengerViewAllowed() ) ) ) then 
+	if ( not IsPauseMenuActive() and PLY:CanRunRadar() ) then 
 		-- Tell the NUI side to open the remote
 		SendNUIMessage( { _type = "openRemote" } )
 
@@ -501,7 +507,7 @@ end
 -- Toggles the internal key lock state, which stops any of the radar's key binds from working
 function RADAR:ToggleKeyLock()
 	-- Check the player state is valid
-	if ( PLY:VehicleStateValid() ) then 
+	if ( PLY:CanRunRadar() ) then 
 		-- Toggle the key lock variable 
 		self.vars.keyLock = not self.vars.keyLock
 
@@ -1596,7 +1602,7 @@ end )
 function RADAR:RunThreads()
 	-- For the system to even run, the player needs to be sat in the driver's seat of a class 18 vehicle, the 
 	-- radar has to be visible and the power must be on, and either one of the antennas must be enabled.
-	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
+	if ( PLY:CanRunRadar() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
 		-- Before we create any of the custom ray trace threads, we need to make sure that the ray trace state 
 		-- is at zero, if it is not at zero, then it means the system is still currently tracing
 		if ( self:GetRayTraceState() == 0 ) then 
@@ -1638,7 +1644,7 @@ end )
 function RADAR:Main()
 	-- Only run any of the main code if all of the states are met, player in the driver's seat of a class 18 vehicle, and
 	-- the system has to be able to perform main tasks 
-	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then 
+	if ( PLY:CanRunRadar() and self:CanPerformMainTask() ) then 
 		-- Create a table that will be used to store all of the data to be sent to the NUI side
 		local data = {} 
 
@@ -1787,7 +1793,7 @@ end )
 -- Update the vehicle pool every 3 seconds
 function RADAR:UpdateVehiclePool()
 	-- Only update the vehicle pool if we need to 
-	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
+	if ( PLY:CanRunRadar() and self:CanPerformMainTask() and self:IsEitherAntennaOn() ) then 
 		-- Get the active vehicle set
 		local vehs = self:GetAllVehicles()
 		
