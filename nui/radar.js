@@ -33,7 +33,6 @@
 /*------------------------------------------------------------------------------------
 	Variables
 ------------------------------------------------------------------------------------*/
-var resourceName; 
 var uiEdited = false;
 
 // All of the audio file names
@@ -629,7 +628,7 @@ $.ajaxSetup({
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
-	$.post( "https://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
+	$.post( "https://wk_wars2x/" + name, JSON.stringify( data ), function( datab ) {
 		if ( datab != "ok" ) {
 			console.log( datab );
 		}            
@@ -1077,9 +1076,6 @@ window.addEventListener( "message", function( event ) {
 
 	switch ( type ) {
 		// System events 
-		case "updatePathName":
-			resourceName = item.pathName
-			break;
 		case "loadUiSettings":
 			loadUiSettings( item.data, true );
 			break;

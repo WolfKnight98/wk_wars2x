@@ -39,21 +39,6 @@ local tostring = tostring
 local math = math 
 local pairs = pairs 
 
---[[----------------------------------------------------------------------------------
-	Resource Rename Fix - for those muppets who rename the resource and 
-	complain that the NUI aspect doesn't work!
-----------------------------------------------------------------------------------]]--
-Citizen.SetTimeout( 1000, function()
-	-- Get the name of the resource, for example the default name is 'wk_wars2x'
-	local name = string.lower( GetCurrentResourceName() )
-
-	-- Print a little message in the client's console
-	UTIL:Log( "Sending resource name (" .. name .. ") to JavaScript side." )
-
-	-- Send a message through the NUI system to the JavaScript file to give the name of the resource 
-	SendNUIMessage( { _type = "updatePathName", pathName = name } )
-end )
-
 
 --[[----------------------------------------------------------------------------------
 	UI loading trigger
