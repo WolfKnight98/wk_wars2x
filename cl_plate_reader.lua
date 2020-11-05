@@ -114,13 +114,21 @@ end
 
 -- Returns the bolo plate
 function READER:GetBoloPlate()
-	return self.vars.boloPlate
+	if ( self.vars.boloPlate ~= nil ) then 
+		return self.vars.boloPlate
+	end 
 end 
 
 -- Sets the bolo plate to the given plate 
 function READER:SetBoloPlate( plate )
 	self.vars.boloPlate = plate
-	UTIL:Notify( "BOLO plate set to: " .. plate )
+	UTIL:Notify( "BOLO plate set to: ~b~" .. plate )
+end 
+
+-- Clears the BOLO plate 
+function READER:ClearBoloPlate()
+	self.vars.boloPlate = nil 
+	UTIL:Notify( "~b~BOLO plate cleared!" )
 end 
 
 -- Returns if the given reader is locked
@@ -185,6 +193,13 @@ RegisterNUICallback( "setBoloPlate", function( plate, cb )
 	-- Set the BOLO plate 
 	READER:SetBoloPlate( plate )
 	cb('ok')
+end )
+
+-- Runs when the "Clear BOLO Plate" button is pressed on the plate reader box
+RegisterNUICallback( "clearBoloPlate", function( plate, cb )
+	-- Clear the BOLO plate 
+	READER:ClearBoloPlate()
+	cb( "ok" )
 end )
 
 -- This is the main function that runs and scans all vehicles in front and behind the patrol vehicle

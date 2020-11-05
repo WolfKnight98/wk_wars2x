@@ -89,6 +89,7 @@ const elements =
 	plateReaderBox: $( "#plateReaderBox" ), 
 	boloText: $( "#boloText" ), 
 	setBoloBtn: $( "#setBoloPlate" ), 
+	clearBoloBtn: $( "#clearBoloPlate" ), 
 	closePrBtn: $( "#closePlateReaderSettings" ),
 
 	openHelp: $( "#helpBtn" ), 
@@ -764,6 +765,11 @@ elements.setBoloBtn.click( function() {
 	} else {
 		sendData( "setBoloPlate", plate ); 
 	}
+} )
+
+// Sets the on click function for the clear BOLO button
+elements.clearBoloBtn.click( function() {
+	sendData( "clearBoloPlate", null ); 
 } )
 
 // Checks what the user is typing into the plate box
