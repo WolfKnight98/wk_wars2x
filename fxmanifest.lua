@@ -31,7 +31,7 @@
 ---------------------------------------------------------------------------------------]]--
 
 -- Define the FX Server version and game type
-fx_version "bodacious"
+fx_version "cerulean"
 game "gta5"
 
 -- Define the resource metadata
