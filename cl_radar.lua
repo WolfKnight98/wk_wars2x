@@ -1436,21 +1436,21 @@ end
 RegisterNUICallback( "toggleRadarDisplay", function( data, cb )
 	-- Toggle the display state 
 	RADAR:ToggleDisplayState()
-	cb('ok')
+	cb( "ok" )
 end )
 
 -- Runs when the user presses the power button on the radar ui 
 RegisterNUICallback( "togglePower", function( data, cb )
 	-- Toggle the radar's power 
 	RADAR:TogglePower()
-	cb('ok')
+	cb( "ok" )
 end )
 
 -- Runs when the user presses the ESC or RMB when the remote is open 
 RegisterNUICallback( "closeRemote", function( data, cb )
 	-- Remove focus to the NUI side 
 	SetNuiFocus( false, false )
-	cb('ok')
+	cb( "ok" )
 end )
 
 -- Runs when the user presses any of the antenna mode buttons on the remote
@@ -1482,7 +1482,8 @@ RegisterNUICallback( "setAntennaMode", function( data, cb )
 			end )
 		end 
 	end
-	cb('ok') 
+
+	cb( "ok" ) 
 end )
 
 -- Runs when the user presses either of the XMIT/HOLD buttons on the remote 
@@ -1507,7 +1508,8 @@ RegisterNUICallback( "toggleAntenna", function( data, cb )
 			end )
 		end 
 	end
-	cb('ok') 
+
+	cb( "ok" ) 
 end )
 
 -- Runs when the user presses the menu button on the remote control
@@ -1529,20 +1531,21 @@ RegisterNUICallback( "menu", function( data, cb )
 		-- Play the standard audio beep
 		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 	end
-	cb('ok') 
+
+	cb( "ok" ) 
 end )
 
 -- Runs when the JavaScript side sends the UI data for saving 
 RegisterNUICallback( "saveUiData", function( data, cb )
 	UTIL:Log( "Saving updated UI settings data." )
 	SetResourceKvp( "wk_wars2x_ui_data", json.encode( data ) )
-	cb('ok')
+	cb( "ok" ) 
 end )
 
 -- Runs when the JavaScript side sends the quick start video has been watched
 RegisterNUICallback( "qsvWatched", function( data, cb )
 	SetResourceKvpInt( "wk_wars2x_new_user", 1 )
-	cb('ok')
+	cb( "ok" ) 
 end )
 
 

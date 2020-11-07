@@ -185,14 +185,14 @@ end )
 RegisterNUICallback( "togglePlateReaderDisplay", function( data, cb )
 	-- Toggle the display state 
 	READER:ToggleDisplayState()
-	cb('ok')
+	cb( "ok" ) 
 end )
 
 -- Runs when the "Set BOLO Plate" button is pressed on the plate reader box
 RegisterNUICallback( "setBoloPlate", function( plate, cb )
 	-- Set the BOLO plate 
 	READER:SetBoloPlate( plate )
-	cb('ok')
+	cb( "ok" ) 
 end )
 
 -- Runs when the "Clear BOLO Plate" button is pressed on the plate reader box
