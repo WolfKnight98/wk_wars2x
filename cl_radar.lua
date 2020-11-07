@@ -45,28 +45,42 @@ local pairs = pairs
 ----------------------------------------------------------------------------------]]--
 local spawned = false 
 
+local function LoadUISettings()
+	UTIL:Log( "Attempting to load saved UI settings data." )
+
+	-- Try and get the saved UI data
+	local uiData = GetResourceKvpString( "wk_wars2x_ui_data" )
+
+	-- If the data exists, then we send it off!
+	if ( uiData ~= nil ) then 
+		SendNUIMessage( { _type = "loadUiSettings", data = json.decode( uiData ) } )
+		
+		UTIL:Log( "Saved UI settings data loaded!" )
+	-- If the data doesn't exist, then we send the defaults
+	else 
+		SendNUIMessage( { _type = "setUiDefaults", data = CONFIG.uiDefaults } )
+
+		UTIL:Log( "Could not find any saved UI settings data." )
+	end 
+end 
+
 -- Runs every time the player spawns, but the additional check means it only runs the first time
 -- the player spawns
 AddEventHandler( "playerSpawned", function()
 	if ( not spawned ) then 
-		UTIL:Log( "Attempting to load saved UI settings data." )
-
-		-- Try and get the saved UI data
-		local uiData = GetResourceKvpString( "wk_wars2x_ui_data" )
-
-		-- If the data exists, then we send it off!
-		if ( uiData ~= nil ) then 
-			SendNUIMessage( { _type = "loadUiSettings", data = json.decode( uiData ) } )
-			
-			UTIL:Log( "Saved UI settings data loaded!" )
-		-- If the data doesn't exist, then we send the defaults
-		else 
-			SendNUIMessage( { _type = "setUiDefaults", data = CONFIG.uiDefaults } )
-
-			UTIL:Log( "Could not find any saved UI settings data." )
-		end 
+		LoadUISettings()
 
 		spawned = true
+	end 
+end )
+
+-- Loads the UI settings when the resource gets restarted, this way active users don't have the 
+-- default settings applied
+AddEventHandler( "onResourceStart", function( resourceName )
+	if ( GetCurrentResourceName() == resourceName ) then 
+		Citizen.Wait( 2000 )
+
+		LoadUISettings()
 	end 
 end )
 
