@@ -44,6 +44,8 @@ local pairs = pairs
 	Key bind registering 
 ----------------------------------------------------------------------------------]]--
 local function RegisterKeyBinds()
+	UTIL:Log( "Registering radar commands and key binds." )
+
 	-- Opens the remote control
 	RegisterCommand( "radar_remote", function()
 		if ( not RADAR:GetKeyLockState() ) then
