@@ -181,12 +181,12 @@ end
 -- Returns if the player can run radar, ensures their vehicle state is valid and that they are a driver or 
 -- a passenger (where valid)
 function PLY:CanRunRadar()
-	return self:VehicleStateValid() and ( self:IsDriver() or ( self:IsPassenger() and RADAR:IsPassengerViewAllowed() ) )
+	return self:IsDriver() or ( self:IsPassenger() and RADAR:IsPassengerViewAllowed() )
 end 
 
 -- Returns if the player is allowed to control the radar from the passenger seat 
 function PLY:CanControlRadar()
-	return self:VehicleStateValid() and self:IsPassenger() and RADAR:IsPassengerControlAllowed()
+	return self:IsPassenger() and RADAR:IsPassengerControlAllowed()
 end 
 
 -- The main purpose of this thread is to update the information about the local player, including their
@@ -1527,8 +1527,11 @@ end )
 
 -- Runs when the user presses the power button on the radar ui 
 RegisterNUICallback( "togglePower", function( data, cb )
-	-- Toggle the radar's power 
-	RADAR:TogglePower()
+	if ( PLY:IsDriver() or ( PLY:IsPassenger() and RADAR:IsPassengerControlAllowed() ) ) then 
+		-- Toggle the radar's power 
+		RADAR:TogglePower()
+	end 
+
 	cb( "ok" )
 end )
 
