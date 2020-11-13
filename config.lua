@@ -50,7 +50,7 @@ CONFIG.allow_passenger_view = true
 -- Allow passenger control
 -- Dependent on CONFIG.allow_passenger_view. When enabled, the front seat passenger will be able to open the 
 -- radar remote and control the radar and plate reader for themself and the driver. 
-CONFIG.allow_passenger_control = true
+CONFIG.allow_passenger_control = false
 
 -- Sets the defaults of all keybinds
 -- These keybinds can be changed by each person in their GTA Settings->Keybinds->FiveM
