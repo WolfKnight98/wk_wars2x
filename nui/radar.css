@@ -159,6 +159,14 @@ button:focus { outline: none; }
 	color: rgb(255, 255, 0);
 }
 
+.green {
+	color: rgb( 0, 255, 0 );
+}
+
+.red {
+	color: rgb( 255, 0, 0 );
+}
+
 .arrow {
 	width: 11px;
 	height: 15.4px;

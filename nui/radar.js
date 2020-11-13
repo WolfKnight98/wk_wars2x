@@ -605,17 +605,27 @@ function menu( optionText, option )
 	elements.patrolSpeed.html( option );
 }
 
+var keyLockTimeout; 
+
 // Makes the key lock label fade in then fade out after 2 seconds
 function displayKeyLock( state )
 {
+	let sl = elements.keyLock.stateLabel; 
+
 	// Set the state label text to enabled or disabled
-	elements.keyLock.stateLabel.html( state ? "enabled" : "disabled" );
+	sl.html( state ? "blocked" : "enabled" );
+
+	// Change the colour of the altered text 
+	state ? sl.addClass( "red" ).removeClass( "green" ) : sl.addClass( "green" ).removeClass( "red" );
 
 	// Fade in the label 
 	elements.keyLock.label.fadeIn();
 
+	// Clear the timeout if it already exists 
+	clearTimeout( keyLockTimeout );
+
 	// Make the label fade out after 2 seconds
-	setTimeout( function() {
+	keyLockTimeout = setTimeout( function() {
 		elements.keyLock.label.fadeOut();
 	}, 2000 ); 
 }
