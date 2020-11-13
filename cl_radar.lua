@@ -184,6 +184,11 @@ function PLY:CanRunRadar()
 	return self:VehicleStateValid() and ( self:IsDriver() or ( self:IsPassenger() and RADAR:IsPassengerViewAllowed() ) )
 end 
 
+-- Returns if the player is allowed to control the radar from the passenger seat 
+function PLY:CanControlRadar()
+	return self:VehicleStateValid() and self:IsPassenger() and RADAR:IsPassengerControlAllowed()
+end 
+
 -- The main purpose of this thread is to update the information about the local player, including their
 -- ped id, the vehicle id (if they're in one), whether they're in a driver seat, and if the vehicle's class
 -- is valid or not 
