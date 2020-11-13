@@ -44,60 +44,64 @@ local pairs = pairs
 	Key bind registering 
 ----------------------------------------------------------------------------------]]--
 local function RegisterKeyBinds()
-	UTIL:Log( "Registering radar commands and key binds." )
+	if ( UTIL:IsResourceNameValid() ) then 
+		UTIL:Log( "Registering radar commands and key binds." )
 
-	-- Opens the remote control
-	RegisterCommand( "radar_remote", function()
-		if ( not RADAR:GetKeyLockState() ) then
-			RADAR:OpenRemote()
-		end
-	end )
-	RegisterKeyMapping( "radar_remote", "Open Remote Control", "keyboard", CONFIG.keyDefaults.remote_control )
+		-- Opens the remote control
+		RegisterCommand( "radar_remote", function()
+			if ( not RADAR:GetKeyLockState() ) then
+				RADAR:OpenRemote()
+			end
+		end )
+		RegisterKeyMapping( "radar_remote", "Open Remote Control", "keyboard", CONFIG.keyDefaults.remote_control )
 
-	-- Locks speed from front antenna
-	RegisterCommand( "radar_fr_ant", function()
-		if ( not RADAR:GetKeyLockState() ) then
-			RADAR:LockAntennaSpeed( "front" )
-		end
-	end )
-	RegisterKeyMapping( "radar_fr_ant", "Front Antenna Lock/Unlock", "keyboard", CONFIG.keyDefaults.front_lock )
+		-- Locks speed from front antenna
+		RegisterCommand( "radar_fr_ant", function()
+			if ( not RADAR:GetKeyLockState() ) then
+				RADAR:LockAntennaSpeed( "front" )
+			end
+		end )
+		RegisterKeyMapping( "radar_fr_ant", "Front Antenna Lock/Unlock", "keyboard", CONFIG.keyDefaults.front_lock )
 
-	-- Locks speed from rear antenna
-	RegisterCommand( "radar_bk_ant", function()
-		if ( not RADAR:GetKeyLockState() ) then
-			RADAR:LockAntennaSpeed( "rear" )
-		end
-	end )
-	RegisterKeyMapping( "radar_bk_ant", "Rear Antenna Lock/Unlock", "keyboard", CONFIG.keyDefaults.rear_lock )
+		-- Locks speed from rear antenna
+		RegisterCommand( "radar_bk_ant", function()
+			if ( not RADAR:GetKeyLockState() ) then
+				RADAR:LockAntennaSpeed( "rear" )
+			end
+		end )
+		RegisterKeyMapping( "radar_bk_ant", "Rear Antenna Lock/Unlock", "keyboard", CONFIG.keyDefaults.rear_lock )
 
-	-- Locks front plate reader
-	RegisterCommand( "radar_fr_cam", function()
-		if ( not RADAR:GetKeyLockState() ) then
-			READER:LockCam( "front", true, false )
-		end
-	end )
-	RegisterKeyMapping( "radar_fr_cam", "Front Plate Reader Lock/Unlock", "keyboard", CONFIG.keyDefaults.plate_front_lock )
+		-- Locks front plate reader
+		RegisterCommand( "radar_fr_cam", function()
+			if ( not RADAR:GetKeyLockState() ) then
+				READER:LockCam( "front", true, false )
+			end
+		end )
+		RegisterKeyMapping( "radar_fr_cam", "Front Plate Reader Lock/Unlock", "keyboard", CONFIG.keyDefaults.plate_front_lock )
 
-	-- Locks rear plate reader
-	RegisterCommand( "radar_bk_cam", function()
-		if ( not RADAR:GetKeyLockState() ) then
-			READER:LockCam( "rear", true, false )
-		end
-	end )
-	RegisterKeyMapping( "radar_bk_cam", "Rear Plate Reader Lock/Unlock", "keyboard", CONFIG.keyDefaults.plate_rear_lock )
+		-- Locks rear plate reader
+		RegisterCommand( "radar_bk_cam", function()
+			if ( not RADAR:GetKeyLockState() ) then
+				READER:LockCam( "rear", true, false )
+			end
+		end )
+		RegisterKeyMapping( "radar_bk_cam", "Rear Plate Reader Lock/Unlock", "keyboard", CONFIG.keyDefaults.plate_rear_lock )
 
-	-- Toggles the key lock state
-	RegisterCommand( "radar_key_lock", function()
-		RADAR:ToggleKeyLock()
-	end )
-	RegisterKeyMapping( "radar_key_lock", "Toggle Keybind Lock", "keyboard", CONFIG.keyDefaults.key_lock )
+		-- Toggles the key lock state
+		RegisterCommand( "radar_key_lock", function()
+			RADAR:ToggleKeyLock()
+		end )
+		RegisterKeyMapping( "radar_key_lock", "Toggle Keybind Lock", "keyboard", CONFIG.keyDefaults.key_lock )
 
-	-- Deletes all of the KVPs
-	RegisterCommand( "reset_radar_data", function()
-		DeleteResourceKvp( "wk_wars2x_ui_data" )
-		DeleteResourceKvp( "wk_wars2x_om_data" )
-		DeleteResourceKvp( "wk_wars2x_new_user" )
-	end, false )
+		-- Deletes all of the KVPs
+		RegisterCommand( "reset_radar_data", function()
+			DeleteResourceKvp( "wk_wars2x_ui_data" )
+			DeleteResourceKvp( "wk_wars2x_om_data" )
+			DeleteResourceKvp( "wk_wars2x_new_user" )
+		end, false )
+	else 
+		UTIL:Log( "ERROR: Resource name is not wk_wars2x. Key binds will not be registered for compatibility reasons. Contact the server owner and ask them to change the resource name back to wk_wars2x" )
+	end 
 end 
 
 

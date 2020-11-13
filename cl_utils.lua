@@ -31,6 +31,7 @@
 ---------------------------------------------------------------------------------------]]--
 
 UTIL = {}
+UTIL.resourceName = ""
 
 -- Returns a number to a set number of decimal places
 function UTIL:Round( num, numDecimalPlaces )
@@ -135,6 +136,11 @@ function UTIL:DrawDebugText( x, y, scale, centre, text )
 	AddTextComponentString( text )
 	DrawText( x, y )
 end
+
+Citizen.CreateThread( function() UTIL.resourceName = GetCurrentResourceName() end )
+function UTIL:IsResourceNameValid()
+	return self.resourceName == "wk_wars2x"
+end 
 
 --[[The MIT License (MIT)
 
