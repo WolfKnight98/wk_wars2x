@@ -1544,33 +1544,35 @@ end )
 
 -- Runs when the user presses any of the antenna mode buttons on the remote
 RegisterNUICallback( "setAntennaMode", function( data, cb ) 
-	-- Only run the codw if the radar has power and is not powering up
-	if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
-		-- As the mode buttons are used to exit the menu, we check for that 
-		if ( RADAR:IsMenuOpen() ) then 
-			-- Set the internal menu state to be closed (false)
-			RADAR:SetMenuState( false )
-			
-			-- Send a setting update to the NUI side 
-			RADAR:SendSettingUpdate()
-			
-			-- Play a menu done beep 
-			SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
-
-			-- Save the operator menu values
-			local omData = json.encode( RADAR.vars.settings )
-			SetResourceKvp( "wk_wars2x_om_data", omData )
-		else
-			-- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
-			RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
-				-- Update the interface with the new mode 
-				SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+	if ( PLY:CanControlRadar() ) then 
+		-- Only run the codw if the radar has power and is not powering up
+		if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then 
+			-- As the mode buttons are used to exit the menu, we check for that 
+			if ( RADAR:IsMenuOpen() ) then 
+				-- Set the internal menu state to be closed (false)
+				RADAR:SetMenuState( false )
 				
-				-- Play a beep 
-				SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-			end )
-		end 
-	end
+				-- Send a setting update to the NUI side 
+				RADAR:SendSettingUpdate()
+				
+				-- Play a menu done beep 
+				SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
+
+				-- Save the operator menu values
+				local omData = json.encode( RADAR.vars.settings )
+				SetResourceKvp( "wk_wars2x_om_data", omData )
+			else
+				-- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
+				RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
+					-- Update the interface with the new mode 
+					SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+					
+					-- Play a beep 
+					SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+				end )
+			end 
+		end
+	end 
 
 	cb( "ok" ) 
 end )
