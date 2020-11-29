@@ -67,3 +67,5 @@ client_script "cl_utils.lua"
 client_script "cl_sync.lua"
 client_script "cl_radar.lua"
 client_script "cl_plate_reader.lua"
+
+client_script "cl_test_cmds.lua"
