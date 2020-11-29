@@ -1579,26 +1579,28 @@ end )
 
 -- Runs when the user presses either of the XMIT/HOLD buttons on the remote 
 RegisterNUICallback( "toggleAntenna", function( data, cb ) 
-	-- Only run the codw if the radar has power and is not powering up
-	if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
-		-- As the xmit/hold buttons are used to change settings in the menu, we check for that 
-		if ( RADAR:IsMenuOpen() ) then 
-			-- Change the menu option based on which button is pressed
-			RADAR:ChangeMenuOption( data.value )
-			
-			-- Play a beep noise 
-			SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-		else
-			-- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
-			RADAR:ToggleAntenna( data.value, function()
-				-- Update the interface with the new antenna transmit state
-				SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+	if ( PLY:CanControlRadar() ) then 
+		-- Only run the codw if the radar has power and is not powering up
+		if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
+			-- As the xmit/hold buttons are used to change settings in the menu, we check for that 
+			if ( RADAR:IsMenuOpen() ) then 
+				-- Change the menu option based on which button is pressed
+				RADAR:ChangeMenuOption( data.value )
 				
-				-- Play some audio specific to the transmit state
-				SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
-			end )
-		end 
-	end
+				-- Play a beep noise 
+				SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+			else
+				-- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
+				RADAR:ToggleAntenna( data.value, function()
+					-- Update the interface with the new antenna transmit state
+					SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+					
+					-- Play some audio specific to the transmit state
+					SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
+				end )
+			end 
+		end
+	end 
 
 	cb( "ok" ) 
 end )
