@@ -30,3 +30,7 @@
 
 ---------------------------------------------------------------------------------------]]--
 
+RegisterNetEvent( "wk_wars2x_sync:sendPowerState" )
+AddEventHandler( "wk_wars2x_sync:sendPowerState", function( data, target )
+	-- code
+end )
