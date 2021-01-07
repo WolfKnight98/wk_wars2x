@@ -144,10 +144,12 @@ end )
 -- default settings applied
 AddEventHandler( "onResourceStart", function( resourceName )
 	if ( GetCurrentResourceName() == resourceName ) then 
-		Citizen.Wait( 2000 )
+		Citizen.CreateThread( function()
+			Citizen.Wait( 1000 )
 
-		RegisterKeyBinds()
-		LoadUISettings()
+			RegisterKeyBinds()
+			LoadUISettings()
+		end )
 	end 
 end )
 
