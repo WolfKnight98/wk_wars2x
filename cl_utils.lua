@@ -111,6 +111,19 @@ function UTIL:GetEntityRelativeDirection( myAng, tarAng )
 	return 0
 end
 
+-- Returns if there is a player in the given vehicle
+function UTIL:IsPlayerInVeh( veh )
+	for i = -1, GetVehicleMaxNumberOfPassengers( veh ) + 1, 1 do
+		local ped = GetPedInVehicleSeat( veh, i )
+
+		if ( DoesEntityExist( ped ) ) then 
+			if ( IsPedAPlayer( ped ) ) then return true end  
+		end 
+	end 
+
+	return false
+end 
+
 -- Your everyday GTA notification function 
 function UTIL:Notify( text )
 	SetNotificationTextEntry( "STRING" )

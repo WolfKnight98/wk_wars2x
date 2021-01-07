@@ -531,6 +531,11 @@ function RADAR:IsPassengerControlAllowed()
 	return CONFIG.allow_passenger_view and CONFIG.allow_passenger_control
 end 
 
+-- Returns if we only auto lock vehicle speeds if said vehicle is a player
+function RADAR:OnlyLockFastPlayers()
+	return CONFIG.only_lock_players
+end 
+
 -- Returns if the fast limit option should be available for the radar
 function RADAR:IsFastLimitAllowed()
 	return CONFIG.allow_fast_limit
@@ -1799,7 +1804,9 @@ function RADAR:Main()
 							if ( self:IsFastLimitAllowed() ) then 
 								-- Make sure the speed is larger than the limit, and that there isn't already a locked speed
 								if ( self:IsFastLockEnabled() and convertedSpeed > self:GetFastLimit() and not self:IsAntennaSpeedLocked( ant ) ) then 
-									self:LockAntennaSpeed( ant )
+									if ( ( self:OnlyLockFastPlayers() and UTIL:IsPlayerInVeh( av[ant][i].veh ) ) or not self:OnlyLockFastPlayers() ) then 
+										self:LockAntennaSpeed( ant )
+									end 
 								end 
 							end 
 						else 

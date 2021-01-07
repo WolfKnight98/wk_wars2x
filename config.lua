@@ -39,7 +39,11 @@ CONFIG.debug = true
 -- Radar fast limit locking
 -- When enabled, the player will be able to define a fast limit within the radar's menu, when a vehicle 
 -- exceeds the fast limit, it will be locked into the fast box. Default setting is disabled to maintain realism
-CONFIG.allow_fast_limit = false 
+CONFIG.allow_fast_limit = true 
+
+-- Radar only lock playersw with auto fast locking 
+-- When enabled, the radar will only automatically lock a speed if the caught vehicle has a real player in it. 
+CONFIG.only_lock_players = false 
 
 -- In-game first time quick start video
 -- When enabled, the player will be asked if they'd like to view the quick start video the first time they 
@@ -47,7 +51,7 @@ CONFIG.allow_fast_limit = false
 CONFIG.allow_quick_start_video = true 
 
 -- Allow passenger view
--- When enabled, the front seat passenger will be able to view the radar and plate reader from their end
+-- When enabled, the front seat passenger will be able to view the radar and plate reader from their end.
 CONFIG.allow_passenger_view = true
 
 -- Allow passenger control
