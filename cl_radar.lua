@@ -379,33 +379,36 @@ end
 
 -- Toggles the radar power
 function RADAR:TogglePower()
-	-- Toggle the power variable
-	self.vars.power = not self.vars.power 
-	
-	-- Send the NUI message to toggle the power 
-	SendNUIMessage( { _type = "radarPower", state = self:IsPowerOn() } )
-
-	-- Power is now turned on 
-	if ( self:IsPowerOn() ) then 
-		-- Also make sure the operator menu is inactive 
-		self:SetMenuState( false )
+	-- Only power up if the system is not already powering up 
+	if ( not self:IsPoweringUp() ) then 
+		-- Toggle the power variable
+		self.vars.power = not self.vars.power 
 		
-		-- Tell the system the radar is 'powering up'
-		self:SetPoweringUpState( true )
+		-- Send the NUI message to toggle the power 
+		SendNUIMessage( { _type = "radarPower", state = self:IsPowerOn() } )
 
-		-- Set a 2 second countdown 
-		Citizen.SetTimeout( 2000, function()
-			-- Tell the system the radar has 'powered up'
-			self:SetPoweringUpState( false )
+		-- Power is now turned on 
+		if ( self:IsPowerOn() ) then 
+			-- Also make sure the operator menu is inactive 
+			self:SetMenuState( false )
+			
+			-- Tell the system the radar is 'powering up'
+			self:SetPoweringUpState( true )
 
-			-- Let the UI side know the system has loaded
-			SendNUIMessage( { _type = "poweredUp" } )
-		end )
-	else 
-		-- If the system is being turned off, then we reset the antennas
-		self:ResetAntenna( "front" )
-		self:ResetAntenna( "rear" )
-	end
+			-- Set a 2 second countdown 
+			Citizen.SetTimeout( 2000, function()
+				-- Tell the system the radar has 'powered up'
+				self:SetPoweringUpState( false )
+
+				-- Let the UI side know the system has loaded
+				SendNUIMessage( { _type = "poweredUp" } )
+			end )
+		else 
+			-- If the system is being turned off, then we reset the antennas
+			self:ResetAntenna( "front" )
+			self:ResetAntenna( "rear" )
+		end
+	end 
 end
 
 -- Toggles the display state of the radar system
