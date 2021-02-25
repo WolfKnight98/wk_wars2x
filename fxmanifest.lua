@@ -66,6 +66,7 @@ server_export "TogglePlateLock"
 client_script "config.lua"
 client_script "cl_utils.lua"
 client_script "cl_sync.lua"
+client_script "cl_player.lua"
 client_script "cl_radar.lua"
 client_script "cl_plate_reader.lua"
 
