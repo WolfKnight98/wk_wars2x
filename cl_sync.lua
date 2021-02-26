@@ -52,6 +52,13 @@ function SYNC:SendPowerState( state )
 	end )
 end 
 
+function SYNC:SendAntennaPowerState( state, ant )
+	self:SyncData( function( ply )
+		TriggerServerEvent( "wk_wars2x_sync:sendAntennaPowerState", ply, state, ant )
+	end )
+end 
+
+
 --[[----------------------------------------------------------------------------------
 	Sync client events
 ----------------------------------------------------------------------------------]]--
@@ -62,6 +69,21 @@ AddEventHandler( "wk_wars2x_sync:receivePowerState", function( state )
 	if ( power ~= state ) then 
 		Citizen.SetTimeout( 100, function()
 			RADAR:TogglePower()
+		end )
+	end 
+end )
+
+RegisterNetEvent( "wk_wars2x_sync:receiveAntennaPowerState" )
+AddEventHandler( "wk_wars2x_sync:receiveAntennaPowerState", function( state, antenna )
+	local power = RADAR:IsAntennaTransmitting( antenna )
+
+	if ( power ~= state ) then 
+		RADAR:ToggleAntenna( antenna, function()
+			-- Update the interface with the new antenna transmit state
+			SendNUIMessage( { _type = "antennaXmit", ant = antenna, on = state } )
+			
+			-- Play some audio specific to the transmit state
+			SendNUIMessage( { _type = "audio", name = state and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
 		end )
 	end 
 end )

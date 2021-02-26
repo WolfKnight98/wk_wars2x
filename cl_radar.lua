@@ -1560,6 +1560,9 @@ RegisterNUICallback( "toggleAntenna", function( data, cb )
 					
 					-- Play some audio specific to the transmit state
 					SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
+
+					-- Sync
+					SYNC:SendAntennaPowerState( RADAR:IsAntennaTransmitting( data.value ), data.value )
 				end )
 			end 
 		end

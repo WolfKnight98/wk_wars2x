@@ -37,3 +37,8 @@ RegisterNetEvent( "wk_wars2x_sync:sendPowerState" )
 AddEventHandler( "wk_wars2x_sync:sendPowerState", function( target, state )
 	TriggerClientEvent( "wk_wars2x_sync:receivePowerState", target, state )
 end )
+
+RegisterNetEvent( "wk_wars2x_sync:sendAntennaPowerState" )
+AddEventHandler( "wk_wars2x_sync:sendAntennaPowerState", function( target, state, ant )
+	TriggerClientEvent( "wk_wars2x_sync:receiveAntennaPowerState", target, state, ant )
+end )
