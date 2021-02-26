@@ -32,3 +32,23 @@
 
 SYNC = {}
 
+function SYNC:SendPowerState( state )
+	local otherPed = PLY:GetOtherPed()
+
+	local otherPly = GetPlayerServerId( NetworkGetPlayerIndexFromPed( otherPed ) )
+
+	TriggerServerEvent( "wk_wars2x_sync:sendPowerState", otherPly, state )
+end 
+
+
+
+RegisterNetEvent( "wk_wars2x_sync:receivePowerState" )
+AddEventHandler( "wk_wars2x_sync:receivePowerState", function( state )
+	local power = RADAR:IsPowerOn()
+
+	if ( power ~= state ) then 
+		Citizen.SetTimeout( 100, function()
+			RADAR:TogglePower()
+		end )
+	end 
+end )

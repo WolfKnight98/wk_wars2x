@@ -1487,8 +1487,12 @@ end )
 -- Runs when the user presses the power button on the radar ui 
 RegisterNUICallback( "togglePower", function( data, cb )
 	if ( PLY:CanControlRadar() ) then 
-		-- Toggle the radar's power 
-		RADAR:TogglePower()
+		if ( not RADAR:IsPoweringUp() ) then 
+			-- Toggle the radar's power 
+			RADAR:TogglePower()
+
+			SYNC:SendPowerState( RADAR:IsPowerOn() )
+		end 
 	end 
 
 	cb( "ok" )

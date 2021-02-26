@@ -31,6 +31,6 @@
 ---------------------------------------------------------------------------------------]]--
 
 RegisterNetEvent( "wk_wars2x_sync:sendPowerState" )
-AddEventHandler( "wk_wars2x_sync:sendPowerState", function( state, target )
-	-- code
+AddEventHandler( "wk_wars2x_sync:sendPowerState", function( target, state )
+	TriggerClientEvent( "wk_wars2x_sync:receivePowerState", target, state )
 end )
