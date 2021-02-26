@@ -67,6 +67,17 @@ function PLY:CanControlRadar()
 	return self:IsDriver() or ( self:IsPassenger() and RADAR:IsPassengerControlAllowed() )
 end 
 
+-- Returns the ped in the opposite seat to the player, e.g. if we're the passenger, then return the driver
+function PLY:GetOtherPed()
+	if ( self:IsDriver() ) then 
+		return GetPedInVehicleSeat( PLY.veh, 0 )
+	elseif ( self:IsPassenger() ) then
+		return GetPedInVehicleSeat( PLY.veh, -1 )
+	end 
+
+	return nil 
+end 
+
 -- The main purpose of this thread is to update the information about the local player, including their
 -- ped id, the vehicle id (if they're in one), whether they're in a driver seat, and if the vehicle's class
 -- is valid or not 
