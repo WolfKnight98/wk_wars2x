@@ -58,6 +58,12 @@ function SYNC:SendAntennaPowerState( state, ant )
 	end )
 end 
 
+function SYNC:SendAntennaMode( ant, mode )
+	self:SyncData( function( ply )
+		TriggerServerEvent( "wk_wars2x_sync:sendAntennaMode", ply, ant, mode )
+	end )
+end 
+
 
 --[[----------------------------------------------------------------------------------
 	Sync client events
@@ -86,4 +92,15 @@ AddEventHandler( "wk_wars2x_sync:receiveAntennaPowerState", function( state, ant
 			SendNUIMessage( { _type = "audio", name = state and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
 		end )
 	end 
+end )
+
+RegisterNetEvent( "wk_wars2x_sync:receiveAntennaMode" )
+AddEventHandler( "wk_wars2x_sync:receiveAntennaMode", function( antenna, mode )
+	RADAR:SetAntennaMode( antenna, mode, function()
+		-- Update the interface with the new mode 
+		SendNUIMessage( { _type = "antennaMode", ant = antenna, mode = mode } )
+		
+		-- Play a beep 
+		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+	end )
 end )

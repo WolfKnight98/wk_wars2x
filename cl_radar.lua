@@ -1532,6 +1532,9 @@ RegisterNUICallback( "setAntennaMode", function( data, cb )
 					
 					-- Play a beep 
 					SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
+
+					-- Sync
+					SYNC:SendAntennaMode( data.value, tonumber( data.mode ) )
 				end )
 			end 
 		end
