@@ -32,6 +32,10 @@
 
 SYNC = {}
 
+
+--[[----------------------------------------------------------------------------------
+	Sync functions 
+----------------------------------------------------------------------------------]]--
 function SYNC:SendPowerState( state )
 	local otherPed = PLY:GetOtherPed()
 
@@ -43,7 +47,9 @@ function SYNC:SendPowerState( state )
 end 
 
 
-
+--[[----------------------------------------------------------------------------------
+	Sync client events
+----------------------------------------------------------------------------------]]--
 RegisterNetEvent( "wk_wars2x_sync:receivePowerState" )
 AddEventHandler( "wk_wars2x_sync:receivePowerState", function( state )
 	local power = RADAR:IsPowerOn()
