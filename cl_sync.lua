@@ -35,9 +35,11 @@ SYNC = {}
 function SYNC:SendPowerState( state )
 	local otherPed = PLY:GetOtherPed()
 
-	local otherPly = GetPlayerServerId( NetworkGetPlayerIndexFromPed( otherPed ) )
+	if ( otherPed ~= nil and otherPed ~= 0 ) then 
+		local otherPly = GetPlayerServerId( NetworkGetPlayerIndexFromPed( otherPed ) )
 
-	TriggerServerEvent( "wk_wars2x_sync:sendPowerState", otherPly, state )
+		TriggerServerEvent( "wk_wars2x_sync:sendPowerState", otherPly, state )
+	end 
 end 
 
 
