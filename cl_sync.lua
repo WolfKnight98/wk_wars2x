@@ -39,7 +39,7 @@ SYNC = {}
 function SYNC:SyncData( cb )
 	local otherPed = PLY:GetOtherPed()
 
-	if ( otherPed ~= nil and otherPed ~= 0 ) then
+	if ( otherPed ~= nil and otherPed ~= 0 and IsPedAPlayer( otherPed ) ) then
 		local otherPly = GetPlayerServerId( NetworkGetPlayerIndexFromPed( otherPed ) )
 
 		cb( otherPly )
