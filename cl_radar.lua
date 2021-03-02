@@ -57,7 +57,7 @@ local function RegisterKeyBinds()
 
 		-- Locks speed from front antenna
 		RegisterCommand( "radar_fr_ant", function()
-			if ( not RADAR:GetKeyLockState() ) then
+			if ( not RADAR:GetKeyLockState() and PLY:CanControlRadar() ) then
 				RADAR:LockAntennaSpeed( "front" )
 
 				SYNC:LockAntennaSpeed( "front", { RADAR:GetAntennaSpeed( "front" ), RADAR:GetAntennaDir( "front" ) } )
@@ -67,7 +67,7 @@ local function RegisterKeyBinds()
 
 		-- Locks speed from rear antenna
 		RegisterCommand( "radar_bk_ant", function()
-			if ( not RADAR:GetKeyLockState() ) then
+			if ( not RADAR:GetKeyLockState() and PLY:CanControlRadar() ) then
 				RADAR:LockAntennaSpeed( "rear" )
 
 				SYNC:LockAntennaSpeed( "rear", { RADAR:GetAntennaSpeed( "rear" ), RADAR:GetAntennaDir( "rear" ) } )
