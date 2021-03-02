@@ -37,12 +37,14 @@ SYNC = {}
 	Sync functions
 ----------------------------------------------------------------------------------]]--
 function SYNC:SyncData( cb )
-	local otherPed = PLY:GetOtherPed()
+	if ( PLY:CanControlRadar() ) then
+		local otherPed = PLY:GetOtherPed()
 
-	if ( otherPed ~= nil and otherPed ~= 0 and IsPedAPlayer( otherPed ) ) then
-		local otherPly = GetPlayerServerId( NetworkGetPlayerIndexFromPed( otherPed ) )
+		if ( otherPed ~= nil and otherPed ~= 0 and IsPedAPlayer( otherPed ) ) then
+			local otherPly = GetPlayerServerId( NetworkGetPlayerIndexFromPed( otherPed ) )
 
-		cb( otherPly )
+			cb( otherPly )
+		end
 	end
 end
 
