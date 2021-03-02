@@ -64,6 +64,12 @@ function SYNC:SendAntennaMode( ant, mode )
 	end )
 end
 
+function SYNC:LockAntennaSpeed( ant, data )
+	self:SyncData( function( ply )
+		TriggerServerEvent( "wk_wars2x_sync:sendLockAntennaSpeed", ply, ant, data )
+	end )
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Sync client events
@@ -91,4 +97,11 @@ end )
 RegisterNetEvent( "wk_wars2x_sync:receiveAntennaMode" )
 AddEventHandler( "wk_wars2x_sync:receiveAntennaMode", function( antenna, mode )
 	RADAR:SetAntennaMode( antenna, mode )
+end )
+
+RegisterNetEvent( "wk_wars2x_sync:receiveLockAntennaSpeed" )
+AddEventHandler( "wk_wars2x_sync:receiveLockAntennaSpeed", function( antenna, data )
+	RADAR:SetAntennaSpeed( antenna, data[1] )
+	RADAR:SetAntennaDir( antenna, data[2] )
+	RADAR:LockAntennaSpeed( antenna )
 end )

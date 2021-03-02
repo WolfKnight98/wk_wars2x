@@ -47,3 +47,8 @@ RegisterNetEvent( "wk_wars2x_sync:sendAntennaMode" )
 AddEventHandler( "wk_wars2x_sync:sendAntennaMode", function( target, ant, mode )
 	TriggerClientEvent( "wk_wars2x_sync:receiveAntennaMode", target, ant, mode )
 end )
+
+RegisterNetEvent( "wk_wars2x_sync:sendLockAntennaSpeed" )
+AddEventHandler( "wk_wars2x_sync:sendLockAntennaSpeed", function( target, ant, data )
+	TriggerClientEvent( "wk_wars2x_sync:receiveLockAntennaSpeed", target, ant, data )
+end )

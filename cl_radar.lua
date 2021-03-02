@@ -59,6 +59,8 @@ local function RegisterKeyBinds()
 		RegisterCommand( "radar_fr_ant", function()
 			if ( not RADAR:GetKeyLockState() ) then
 				RADAR:LockAntennaSpeed( "front" )
+
+				SYNC:LockAntennaSpeed( "front", { RADAR:GetAntennaSpeed( "front" ), RADAR:GetAntennaDir( "front" ) } )
 			end
 		end )
 		RegisterKeyMapping( "radar_fr_ant", "Front Antenna Lock/Unlock", "keyboard", CONFIG.keyDefaults.front_lock )
@@ -67,6 +69,8 @@ local function RegisterKeyBinds()
 		RegisterCommand( "radar_bk_ant", function()
 			if ( not RADAR:GetKeyLockState() ) then
 				RADAR:LockAntennaSpeed( "rear" )
+
+				SYNC:LockAntennaSpeed( "rear", { RADAR:GetAntennaSpeed( "rear" ), RADAR:GetAntennaDir( "rear" ) } )
 			end
 		end )
 		RegisterKeyMapping( "radar_bk_ant", "Rear Antenna Lock/Unlock", "keyboard", CONFIG.keyDefaults.rear_lock )
