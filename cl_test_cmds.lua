@@ -1,4 +1,4 @@
-if ( CONFIG.debug ) then 
+if ( CONFIG.debug ) then
 	-- Restart the resource
 	RegisterCommand( "rre", function( source, args, rawCommand )
 		UTIL:Notify( "[DEBUG]: Restarting resource" )

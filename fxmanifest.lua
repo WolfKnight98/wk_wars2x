@@ -2,10 +2,10 @@
 
 	Wraith ARS 2X
 	Created by WolfKnight
-	
-	For discussions, information on future updates, and more, join 
-	my Discord: https://discord.gg/fD4e6WD 
-	
+
+	For discussions, information on future updates, and more, join
+	my Discord: https://discord.gg/fD4e6WD
+
 	MIT License
 
 	Copyright (c) 2020-2021 WolfKnight
@@ -42,9 +42,9 @@ version "beta"
 
 -- Include the files
 files {
-	"nui/radar.html", 
-	"nui/radar.css", 
-	"nui/jquery-3.4.1.min.js", 
+	"nui/radar.html",
+	"nui/radar.css",
+	"nui/jquery-3.4.1.min.js",
 	"nui/radar.js",
 	"nui/images/*.png",
 	"nui/images/plates/*.png",
