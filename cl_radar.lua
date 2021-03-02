@@ -972,14 +972,17 @@ end
 ----------------------------------------------------------------------------------]]--
 -- Toggles the state of the given antenna between hold and transmitting, only works if the radar's power is
 -- on. Also runs a callback function when present.
-function RADAR:ToggleAntenna( ant, cb )
+function RADAR:ToggleAntenna( ant )
 	-- Check power is on
 	if ( self:IsPowerOn() ) then
 		-- Toggle the given antennas state
 		self.vars.antennas[ant].xmit = not self.vars.antennas[ant].xmit
 
-		-- Run the callback function if there is one
-		if ( cb ) then cb() end
+		-- Update the interface with the new antenna transmit state
+		SendNUIMessage( { _type = "antennaXmit", ant = ant, on = self:IsAntennaTransmitting( ant ) } )
+
+		-- Play some audio specific to the transmit state
+		SendNUIMessage( { _type = "audio", name = self:IsAntennaTransmitting( ant ) and "xmit_on" or "xmit_off", vol = self:GetSettingValue( "beep" ) } )
 	end
 end
 
@@ -1557,16 +1560,10 @@ RegisterNUICallback( "toggleAntenna", function( data, cb )
 				SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
 			else
 				-- Toggle the transmit state for the designated antenna, pass along a callback which contains data from this NUI callback
-				RADAR:ToggleAntenna( data.value, function()
-					-- Update the interface with the new antenna transmit state
-					SendNUIMessage( { _type = "antennaXmit", ant = data.value, on = RADAR:IsAntennaTransmitting( data.value ) } )
+				RADAR:ToggleAntenna( data.value )
 
-					-- Play some audio specific to the transmit state
-					SendNUIMessage( { _type = "audio", name = RADAR:IsAntennaTransmitting( data.value ) and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
-
-					-- Sync
-					SYNC:SendAntennaPowerState( RADAR:IsAntennaTransmitting( data.value ), data.value )
-				end )
+				-- Sync
+				SYNC:SendAntennaPowerState( RADAR:IsAntennaTransmitting( data.value ), data.value )
 			end
 		end
 	end

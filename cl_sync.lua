@@ -84,13 +84,7 @@ AddEventHandler( "wk_wars2x_sync:receiveAntennaPowerState", function( state, ant
 	local power = RADAR:IsAntennaTransmitting( antenna )
 
 	if ( power ~= state ) then
-		RADAR:ToggleAntenna( antenna, function()
-			-- Update the interface with the new antenna transmit state
-			SendNUIMessage( { _type = "antennaXmit", ant = antenna, on = state } )
-
-			-- Play some audio specific to the transmit state
-			SendNUIMessage( { _type = "audio", name = state and "xmit_on" or "xmit_off", vol = RADAR:GetSettingValue( "beep" ) } )
-		end )
+		RADAR:ToggleAntenna( antenna )
 	end
 end )
 
