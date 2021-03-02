@@ -1007,7 +1007,7 @@ end
 
 -- Sets the mode of the given antenna if the mode is valid and the power is on. Also runs a callback function
 -- when present.
-function RADAR:SetAntennaMode( ant, mode, cb )
+function RADAR:SetAntennaMode( ant, mode )
 	-- Check the mode is actually a number, this is needed as the radar system relies on the mode to be
 	-- a number to work
 	if ( type( mode ) == "number" ) then
@@ -1016,8 +1016,11 @@ function RADAR:SetAntennaMode( ant, mode, cb )
 			-- Update the mode for the antenna
 			self.vars.antennas[ant].mode = mode
 
-			-- Run the callback function if there is one
-			if ( cb ) then cb() end
+			-- Update the interface with the new mode
+			SendNUIMessage( { _type = "antennaMode", ant = ant, mode = mode } )
+
+			-- Play a beep
+			SendNUIMessage( { _type = "audio", name = "beep", vol = self:GetSettingValue( "beep" ) } )
 		end
 	end
 end
@@ -1529,16 +1532,10 @@ RegisterNUICallback( "setAntennaMode", function( data, cb )
 				SetResourceKvp( "wk_wars2x_om_data", omData )
 			else
 				-- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
-				RADAR:SetAntennaMode( data.value, tonumber( data.mode ), function()
-					-- Update the interface with the new mode
-					SendNUIMessage( { _type = "antennaMode", ant = data.value, mode = tonumber( data.mode ) } )
+				RADAR:SetAntennaMode( data.value, tonumber( data.mode ) )
 
-					-- Play a beep
-					SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-
-					-- Sync
-					SYNC:SendAntennaMode( data.value, tonumber( data.mode ) )
-				end )
+				-- Sync
+				SYNC:SendAntennaMode( data.value, tonumber( data.mode ) )
 			end
 		end
 	end

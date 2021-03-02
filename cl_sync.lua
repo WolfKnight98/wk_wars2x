@@ -90,11 +90,5 @@ end )
 
 RegisterNetEvent( "wk_wars2x_sync:receiveAntennaMode" )
 AddEventHandler( "wk_wars2x_sync:receiveAntennaMode", function( antenna, mode )
-	RADAR:SetAntennaMode( antenna, mode, function()
-		-- Update the interface with the new mode
-		SendNUIMessage( { _type = "antennaMode", ant = antenna, mode = mode } )
-
-		-- Play a beep
-		SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "beep" ) } )
-	end )
+	RADAR:SetAntennaMode( antenna, mode )
 end )
