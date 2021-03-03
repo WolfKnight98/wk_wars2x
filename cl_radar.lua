@@ -105,6 +105,7 @@ local function RegisterKeyBinds()
 
 			UTIL:Notify( "Radar data deleted, please immediately restart your game without opening the radar's remote." )
 		end, false )
+		TriggerEvent( "chat:addSuggestion", "/reset_radar_data", "Resets the KVP data stored for the wk_wars2x resource." )
 	else
 		UTIL:Log( "ERROR: Resource name is not wk_wars2x. Key binds will not be registered for compatibility reasons. Contact the server owner and ask them to change the resource name back to wk_wars2x" )
 	end
