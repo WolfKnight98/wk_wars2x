@@ -103,7 +103,5 @@ end )
 
 RegisterNetEvent( "wk_wars2x_sync:receiveLockAntennaSpeed" )
 AddEventHandler( "wk_wars2x_sync:receiveLockAntennaSpeed", function( antenna, data )
-	RADAR:SetAntennaSpeed( antenna, data[1] )
-	RADAR:SetAntennaDir( antenna, data[2] )
-	RADAR:LockAntennaSpeed( antenna )
+	RADAR:LockAntennaSpeed( antenna, data )
 end )

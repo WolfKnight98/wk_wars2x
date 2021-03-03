@@ -58,9 +58,9 @@ local function RegisterKeyBinds()
 		-- Locks speed from front antenna
 		RegisterCommand( "radar_fr_ant", function()
 			if ( not RADAR:GetKeyLockState() and PLY:CanControlRadar() ) then
-				RADAR:LockAntennaSpeed( "front" )
+				RADAR:LockAntennaSpeed( "front", nil )
 
-				SYNC:LockAntennaSpeed( "front", { RADAR:GetAntennaSpeed( "front" ), RADAR:GetAntennaDir( "front" ) } )
+				SYNC:LockAntennaSpeed( "front", RADAR:GetAntennaDataPacket( "front" ) )
 			end
 		end )
 		RegisterKeyMapping( "radar_fr_ant", "Front Antenna Lock/Unlock", "keyboard", CONFIG.keyDefaults.front_lock )
@@ -68,9 +68,9 @@ local function RegisterKeyBinds()
 		-- Locks speed from rear antenna
 		RegisterCommand( "radar_bk_ant", function()
 			if ( not RADAR:GetKeyLockState() and PLY:CanControlRadar() ) then
-				RADAR:LockAntennaSpeed( "rear" )
+				RADAR:LockAntennaSpeed( "rear", nil )
 
-				SYNC:LockAntennaSpeed( "rear", { RADAR:GetAntennaSpeed( "rear" ), RADAR:GetAntennaDir( "rear" ) } )
+				SYNC:LockAntennaSpeed( "rear", RADAR:GetAntennaDataPacket( "rear" ) )
 			end
 		end )
 		RegisterKeyMapping( "radar_bk_ant", "Rear Antenna Lock/Unlock", "keyboard", CONFIG.keyDefaults.rear_lock )
@@ -1170,12 +1170,24 @@ end
 
 -- When the user presses the speed lock key for either antenna, this function is called to get the
 -- necessary information from the antenna, and then lock it into the display
-function RADAR:LockAntennaSpeed( ant )
+function RADAR:LockAntennaSpeed( ant, override )
 	-- Only lock a speed if the antenna is on and the UI is displayed
 	if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() and self:IsAntennaTransmitting( ant ) ) then
 		-- Check if the antenna doesn't have a locked speed, if it doesn't then we lock in the speed, otherwise we
 		-- reset the lock
 		if ( not self:IsAntennaSpeedLocked( ant ) ) then
+			-- Here we check if the override parameter is valid, if so then we set the radar's speed data to the
+			-- speed data provided in the override table.
+			if ( override ~= nil ) then
+				self:SetAntennaData( ant, override[1], override[2] )
+				self:SetAntennaFastData( ant, override[3], override[4] )
+			end
+
+			-- This override parameter is used for the passenger control system, as the speeds displayed on the
+			-- recipients display can't be trusted. When the player who locks the speed triggers the sync, their
+			-- speed data is collected and sent to the other player so that their speed data is overriden to be the same.
+			override = override or { nil, nil, nil, nil }
+
 			-- Set up a temporary table with 3 nil values, this way if the system isn't able to get a speed or
 			-- direction, the speed lock function won't work
 			local data = { nil, nil, nil }
@@ -1183,12 +1195,12 @@ function RADAR:LockAntennaSpeed( ant )
 			-- As the lock system is based on which speed is displayed, we have to check if there is a speed in the
 			-- fast box, if there is then we lock in the fast speed, otherwise we lock in the strongest speed
 			if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then
-				data[1] = self:GetAntennaFastSpeed( ant )
-				data[2] = self:GetAntennaFastDir( ant )
+				data[1] = override[3] or self:GetAntennaFastSpeed( ant )
+				data[2] = override[4] or self:GetAntennaFastDir( ant )
 				data[3] = 2
 			else
-				data[1] = self:GetAntennaSpeed( ant )
-				data[2] = self:GetAntennaDir( ant )
+				data[1] = override[1] or self:GetAntennaSpeed( ant )
+				data[2] = override[2] or self:GetAntennaDir( ant )
 				data[3] = 1
 			end
 
@@ -1213,6 +1225,16 @@ function RADAR:ResetAntenna( ant )
 	self.vars.antennas[ant].mode = 0
 
 	self:ResetAntennaSpeedLock( ant )
+end
+
+-- Returns a table with both antenna's speed data and directions
+function RADAR:GetAntennaDataPacket( ant )
+	return {
+		self:GetAntennaSpeed( ant ),
+		self:GetAntennaDir( ant ),
+		self:GetAntennaFastSpeed( ant ),
+		self:GetAntennaFastDir( ant )
+	}
 end
 
 
