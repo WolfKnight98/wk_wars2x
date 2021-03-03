@@ -103,7 +103,7 @@ local function RegisterKeyBinds()
 			DeleteResourceKvp( "wk_wars2x_om_data" )
 			DeleteResourceKvp( "wk_wars2x_new_user" )
 
-			UTIL:Log( "Radar data deleted, please immediately restart your game without opening the radar's remote." )
+			UTIL:Notify( "Radar data deleted, please immediately restart your game without opening the radar's remote." )
 		end, false )
 	else
 		UTIL:Log( "ERROR: Resource name is not wk_wars2x. Key binds will not be registered for compatibility reasons. Contact the server owner and ask them to change the resource name back to wk_wars2x" )
