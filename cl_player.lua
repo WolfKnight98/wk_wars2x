@@ -92,3 +92,22 @@ Citizen.CreateThread( function()
 		Citizen.Wait( 500 )
 	end
 end )
+
+Citizen.CreateThread( function()
+	while ( true ) do
+		if ( IsPedGettingIntoAVehicle( PLY.ped ) ) then
+			UTIL:Notify( "DEBUG: Player getting in vehicle" )
+			local vehEntering = GetVehiclePedIsEntering( PLY.ped )
+
+			Citizen.Wait( 2000 )
+
+			local veh = GetVehiclePedIsIn( PLY.ped, false )
+
+			if ( veh == vehEntering ) then
+				UTIL:Notify( "DEBUG: Trigger sync" )
+			end
+		end
+
+		Citizen.Wait( 500 )
+	end
+end )
