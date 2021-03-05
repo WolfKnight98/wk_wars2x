@@ -43,7 +43,10 @@ local pairs = pairs
 	Resource Rename Fix - for those muppets who rename the resource and 
 	complain that the NUI aspect doesn't work!
 ----------------------------------------------------------------------------------]]--
-Citizen.SetTimeout( 1000, function()
+CreateThread(function()
+	-- Wait a second, it's important
+	Wait(1000)
+		
 	-- Get the name of the resource, for example the default name is 'wk_wars2x'
 	local name = string.lower( GetCurrentResourceName() )
 
