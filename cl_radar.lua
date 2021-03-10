@@ -331,6 +331,14 @@ function RADAR:GetRadarDataForSync()
 	}
 end
 
+function RADAR:GetBackupOMData()
+	return self.backupData.om
+end
+
+function RADAR:GetBackupAntennaData( ant )
+	return self.backupData.antennas[ant]
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Radar essentials functions
