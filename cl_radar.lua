@@ -310,6 +310,15 @@ RADAR.sorting = {
 	fastest = function( a, b ) return a.speed > b.speed end
 }
 
+-- Used to back up the operator menu and antenna data when the player becomes a passenger
+RADAR.backupData = {
+	om = nil,
+	antennas = {
+		["front"] = nil,
+		["rear"] = nil
+	}
+}
+
 
 --[[----------------------------------------------------------------------------------
 	Radar sync functions
