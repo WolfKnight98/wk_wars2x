@@ -30,12 +30,18 @@
 
 ---------------------------------------------------------------------------------------]]--
 
+--[[----------------------------------------------------------------------------------
+	Sync variables
+----------------------------------------------------------------------------------]]--
 SYNC = {}
 
 
 --[[----------------------------------------------------------------------------------
 	Sync functions
 ----------------------------------------------------------------------------------]]--
+-- Used to get the other ped (driver/passenger) in a vehicle and calls the given callback. This function will only work
+-- if the player can control the radar, it also ensures that the other ped (if found) exists and is a player. The other
+-- player's server ID is passed to the given callback as an argument.
 function SYNC:SyncData( cb )
 	if ( PLY:CanControlRadar() ) then
 		local otherPed = PLY:GetOtherPed()
@@ -48,24 +54,28 @@ function SYNC:SyncData( cb )
 	end
 end
 
+-- Sends the radar's power state to the other player (driver/passenger)
 function SYNC:SendPowerState( state )
 	self:SyncData( function( ply )
 		TriggerServerEvent( "wk_wars2x_sync:sendPowerState", ply, state )
 	end )
 end
 
+-- Sends the power state for the given antenna to the other player (driver/passenger)
 function SYNC:SendAntennaPowerState( state, ant )
 	self:SyncData( function( ply )
 		TriggerServerEvent( "wk_wars2x_sync:sendAntennaPowerState", ply, state, ant )
 	end )
 end
 
+-- Sends the mode for the given antenna to the other player (driver/passenger)
 function SYNC:SendAntennaMode( ant, mode )
 	self:SyncData( function( ply )
 		TriggerServerEvent( "wk_wars2x_sync:sendAntennaMode", ply, ant, mode )
 	end )
 end
 
+-- Sends a lock/unlock state, as well as the current player's displayed data to the other player (driver/passenger)
 function SYNC:LockAntennaSpeed( ant, data )
 	self:SyncData( function( ply )
 		TriggerServerEvent( "wk_wars2x_sync:sendLockAntennaSpeed", ply, ant, data )
@@ -76,10 +86,13 @@ end
 --[[----------------------------------------------------------------------------------
 	Sync client events
 ----------------------------------------------------------------------------------]]--
+-- Event for receiving the radar powet state
 RegisterNetEvent( "wk_wars2x_sync:receivePowerState" )
 AddEventHandler( "wk_wars2x_sync:receivePowerState", function( state )
+	-- Get the current local radar power state
 	local power = RADAR:IsPowerOn()
 
+	-- If the local power state is not the same as the state sent, toggle the radar power
 	if ( power ~= state ) then
 		Citizen.SetTimeout( 100, function()
 			RADAR:TogglePower()
@@ -87,20 +100,25 @@ AddEventHandler( "wk_wars2x_sync:receivePowerState", function( state )
 	end
 end )
 
+-- Event for receiving a power state for the given antenna
 RegisterNetEvent( "wk_wars2x_sync:receiveAntennaPowerState" )
 AddEventHandler( "wk_wars2x_sync:receiveAntennaPowerState", function( state, antenna )
+	-- Get the current local antenna power state
 	local power = RADAR:IsAntennaTransmitting( antenna )
 
+	-- If the local power state is not the same as the given state, toggle the antenna's power
 	if ( power ~= state ) then
 		RADAR:ToggleAntenna( antenna )
 	end
 end )
 
+-- Event for receiving a mode for the given antenna
 RegisterNetEvent( "wk_wars2x_sync:receiveAntennaMode" )
 AddEventHandler( "wk_wars2x_sync:receiveAntennaMode", function( antenna, mode )
 	RADAR:SetAntennaMode( antenna, mode )
 end )
 
+-- Event for receiving a lock state and speed data for the given antenna
 RegisterNetEvent( "wk_wars2x_sync:receiveLockAntennaSpeed" )
 AddEventHandler( "wk_wars2x_sync:receiveLockAntennaSpeed", function( antenna, data )
 	RADAR:LockAntennaSpeed( antenna, data )
