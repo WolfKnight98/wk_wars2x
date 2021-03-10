@@ -312,6 +312,18 @@ RADAR.sorting = {
 
 
 --[[----------------------------------------------------------------------------------
+	Radar sync functions
+----------------------------------------------------------------------------------]]--
+function RADAR:GetRadarDataForSync()
+	return {
+		om = self.vars.settings,
+		["front"] = self.vars.antennas["front"],
+		["rear"] = self.vars.antennas["rear"]
+	}
+end
+
+
+--[[----------------------------------------------------------------------------------
 	Radar essentials functions
 ----------------------------------------------------------------------------------]]--
 -- Returns if the radar's power is on or off
