@@ -347,6 +347,24 @@ function RADAR:SetBackupAntennaData( ant, data )
 	self.backupData.antennas[ant] = data
 end
 
+-- Used when the player becomes a passenger in another vehicle. The local data is backed up to make way for the data
+-- provided by the driver. When the player becomes the driver again, the local data is restored.
+function RADAR:BackupData()
+	local data = self:GetRadarDataForSync()
+
+	-- Backup operator menu data
+	if ( self:GetBackupOMData() == nil ) then
+		self:SetBackupOMData( data.om )
+	end
+
+	-- Backup front and rear antenna data
+	for _, ant in UTIL:Values( { "front", "rear" } ) do
+		if ( self:GetBackupAntennaData( ant ) == nil ) then
+			self:SetBackupAntennaData( ant, data[ant] )
+		end
+	end
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Radar essentials functions
