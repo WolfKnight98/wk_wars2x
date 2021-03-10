@@ -339,6 +339,14 @@ function RADAR:GetBackupAntennaData( ant )
 	return self.backupData.antennas[ant]
 end
 
+function RADAR:SetBackupOMData( data )
+	self.backupData.om = data
+end
+
+function RADAR:SetBackupAntennaData( ant, data )
+	self.backupData.antennas[ant] = data
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Radar essentials functions
