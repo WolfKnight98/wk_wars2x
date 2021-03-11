@@ -513,7 +513,7 @@ end
 
 -- Return the state of the fastDisplay setting, short hand direct way to check if the fast system is enabled
 function RADAR:IsFastDisplayEnabled()
-	return self.vars.settings["fastDisplay"]
+	return self:GetSettingValue( "fastDisplay" )
 end
 
 -- Returns if either of the antennas are transmitting
