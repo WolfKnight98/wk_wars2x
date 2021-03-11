@@ -379,6 +379,23 @@ function RADAR:BackupData()
 	end
 end
 
+-- Backs up the local radar data and then replaces it with the data provided by the driver
+function RADAR:LoadDataFromDriver( data )
+	-- Backup the local data first
+	self:BackupData()
+
+	-- As a precaution, give the system 100ms before it replaces the local data with the data from the driver
+	Citizen.SetTimeout( 100, function()
+		-- Set the operator menu settings
+		self:SetOMTableData( data.om )
+
+		-- Set the antenna data
+		for _, ant in UTIL:Values( { "front", "rear" } ) do
+			self:SetAntennaTableData( ant, data[ant] )
+		end
+	end )
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Radar essentials functions
