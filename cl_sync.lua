@@ -44,11 +44,9 @@ SYNC = {}
 -- player's server ID is passed to the given callback as an argument.
 function SYNC:SyncData( cb )
 	if ( PLY:CanControlRadar() ) then
-		local otherPed = PLY:GetOtherPed()
+		local otherPly = PLY:GetOtherPedServerId()
 
-		if ( otherPed ~= nil and otherPed ~= 0 and IsPedAPlayer( otherPed ) ) then
-			local otherPly = GetPlayerServerId( NetworkGetPlayerIndexFromPed( otherPed ) )
-
+		if ( otherPly ~= nil ) then
 			cb( otherPly )
 		end
 	end
