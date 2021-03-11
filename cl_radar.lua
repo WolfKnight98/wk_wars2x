@@ -331,6 +331,13 @@ function RADAR:GetRadarDataForSync()
 	}
 end
 
+-- Sets the operator menu settings table within the radar's main variables table
+function RADAR:SetOMTableData( data )
+	if ( type( data ) == "table" ) then
+		self.vars.settings = data
+	end
+end
+
 function RADAR:GetBackupOMData()
 	return self.backupData.om
 end
