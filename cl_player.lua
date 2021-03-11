@@ -117,6 +117,7 @@ Citizen.CreateThread( function()
 
 			if ( veh == vehEntering ) then
 				UTIL:Notify( "DEBUG: Trigger sync" )
+				SYNC:SyncDataOnEnter()
 			end
 		end
 

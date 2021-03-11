@@ -80,6 +80,24 @@ function SYNC:LockAntennaSpeed( ant, data )
 	end )
 end
 
+-- Requests radar data from the driver if the player has just entered a valid vehicle as a front seat passenger
+function SYNC:SyncDataOnEnter()
+	-- Make sure passenger view is allowed, also, using PLY:IsPassenger() already checks that the player's
+	-- vehicle meets the requirements of what the radar requires. This way we don't have to do additional
+	-- checks manually.
+	if ( RADAR:IsPassengerViewAllowed() ) then
+		if ( PLY:IsPassenger() ) then
+			UTIL:Notify( "Triggering server event to get radar data" )
+			local driver = PLY:GetOtherPedServerId()
+			TriggerServerEvent( "wk_wars2x_sync:requestRadarData", driver )
+		elseif ( PLY:IsDriver() ) then
+			UTIL:Notify( "Restoring local radar data" )
+			-- Restore the local data
+			RADAR:RestoreFromBackup()
+		end
+	end
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Sync client events
@@ -120,4 +138,23 @@ end )
 RegisterNetEvent( "wk_wars2x_sync:receiveLockAntennaSpeed" )
 AddEventHandler( "wk_wars2x_sync:receiveLockAntennaSpeed", function( antenna, data )
 	RADAR:LockAntennaSpeed( antenna, data )
+end )
+
+
+
+
+RegisterNetEvent( "wk_wars2x_sync:getRadarDataFromDriver" )
+AddEventHandler( "wk_wars2x_sync:getRadarDataFromDriver", function( playerFor )
+	print( "Radar table has been requested by " .. tostring( GetPlayerName( playerFor ) ) )
+
+	local data = RADAR:GetRadarDataForSync()
+
+	print( "Got table (type: " .. type( data ) .. ")" )
+
+	TriggerServerEvent( "wk_wars2x_sync:sendRadarDataForPassenger", playerFor, data )
+end )
+
+RegisterNetEvent( "wk_wars2x_sync:receiveRadarData" )
+AddEventHandler( "wk_wars2x_sync:receiveRadarData", function( data )
+	RADAR:LoadDataFromDriver( data )
 end )

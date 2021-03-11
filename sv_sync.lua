@@ -56,3 +56,19 @@ AddEventHandler( "wk_wars2x_sync:sendLockAntennaSpeed", function( target, ant, d
 	print( "[wk_wars2x]: Received \"wk_wars2x_sync:sendLockAntennaSpeed\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
 	TriggerClientEvent( "wk_wars2x_sync:receiveLockAntennaSpeed", target, ant, data )
 end )
+
+
+--[[----------------------------------------------------------------------------------
+	Radar data sync server events
+----------------------------------------------------------------------------------]]--
+RegisterNetEvent( "wk_wars2x_sync:requestRadarData" )
+AddEventHandler( "wk_wars2x_sync:requestRadarData", function( target )
+	print( "[wk_wars2x]: Received \"wk_wars2x_sync:requestRadarData\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
+
+	TriggerClientEvent( "wk_wars2x_sync:getRadarDataFromDriver", target, source )
+end )
+
+RegisterNetEvent( "wk_wars2x_sync:sendRadarDataForPassenger" )
+AddEventHandler( "wk_wars2x_sync:sendRadarDataForPassenger", function( playerFor, data )
+	TriggerClientEvent( "wk_wars2x_sync:receiveRadarData", playerFor, data )
+end )

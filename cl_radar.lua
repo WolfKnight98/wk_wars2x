@@ -358,6 +358,7 @@ function RADAR:SetBackupOMData( data )
 end
 
 function RADAR:SetBackupAntennaData( ant, data )
+	UTIL:Notify( "Trying to set backup for antenna: " .. ant .. " (type: " .. type( ant ) .. ") with data: (type: " .. type( data ) .. ")" )
 	self.backupData.antennas[ant] = data
 end
 
