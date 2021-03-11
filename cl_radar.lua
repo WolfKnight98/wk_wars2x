@@ -338,6 +338,13 @@ function RADAR:SetOMTableData( data )
 	end
 end
 
+-- Sets the antenna settings table for the given antenna within the radar's main variables table
+function RADAR:SetAntennaTableData( ant, data )
+	if ( type( data ) == "table" ) then
+		self.vars.antennas[ant] = data
+	end
+end
+
 function RADAR:GetBackupOMData()
 	return self.backupData.om
 end
