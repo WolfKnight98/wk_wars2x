@@ -372,7 +372,7 @@ function RADAR:BackupData()
 	end
 
 	-- Backup front and rear antenna data
-	for _, ant in UTIL:Values( { "front", "rear" } ) do
+	for ant in UTIL:Values( { "front", "rear" } ) do
 		if ( self:GetBackupAntennaData( ant ) == nil ) then
 			self:SetBackupAntennaData( ant, data[ant] )
 		end
@@ -390,7 +390,7 @@ function RADAR:LoadDataFromDriver( data )
 		self:SetOMTableData( data.om )
 
 		-- Set the antenna data
-		for _, ant in UTIL:Values( { "front", "rear" } ) do
+		for ant in UTIL:Values( { "front", "rear" } ) do
 			self:SetAntennaTableData( ant, data[ant] )
 		end
 	end )
@@ -410,7 +410,7 @@ function RADAR:RestoreFromBackup()
 	end
 
 	-- Iterate through the antennas and restore their backups
-	for _, ant in UTIL:Values( { "front", "rear" } ) do
+	for ant in UTIL:Values( { "front", "rear" } ) do
 		-- Get the antenna backup data
 		local antData = self:GetBackupAntennaData( ant )
 
