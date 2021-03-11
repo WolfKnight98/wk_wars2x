@@ -416,7 +416,7 @@ function RADAR:RestoreFromBackup()
 
 		-- Restore the antenna data
 		if ( antData ~= nil ) then
-			self:SetAntennaTableData( ant, data[ant] )
+			self:SetAntennaTableData( ant, antData[ant] )
 
 			-- Clear the backup
 			self:SetBackupAntennaData( ant, nil )
