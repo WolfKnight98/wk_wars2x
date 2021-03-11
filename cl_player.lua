@@ -78,6 +78,18 @@ function PLY:GetOtherPed()
 	return nil
 end
 
+function PLY:GetOtherPedServerId()
+	local otherPed = self:GetOtherPed()
+
+	if ( otherPed ~= nil and otherPed ~= 0 and IsPedAPlayer( otherPed ) ) then
+		local otherPly = GetPlayerServerId( NetworkGetPlayerIndexFromPed( otherPed ) )
+
+		return otherPly
+	end
+
+	return nil
+end
+
 -- The main purpose of this thread is to update the information about the local player, including their
 -- ped id, the vehicle id (if they're in one), whether they're in a driver seat, and if the vehicle's class
 -- is valid or not
