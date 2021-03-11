@@ -396,6 +396,34 @@ function RADAR:LoadDataFromDriver( data )
 	end )
 end
 
+-- Restores the local player's operator menu and antenna data
+function RADAR:RestoreFromBackup()
+	-- Get the operator menu data
+	local omData = self:GetBackupOMData()
+
+	-- Restore the operator menu data
+	if ( omData ~= nil ) then
+		self:SetOMTableData( omData )
+
+		-- Clear the backup
+		self:SetBackupOMData( nil )
+	end
+
+	-- Iterate through the antennas and restore their backups
+	for _, ant in UTIL:Values( { "front", "rear" } ) do
+		-- Get the antenna backup data
+		local antData = self:GetBackupAntennaData( ant )
+
+		-- Restore the antenna data
+		if ( antData ~= nil ) then
+			self:SetAntennaTableData( ant, data[ant] )
+
+			-- Clear the backup
+			self:SetBackupAntennaData( ant, nil )
+		end
+	end
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Radar essentials functions
