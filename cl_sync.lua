@@ -87,11 +87,11 @@ function SYNC:SyncDataOnEnter()
 	-- checks manually.
 	if ( RADAR:IsPassengerViewAllowed() ) then
 		if ( PLY:IsPassenger() ) then
-			UTIL:Notify( "Triggering server event to get radar data" )
+			-- UTIL:Notify( "Triggering server event to get radar data" )
 			local driver = PLY:GetOtherPedServerId()
 			TriggerServerEvent( "wk_wars2x_sync:requestRadarData", driver )
 		elseif ( PLY:IsDriver() ) then
-			UTIL:Notify( "Restoring local radar data" )
+			-- UTIL:Notify( "Restoring local radar data" )
 
 			if ( RADAR:IsThereBackupData() ) then
 				-- Restore the local data
@@ -141,11 +141,11 @@ end )
 
 RegisterNetEvent( "wk_wars2x_sync:getRadarDataFromDriver" )
 AddEventHandler( "wk_wars2x_sync:getRadarDataFromDriver", function( playerFor )
-	print( "Radar table has been requested by " .. tostring( GetPlayerName( playerFor ) ) )
+	-- print( "Radar table has been requested by " .. tostring( GetPlayerName( playerFor ) ) )
 
 	local data = RADAR:GetRadarDataForSync()
 
-	print( "Got table (type: " .. type( data ) .. ")" )
+	-- print( "Got table (type: " .. type( data ) .. ")" )
 
 	TriggerServerEvent( "wk_wars2x_sync:sendRadarDataForPassenger", playerFor, data )
 end )
