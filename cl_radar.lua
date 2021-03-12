@@ -455,31 +455,36 @@ function RADAR:SetPoweringUpState( state )
 end
 
 -- Toggles the radar power
-function RADAR:TogglePower()
+function RADAR:SetPowerState( state, instantOverride )
+	local currentState = self:IsPowerOn()
+
 	-- Only power up if the system is not already powering up
-	if ( not self:IsPoweringUp() ) then
+	if ( not self:IsPoweringUp() and currentState ~= state ) then
 		-- Toggle the power variable
-		self.vars.power = not self.vars.power
+		self.vars.power = state
 
 		-- Send the NUI message to toggle the power
-		SendNUIMessage( { _type = "radarPower", state = self:IsPowerOn() } )
+		SendNUIMessage( { _type = "radarPower", state = state, override = instantOverride } )
 
 		-- Power is now turned on
 		if ( self:IsPowerOn() ) then
 			-- Also make sure the operator menu is inactive
 			self:SetMenuState( false )
 
-			-- Tell the system the radar is 'powering up'
-			self:SetPoweringUpState( true )
+			-- Only do the power up simulation if allowed
+			if ( not instantOverride ) then
+				-- Tell the system the radar is 'powering up'
+				self:SetPoweringUpState( true )
 
-			-- Set a 2 second countdown
-			Citizen.SetTimeout( 2000, function()
-				-- Tell the system the radar has 'powered up'
-				self:SetPoweringUpState( false )
+				-- Set a 2 second countdown
+				Citizen.SetTimeout( 2000, function()
+					-- Tell the system the radar has 'powered up'
+					self:SetPoweringUpState( false )
 
-				-- Let the UI side know the system has loaded
-				SendNUIMessage( { _type = "poweredUp" } )
-			end )
+					-- Let the UI side know the system has loaded
+					SendNUIMessage( { _type = "poweredUp" } )
+				end )
+			end
 		else
 			-- If the system is being turned off, then we reset the antennas
 			self:ResetAntenna( "front" )
@@ -1649,7 +1654,7 @@ RegisterNUICallback( "togglePower", function( data, cb )
 	if ( PLY:CanControlRadar() ) then
 		if ( not RADAR:IsPoweringUp() ) then
 			-- Toggle the radar's power
-			RADAR:TogglePower()
+			RADAR:SetPowerState( not RADAR:IsPowerOn(), false )
 
 			SYNC:SendPowerState( RADAR:IsPowerOn() )
 		end

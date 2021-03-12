@@ -108,15 +108,8 @@ end
 -- Event for receiving the radar powet state
 RegisterNetEvent( "wk_wars2x_sync:receivePowerState" )
 AddEventHandler( "wk_wars2x_sync:receivePowerState", function( state )
-	-- Get the current local radar power state
-	local power = RADAR:IsPowerOn()
-
-	-- If the local power state is not the same as the state sent, toggle the radar power
-	if ( power ~= state ) then
-		Citizen.SetTimeout( 100, function()
-			RADAR:TogglePower()
-		end )
-	end
+	-- Set the radar's power
+	RADAR:SetPowerState( state, false )
 end )
 
 -- Event for receiving a power state for the given antenna

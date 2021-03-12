@@ -510,9 +510,9 @@ function poweredUp()
 }
 
 // Runs the startup process or clears everything, the Lua side calls for the full powered up state
-function radarPower( state )
+function radarPower( state, override )
 {
-	state ? poweringUp() : clearEverything();
+	state ? ( override ? poweredUp() : poweringUp() ) : clearEverything();
 }
 
 
@@ -1114,7 +1114,7 @@ window.addEventListener( "message", function( event ) {
 			setEleVisible( elements.radar, item.state ); 
 			break; 
 		case "radarPower":
-			radarPower( item.state );
+			radarPower( item.state, item.override );
 			break; 
 		case "poweredUp":
 			poweredUp();
