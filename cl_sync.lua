@@ -92,8 +92,11 @@ function SYNC:SyncDataOnEnter()
 			TriggerServerEvent( "wk_wars2x_sync:requestRadarData", driver )
 		elseif ( PLY:IsDriver() ) then
 			UTIL:Notify( "Restoring local radar data" )
-			-- Restore the local data
-			RADAR:RestoreFromBackup()
+
+			if ( RADAR:IsThereBackupData() ) then
+				-- Restore the local data
+				RADAR:RestoreFromBackup()
+			end
 		end
 	end
 end
