@@ -404,8 +404,8 @@ function RADAR:LoadDataFromDriver( data )
 	-- Backup the local data first
 	self:BackupData()
 
-	-- As a precaution, give the system 100ms before it replaces the local data with the data from the driver
-	Citizen.SetTimeout( 100, function()
+	-- As a precaution, give the system 50ms before it replaces the local data with the data from the driver
+	Citizen.SetTimeout( 50, function()
 		-- Set the operator menu settings
 		self:SetOMTableData( data.om )
 
