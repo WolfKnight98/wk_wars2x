@@ -312,6 +312,7 @@ RADAR.sorting = {
 
 -- Used to back up the operator menu and antenna data when the player becomes a passenger
 RADAR.backupData = {
+	power = nil,
 	om = nil,
 	antennas = {
 		["front"] = nil,
@@ -325,6 +326,7 @@ RADAR.backupData = {
 ----------------------------------------------------------------------------------]]--
 function RADAR:GetRadarDataForSync()
 	return {
+		power = self.vars.power,
 		om = self.vars.settings,
 		["front"] = self.vars.antennas["front"],
 		["rear"] = self.vars.antennas["rear"]
@@ -345,6 +347,10 @@ function RADAR:SetAntennaTableData( ant, data )
 	end
 end
 
+function RADAR:GetBackupPowerState()
+	return self.backupData.power
+end
+
 function RADAR:GetBackupOMData()
 	return self.backupData.om
 end
@@ -353,12 +359,16 @@ function RADAR:GetBackupAntennaData( ant )
 	return self.backupData.antennas[ant]
 end
 
+function RADAR:SetBackupPowerState( state )
+	self.backupData.power = state
+end
+
 function RADAR:SetBackupOMData( data )
 	self.backupData.om = data
 end
 
 function RADAR:SetBackupAntennaData( ant, data )
-	UTIL:Notify( "Trying to set backup for antenna: " .. ant .. " (type: " .. type( ant ) .. ") with data: (type: " .. type( data ) .. ")" )
+	-- UTIL:Notify( "Trying to set backup for antenna: " .. ant .. " (type: " .. type( ant ) .. ") with data: (type: " .. type( data ) .. ")" )
 	self.backupData.antennas[ant] = data
 end
 
@@ -370,6 +380,11 @@ end
 -- provided by the driver. When the player becomes the driver again, the local data is restored.
 function RADAR:BackupData()
 	local data = self:GetRadarDataForSync()
+
+	-- Backup power state
+	if ( self:GetBackupPowerState() == nil ) then
+		self:SetBackupPowerState( data.power )
+	end
 
 	-- Backup operator menu data
 	if ( self:GetBackupOMData() == nil ) then
@@ -399,8 +414,13 @@ function RADAR:LoadDataFromDriver( data )
 			self:SetAntennaTableData( ant, data[ant] )
 		end
 
+		-- Set the power state
+		self:SetPowerState( data.power, true )
+
 		-- Update the display
-		self:SendSettingUpdate()
+		if ( data.power ) then
+			self:SendSettingUpdate()
+		end
 	end )
 end
 
@@ -424,15 +444,33 @@ function RADAR:RestoreFromBackup()
 
 		-- Restore the antenna data
 		if ( antData ~= nil ) then
+			UTIL:Notify( "Restoring backup " .. ant .. " antenna data" )
 			self:SetAntennaTableData( ant, antData )
+
+			UTIL:Log( "Backup " .. ant .. " antenna, data: (xmit: " .. tostring( antData.xmit ) .. ") (mode: " .. tostring( antData.mode ) .. ") (speedLocked: " .. tostring( antData.speedLocked ) .. ") (fast: " .. tostring( antData.fast ) .. ")" )
 
 			-- Clear the backup
 			self:SetBackupAntennaData( ant, nil )
 		end
 	end
 
+	-- Get the power state
+	local pwrState = self:GetBackupPowerState()
+
+	UTIL:Notify( "Backup power state: " .. tostring( pwrState ) )
+
+	if ( pwrState ~= nil ) then
+		self:SetPowerState( pwrState, true )
+
+		self:SetBackupPowerState( nil )
+	end
+
 	-- Update the display
-	self:SendSettingUpdate()
+	if ( pwrState ) then
+		Citizen.SetTimeout( 50, function()
+			self:SendSettingUpdate()
+		end )
+	end
 end
 
 
