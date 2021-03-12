@@ -398,6 +398,9 @@ function RADAR:LoadDataFromDriver( data )
 		for ant in UTIL:Values( { "front", "rear" } ) do
 			self:SetAntennaTableData( ant, data[ant] )
 		end
+
+		-- Update the display
+		self:SendSettingUpdate()
 	end )
 end
 
@@ -427,6 +430,9 @@ function RADAR:RestoreFromBackup()
 			self:SetBackupAntennaData( ant, nil )
 		end
 	end
+
+	-- Update the display
+	self:SendSettingUpdate()
 end
 
 
@@ -538,6 +544,8 @@ function RADAR:SendSettingUpdate()
 		antennas[ant].mode = self:GetAntennaMode( ant )
 		antennas[ant].speedLocked = self:IsAntennaSpeedLocked( ant )
 		antennas[ant].fast = self:ShouldFastBeDisplayed( ant )
+
+		UTIL:Log( "Updating " .. ant .. " antenna display, data: (xmit: " .. tostring( antennas[ant].xmit ) .. ") (mode: " .. tostring( antennas[ant].mode ) .. ") (speedLocked: " .. tostring( antennas[ant].speedLocked ) .. ") (fast: " .. tostring( antennas[ant].fast ) .. ")" )
 	end
 
 	-- Send a message to the NUI side with the current state of the antennas
