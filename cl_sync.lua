@@ -89,7 +89,11 @@ function SYNC:SyncDataOnEnter()
 		if ( PLY:IsPassenger() ) then
 			-- UTIL:Notify( "Triggering server event to get radar data" )
 			local driver = PLY:GetOtherPedServerId()
-			TriggerServerEvent( "wk_wars2x_sync:requestRadarData", driver )
+
+			-- Only trigger the event if there is actually a driver
+			if ( driver ~= nil ) then
+				TriggerServerEvent( "wk_wars2x_sync:requestRadarData", driver )
+			end
 		elseif ( PLY:IsDriver() ) then
 			-- UTIL:Notify( "Restoring local radar data" )
 
