@@ -444,10 +444,10 @@ function RADAR:RestoreFromBackup()
 
 		-- Restore the antenna data
 		if ( antData ~= nil ) then
-			UTIL:Notify( "Restoring backup " .. ant .. " antenna data" )
+			-- UTIL:Notify( "Restoring backup " .. ant .. " antenna data" )
 			self:SetAntennaTableData( ant, antData )
 
-			UTIL:Log( "Backup " .. ant .. " antenna, data: (xmit: " .. tostring( antData.xmit ) .. ") (mode: " .. tostring( antData.mode ) .. ") (speedLocked: " .. tostring( antData.speedLocked ) .. ") (fast: " .. tostring( antData.fast ) .. ")" )
+			-- UTIL:Log( "Backup " .. ant .. " antenna, data: (xmit: " .. tostring( antData.xmit ) .. ") (mode: " .. tostring( antData.mode ) .. ") (speedLocked: " .. tostring( antData.speedLocked ) .. ") (fast: " .. tostring( antData.fast ) .. ")" )
 
 			-- Clear the backup
 			self:SetBackupAntennaData( ant, nil )
@@ -457,7 +457,7 @@ function RADAR:RestoreFromBackup()
 	-- Get the power state
 	local pwrState = self:GetBackupPowerState()
 
-	UTIL:Notify( "Backup power state: " .. tostring( pwrState ) )
+	-- UTIL:Notify( "Backup power state: " .. tostring( pwrState ) )
 
 	if ( pwrState ~= nil ) then
 		self:SetPowerState( pwrState, true )
@@ -588,7 +588,7 @@ function RADAR:SendSettingUpdate()
 		antennas[ant].speedLocked = self:IsAntennaSpeedLocked( ant )
 		antennas[ant].fast = self:ShouldFastBeDisplayed( ant )
 
-		UTIL:Log( "Updating " .. ant .. " antenna display, data: (xmit: " .. tostring( antennas[ant].xmit ) .. ") (mode: " .. tostring( antennas[ant].mode ) .. ") (speedLocked: " .. tostring( antennas[ant].speedLocked ) .. ") (fast: " .. tostring( antennas[ant].fast ) .. ")" )
+		-- UTIL:Log( "Updating " .. ant .. " antenna display, data: (xmit: " .. tostring( antennas[ant].xmit ) .. ") (mode: " .. tostring( antennas[ant].mode ) .. ") (speedLocked: " .. tostring( antennas[ant].speedLocked ) .. ") (fast: " .. tostring( antennas[ant].fast ) .. ")" )
 	end
 
 	-- Send a message to the NUI side with the current state of the antennas
