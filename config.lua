@@ -57,7 +57,7 @@ CONFIG.allow_passenger_view = true
 -- Allow passenger control
 -- Dependent on CONFIG.allow_passenger_view. When enabled, the front seat passenger will be able to open the
 -- radar remote and control the radar and plate reader for themself and the driver.
-CONFIG.allow_passenger_control = false
+CONFIG.allow_passenger_control = true
 
 -- Set this to true if you use Sonoran CAD with the WraithV2 plugin
 CONFIG.use_sonorancad = false
