@@ -137,7 +137,7 @@ end )
 -- Event for receiving a lock state and speed data for the given antenna
 RegisterNetEvent( "wk_wars2x_sync:receiveLockAntennaSpeed" )
 AddEventHandler( "wk_wars2x_sync:receiveLockAntennaSpeed", function( antenna, data )
-	RADAR:LockAntennaSpeed( antenna, data )
+	RADAR:LockAntennaSpeed( antenna, data, true )
 end )
 
 

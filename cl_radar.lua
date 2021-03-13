@@ -1341,9 +1341,9 @@ end
 
 -- When the user presses the speed lock key for either antenna, this function is called to get the
 -- necessary information from the antenna, and then lock it into the display
-function RADAR:LockAntennaSpeed( ant, override )
+function RADAR:LockAntennaSpeed( ant, override, lockRegardless )
 	-- Only lock a speed if the antenna is on and the UI is displayed
-	if ( self:IsPowerOn() and self:GetDisplayState() and not self:GetDisplayHidden() and self:IsAntennaTransmitting( ant ) ) then
+	if ( self:IsPowerOn() and ( ( self:GetDisplayState() and not self:GetDisplayHidden() ) or lockRegardless ) and self:IsAntennaTransmitting( ant ) ) then
 		-- Check if the antenna doesn't have a locked speed, if it doesn't then we lock in the speed, otherwise we
 		-- reset the lock
 		if ( not self:IsAntennaSpeedLocked( ant ) ) then
