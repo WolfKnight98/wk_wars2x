@@ -1769,7 +1769,7 @@ end )
 RegisterNUICallback( "menu", function( data, cb )
 	if ( PLY:CanControlRadar() ) then
 		-- Only run the codw if the radar has power and is not powering up
-		if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
+		if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() and PLY:IsDriver() ) then
 			-- As the menu button is a multipurpose button, we first check to see if the menu is already open
 			if ( RADAR:IsMenuOpen() ) then
 				-- As the menu is already open, we then iterate to the next option in the settings list
