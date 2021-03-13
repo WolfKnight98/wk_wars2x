@@ -502,7 +502,7 @@ function RADAR:SetPowerState( state, instantOverride )
 		self.vars.power = state
 
 		-- Send the NUI message to toggle the power
-		SendNUIMessage( { _type = "radarPower", state = state, override = instantOverride } )
+		SendNUIMessage( { _type = "radarPower", state = state, override = instantOverride, fast = self:IsFastDisplayEnabled() } )
 
 		-- Power is now turned on
 		if ( self:IsPowerOn() ) then
@@ -520,7 +520,7 @@ function RADAR:SetPowerState( state, instantOverride )
 					self:SetPoweringUpState( false )
 
 					-- Let the UI side know the system has loaded
-					SendNUIMessage( { _type = "poweredUp" } )
+					SendNUIMessage( { _type = "poweredUp", fast = self:IsFastDisplayEnabled() } )
 				end )
 			end
 		else

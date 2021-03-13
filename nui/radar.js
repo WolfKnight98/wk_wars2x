@@ -494,7 +494,7 @@ function poweringUp()
 } 
 
 // Simulates the 'fully powered' state of the radar unit 
-function poweredUp()
+function poweredUp( fastDisplay )
 {
 	// Completely clear everything
 	clearEverything(); 
@@ -505,14 +505,14 @@ function poweredUp()
 		// Even though the clearEverything() function is called above, we run this so the fast window
 		// displays 'HLd'
 		setAntennaXmit( ant, false );
-		setAntennaFastMode( ant, true );    
+		setAntennaFastMode( ant, fastDisplay );    
 	}
 }
 
 // Runs the startup process or clears everything, the Lua side calls for the full powered up state
-function radarPower( state, override )
+function radarPower( state, override, fastDisplay )
 {
-	state ? ( override ? poweredUp() : poweringUp() ) : clearEverything();
+	state ? ( override ? poweredUp( fastDisplay ) : poweringUp() ) : clearEverything();
 }
 
 
@@ -1114,10 +1114,10 @@ window.addEventListener( "message", function( event ) {
 			setEleVisible( elements.radar, item.state ); 
 			break; 
 		case "radarPower":
-			radarPower( item.state, item.override );
+			radarPower( item.state, item.override, item.fast );
 			break; 
 		case "poweredUp":
-			poweredUp();
+			poweredUp( item.fast );
 			break;
 		case "update":
 			updateDisplays( item.speed, item.antennas );
