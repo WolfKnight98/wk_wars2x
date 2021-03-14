@@ -68,6 +68,10 @@ READER.vars =
 	}
 }
 
+
+--[[----------------------------------------------------------------------------------
+	Plate reader functions
+----------------------------------------------------------------------------------]]--
 -- Gets the display state
 function READER:GetDisplayState()
 	return self.vars.displayed
@@ -181,6 +185,10 @@ AddEventHandler( "wk:togglePlateLock", function( cam, beep, bolo )
 	READER:LockCam( cam, beep, bolo )
 end )
 
+
+--[[----------------------------------------------------------------------------------
+	Plate reader NUI callbacks
+----------------------------------------------------------------------------------]]--
 -- Runs when the "Toggle Display" button is pressed on the plate reder box
 RegisterNUICallback( "togglePlateReaderDisplay", function( data, cb )
 	-- Toggle the display state
@@ -202,6 +210,10 @@ RegisterNUICallback( "clearBoloPlate", function( plate, cb )
 	cb( "ok" )
 end )
 
+
+--[[----------------------------------------------------------------------------------
+	Plate reader threads
+----------------------------------------------------------------------------------]]--
 -- This is the main function that runs and scans all vehicles in front and behind the patrol vehicle
 function READER:Main()
 	-- Check that the system can actually run
