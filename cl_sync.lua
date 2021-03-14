@@ -41,10 +41,12 @@ SYNC = {}
 --[[----------------------------------------------------------------------------------
 	Sync functions
 ----------------------------------------------------------------------------------]]--
+-- Returns if the given player has the remote open
 function SYNC:IsRemoteAlreadyOpen( ply )
 	return DecorGetBool( ply, "wk_wars2x_sync_remoteOpen" )
 end
 
+-- Sets the remote open decor for the local player to the given state
 function SYNC:SetRemoteOpenState( state )
 	DecorSetBool( PLY.ped, "wk_wars2x_sync_remoteOpen", state )
 end
@@ -90,6 +92,7 @@ function SYNC:LockAntennaSpeed( ant, data )
 	end )
 end
 
+-- Sends the given operator menu table data to the other player
 function SYNC:SendUpdatedOMData( data )
 	self:SyncData( function( ply )
 		TriggerServerEvent( "wk_wars2x_sync:sendUpdatedOMData", ply, data )
@@ -103,7 +106,6 @@ function SYNC:SyncDataOnEnter()
 	-- checks manually.
 	if ( RADAR:IsPassengerViewAllowed() ) then
 		if ( PLY:IsPassenger() ) then
-			-- UTIL:Notify( "Triggering server event to get radar data" )
 			local driver = PLY:GetOtherPedServerId()
 
 			-- Only trigger the event if there is actually a driver
@@ -111,8 +113,6 @@ function SYNC:SyncDataOnEnter()
 				TriggerServerEvent( "wk_wars2x_sync:requestRadarData", driver )
 			end
 		elseif ( PLY:IsDriver() ) then
-			-- UTIL:Notify( "Restoring local radar data" )
-
 			if ( RADAR:IsThereBackupData() ) then
 				-- Restore the local data
 				RADAR:RestoreFromBackup()
@@ -156,25 +156,21 @@ AddEventHandler( "wk_wars2x_sync:receiveLockAntennaSpeed", function( antenna, da
 	RADAR:LockAntennaSpeed( antenna, data, true )
 end )
 
-
-
-
+-- Event for gathering the radar data and sending it to another player
 RegisterNetEvent( "wk_wars2x_sync:getRadarDataFromDriver" )
 AddEventHandler( "wk_wars2x_sync:getRadarDataFromDriver", function( playerFor )
-	-- print( "Radar table has been requested by " .. tostring( GetPlayerName( playerFor ) ) )
-
 	local data = RADAR:GetRadarDataForSync()
-
-	-- print( "Got table (type: " .. type( data ) .. ")" )
 
 	TriggerServerEvent( "wk_wars2x_sync:sendRadarDataForPassenger", playerFor, data )
 end )
 
+-- Event for receiving radar data from another player
 RegisterNetEvent( "wk_wars2x_sync:receiveRadarData" )
 AddEventHandler( "wk_wars2x_sync:receiveRadarData", function( data )
 	RADAR:LoadDataFromDriver( data )
 end )
 
+-- Event for receiving updated operator menu data from another player
 RegisterNetEvent( "wk_wars2x_sync:receiveUpdatedOMData" )
 AddEventHandler( "wk_wars2x_sync:receiveUpdatedOMData", function( data )
 	if ( PLY:IsPassenger() and RADAR:IsThereBackupData() ) then
