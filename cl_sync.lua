@@ -32,6 +32,174 @@
 
 DecorRegister( "wk_wars2x_sync_remoteOpen", 2 )
 
+
+--[[----------------------------------------------------------------------------------
+	Radar sync variables and functions
+----------------------------------------------------------------------------------]]--
+-- Used to back up the operator menu and antenna data when the player becomes a passenger
+RADAR.backupData = {
+	power = nil,
+	om = nil,
+	antennas = {
+		["front"] = nil,
+		["rear"] = nil
+	}
+}
+
+function RADAR:GetRadarDataForSync()
+	return {
+		power = self.vars.power,
+		om = self.vars.settings,
+		["front"] = self.vars.antennas["front"],
+		["rear"] = self.vars.antennas["rear"]
+	}
+end
+
+function RADAR:GetOMTableData()
+	return self.vars.settings
+end
+
+-- Sets the operator menu settings table within the radar's main variables table
+function RADAR:SetOMTableData( data )
+	if ( type( data ) == "table" ) then
+		self.vars.settings = data
+	end
+end
+
+-- Sets the antenna settings table for the given antenna within the radar's main variables table
+function RADAR:SetAntennaTableData( ant, data )
+	if ( type( data ) == "table" ) then
+		self.vars.antennas[ant] = data
+	end
+end
+
+function RADAR:GetBackupPowerState()
+	return self.backupData.power
+end
+
+function RADAR:GetBackupOMData()
+	return self.backupData.om
+end
+
+function RADAR:GetBackupAntennaData( ant )
+	return self.backupData.antennas[ant]
+end
+
+function RADAR:SetBackupPowerState( state )
+	self.backupData.power = state
+end
+
+function RADAR:SetBackupOMData( data )
+	self.backupData.om = data
+end
+
+function RADAR:SetBackupAntennaData( ant, data )
+	-- UTIL:Notify( "Trying to set backup for antenna: " .. ant .. " (type: " .. type( ant ) .. ") with data: (type: " .. type( data ) .. ")" )
+	self.backupData.antennas[ant] = data
+end
+
+function RADAR:IsThereBackupData()
+	return self:GetBackupOMData() ~= nil or self:GetBackupAntennaData( "front" ) ~= nil or self:GetBackupAntennaData( "rear" ) ~= nil
+end
+
+-- Used when the player becomes a passenger in another vehicle. The local data is backed up to make way for the data
+-- provided by the driver. When the player becomes the driver again, the local data is restored.
+function RADAR:BackupData()
+	local data = self:GetRadarDataForSync()
+
+	-- Backup power state
+	if ( self:GetBackupPowerState() == nil ) then
+		self:SetBackupPowerState( data.power )
+	end
+
+	-- Backup operator menu data
+	if ( self:GetBackupOMData() == nil ) then
+		self:SetBackupOMData( data.om )
+	end
+
+	-- Backup front and rear antenna data
+	for ant in UTIL:Values( { "front", "rear" } ) do
+		if ( self:GetBackupAntennaData( ant ) == nil ) then
+			self:SetBackupAntennaData( ant, data[ant] )
+		end
+	end
+end
+
+-- Backs up the local radar data and then replaces it with the data provided by the driver
+function RADAR:LoadDataFromDriver( data )
+	-- Backup the local data first
+	self:BackupData()
+
+	-- As a precaution, give the system 50ms before it replaces the local data with the data from the driver
+	Citizen.SetTimeout( 50, function()
+		-- Set the operator menu settings
+		self:SetOMTableData( data.om )
+
+		-- Set the antenna data
+		for ant in UTIL:Values( { "front", "rear" } ) do
+			self:SetAntennaTableData( ant, data[ant] )
+		end
+
+		-- Set the power state
+		self:SetPowerState( data.power, true )
+
+		-- Update the display
+		if ( data.power ) then
+			self:SendSettingUpdate()
+		end
+	end )
+end
+
+-- Restores the local player's operator menu and antenna data
+function RADAR:RestoreFromBackup()
+	-- Get the operator menu data
+	local omData = self:GetBackupOMData()
+
+	-- Restore the operator menu data
+	if ( omData ~= nil ) then
+		self:SetOMTableData( omData )
+
+		-- Clear the backup
+		self:SetBackupOMData( nil )
+	end
+
+	-- Iterate through the antennas and restore their backups
+	for ant in UTIL:Values( { "front", "rear" } ) do
+		-- Get the antenna backup data
+		local antData = self:GetBackupAntennaData( ant )
+
+		-- Restore the antenna data
+		if ( antData ~= nil ) then
+			-- UTIL:Notify( "Restoring backup " .. ant .. " antenna data" )
+			self:SetAntennaTableData( ant, antData )
+
+			-- UTIL:Log( "Backup " .. ant .. " antenna, data: (xmit: " .. tostring( antData.xmit ) .. ") (mode: " .. tostring( antData.mode ) .. ") (speedLocked: " .. tostring( antData.speedLocked ) .. ") (fast: " .. tostring( antData.fast ) .. ")" )
+
+			-- Clear the backup
+			self:SetBackupAntennaData( ant, nil )
+		end
+	end
+
+	-- Get the power state
+	local pwrState = self:GetBackupPowerState()
+
+	-- UTIL:Notify( "Backup power state: " .. tostring( pwrState ) )
+
+	if ( pwrState ~= nil ) then
+		self:SetPowerState( pwrState, true )
+
+		self:SetBackupPowerState( nil )
+	end
+
+	-- Update the display
+	if ( pwrState ) then
+		Citizen.SetTimeout( 50, function()
+			self:SendSettingUpdate()
+		end )
+	end
+end
+
+
 --[[----------------------------------------------------------------------------------
 	Sync variables
 ----------------------------------------------------------------------------------]]--
