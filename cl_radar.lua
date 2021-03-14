@@ -756,6 +756,24 @@ function RADAR:SetMenuState( state )
 	end
 end
 
+-- Closes the operator menu
+function RADAR:CloseMenu( playAudio )
+	-- Set the internal menu state to be closed (false)
+	RADAR:SetMenuState( false )
+
+	-- Send a setting update to the NUI side
+	RADAR:SendSettingUpdate()
+
+	-- Play a menu done beep
+	if ( playAudio or playAudio == nil ) then
+		SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
+	end
+
+	-- Save the operator menu values
+	local omData = json.encode( RADAR.vars.settings )
+	SetResourceKvp( "wk_wars2x_om_data", omData )
+end
+
 -- Returns if the operator menu is open
 function RADAR:IsMenuOpen()
 	return self.vars.menuActive
@@ -1725,7 +1743,13 @@ end )
 RegisterNUICallback( "closeRemote", function( data, cb )
 	-- Remove focus to the NUI side
 	SetNuiFocus( false, false )
+
+	if ( RADAR:IsMenuOpen() ) then
+		RADAR:CloseMenu( false )
+	end
+
 	SYNC:SetRemoteOpenState( false )
+
 	cb( "ok" )
 end )
 
@@ -1736,18 +1760,7 @@ RegisterNUICallback( "setAntennaMode", function( data, cb )
 		if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
 			-- As the mode buttons are used to exit the menu, we check for that
 			if ( RADAR:IsMenuOpen() ) then
-				-- Set the internal menu state to be closed (false)
-				RADAR:SetMenuState( false )
-
-				-- Send a setting update to the NUI side
-				RADAR:SendSettingUpdate()
-
-				-- Play a menu done beep
-				SendNUIMessage( { _type = "audio", name = "done", vol = RADAR:GetSettingValue( "beep" ) } )
-
-				-- Save the operator menu values
-				local omData = json.encode( RADAR.vars.settings )
-				SetResourceKvp( "wk_wars2x_om_data", omData )
+				RADAR:CloseMenu()
 			else
 				-- Change the mode for the designated antenna, pass along a callback which contains data from this NUI callback
 				RADAR:SetAntennaMode( data.value, tonumber( data.mode ) )
