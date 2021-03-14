@@ -30,6 +30,8 @@
 
 ---------------------------------------------------------------------------------------]]--
 
+DecorRegister( "wk_wars2x_sync_remoteOpen", 2 )
+
 --[[----------------------------------------------------------------------------------
 	Sync variables
 ----------------------------------------------------------------------------------]]--
@@ -39,6 +41,14 @@ SYNC = {}
 --[[----------------------------------------------------------------------------------
 	Sync functions
 ----------------------------------------------------------------------------------]]--
+function SYNC:IsRemoteAlreadyOpen( ply )
+	return DecorGetBool( ply, "wk_wars2x_sync_remoteOpen" )
+end
+
+function SYNC:SetRemoteOpenState( state )
+	DecorSetBool( PLY.ped, "wk_wars2x_sync_remoteOpen", state )
+end
+
 -- Used to get the other ped (driver/passenger) in a vehicle and calls the given callback. This function will only work
 -- if the player can control the radar, it also ensures that the other ped (if found) exists and is a player. The other
 -- player's server ID is passed to the given callback as an argument.

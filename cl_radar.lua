@@ -156,6 +156,8 @@ AddEventHandler( "onResourceStart", function( resourceName )
 
 			RegisterKeyBinds()
 			LoadUISettings()
+
+			DecorSetBool( PlayerPedId(), "wk_wars2x_sync_remoteOpen", false )
 		end )
 	end
 end )
@@ -626,20 +628,30 @@ end
 -- passenger can also open the remote, we check the config variable as well.
 function RADAR:OpenRemote()
 	if ( not IsPauseMenuActive() and PLY:CanViewRadar() ) then
-		-- Tell the NUI side to open the remote
-		SendNUIMessage( { _type = "openRemote" } )
+		-- Get the remote open state from the other player
+		local openByOtherPly = SYNC:IsRemoteAlreadyOpen( PLY:GetOtherPed() )
 
-		if ( CONFIG.allow_quick_start_video ) then
-			-- Display the new user popup if we can
-			local show = GetResourceKvpInt( "wk_wars2x_new_user" )
+		-- Check that the remote can be opened
+		if ( not openByOtherPly ) then
+			-- Tell the NUI side to open the remote
+			SendNUIMessage( { _type = "openRemote" } )
 
-			if ( show == 0 ) then
-				SendNUIMessage( { _type = "showNewUser" } )
+			SYNC:SetRemoteOpenState( true )
+
+			if ( CONFIG.allow_quick_start_video ) then
+				-- Display the new user popup if we can
+				local show = GetResourceKvpInt( "wk_wars2x_new_user" )
+
+				if ( show == 0 ) then
+					SendNUIMessage( { _type = "showNewUser" } )
+				end
 			end
-		end
 
-		-- Bring focus to the NUI side
-		SetNuiFocus( true, true )
+			-- Bring focus to the NUI side
+			SetNuiFocus( true, true )
+		else
+			UTIL:Notify( "Another player already has the remote open." )
+		end
 	end
 end
 
@@ -1705,6 +1717,7 @@ end )
 RegisterNUICallback( "closeRemote", function( data, cb )
 	-- Remove focus to the NUI side
 	SetNuiFocus( false, false )
+	SYNC:SetRemoteOpenState( false )
 	cb( "ok" )
 end )
 
