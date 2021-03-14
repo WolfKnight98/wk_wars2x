@@ -1294,7 +1294,7 @@ function RADAR:SetAntennaSpeedIsLocked( ant, state )
 end
 
 -- Sets a speed and direction to be locked in for the given antenna
-function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
+function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType, playAudio )
 	-- Check that the passed speed and direction are actually valid
 	if ( speed ~= nil and dir ~= nil and lockType ~= nil ) then
 		-- Set the locked speed and direction to the passed values
@@ -1305,11 +1305,13 @@ function RADAR:SetAntennaSpeedLock( ant, speed, dir, lockType )
 		-- Tell the system that a speed has been locked for the given antenna
 		self:SetAntennaSpeedIsLocked( ant, true )
 
-		-- Send a message to the NUI side to play the beep sound with the current volume setting
-		SendNUIMessage( { _type = "audio", name = "beep", vol = self:GetSettingValue( "beep" ) } )
+		if ( playAudio ) then
+			-- Send a message to the NUI side to play the beep sound with the current volume setting
+			SendNUIMessage( { _type = "audio", name = "beep", vol = self:GetSettingValue( "beep" ) } )
 
-		-- Send a message to the NUI side to play the lock audio with the current voice volume setting
-		SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = self:GetSettingValue( "voice" ) } )
+			-- Send a message to the NUI side to play the lock audio with the current voice volume setting
+			SendNUIMessage( { _type = "lockAudio", ant = ant, dir = dir, vol = self:GetSettingValue( "voice" ) } )
+		end
 
 		-- Great Scott!
 		if ( speed == "¦88" and self:GetSettingValue( "speedType" ) == "mph" ) then
@@ -1356,6 +1358,10 @@ end
 function RADAR:LockAntennaSpeed( ant, override, lockRegardless )
 	-- Only lock a speed if the antenna is on and the UI is displayed
 	if ( self:IsPowerOn() and ( ( self:GetDisplayState() and not self:GetDisplayHidden() ) or lockRegardless ) and self:IsAntennaTransmitting( ant ) ) then
+		-- Used to determine whether or not to play the audio and update the display. This is mainly for the passenger
+		-- control system, as in theory one player could be in the operator menu, and the other player could lock a speed.
+		local isMenuOpen = self:IsMenuOpen()
+
 		-- Check if the antenna doesn't have a locked speed, if it doesn't then we lock in the speed, otherwise we
 		-- reset the lock
 		if ( not self:IsAntennaSpeedLocked( ant ) ) then
@@ -1388,14 +1394,16 @@ function RADAR:LockAntennaSpeed( ant, override, lockRegardless )
 			end
 
 			-- Lock in the speed data for the antenna
-			self:SetAntennaSpeedLock( ant, data[1], data[2], data[3] )
+			self:SetAntennaSpeedLock( ant, data[1], data[2], data[3], isMenuOpen )
 		else
 			self:ResetAntennaSpeedLock( ant )
 		end
 
-		-- Send an NUI message to change the lock label, otherwise we'd have to wait until the next main loop
-		SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )
-		SendNUIMessage( { _type = "antennaFast", ant = ant, state = self:ShouldFastBeDisplayed( ant ) } )
+		if ( not isMenuOpen ) then
+			-- Send an NUI message to change the lock label, otherwise we'd have to wait until the next main loop
+			SendNUIMessage( { _type = "antennaLock", ant = ant, state = self:IsAntennaSpeedLocked( ant ) } )
+			SendNUIMessage( { _type = "antennaFast", ant = ant, state = self:ShouldFastBeDisplayed( ant ) } )
+		end
 	end
 end
 
