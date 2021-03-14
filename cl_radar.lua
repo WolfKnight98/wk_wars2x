@@ -335,6 +335,10 @@ function RADAR:GetRadarDataForSync()
 	}
 end
 
+function RADAR:GetOMTableData()
+	return self.vars.settings
+end
+
 -- Sets the operator menu settings table within the radar's main variables table
 function RADAR:SetOMTableData( data )
 	if ( type( data ) == "table" ) then
@@ -772,6 +776,12 @@ function RADAR:CloseMenu( playAudio )
 	-- Save the operator menu values
 	local omData = json.encode( RADAR.vars.settings )
 	SetResourceKvp( "wk_wars2x_om_data", omData )
+
+	-- Send the operator menu to the passenger if allowed
+	if ( self:IsPassengerViewAllowed() ) then
+		local updatedOMData = self:GetOMTableData()
+		SYNC:SendUpdatedOMData( updatedOMData )
+	end
 end
 
 -- Returns if the operator menu is open

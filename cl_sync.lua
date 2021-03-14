@@ -90,6 +90,12 @@ function SYNC:LockAntennaSpeed( ant, data )
 	end )
 end
 
+function SYNC:SendUpdatedOMData( data )
+	self:SyncData( function( ply )
+		TriggerServerEvent( "wk_wars2x_sync:sendUpdatedOMData", ply, data )
+	end )
+end
+
 -- Requests radar data from the driver if the player has just entered a valid vehicle as a front seat passenger
 function SYNC:SyncDataOnEnter()
 	-- Make sure passenger view is allowed, also, using PLY:IsPassenger() already checks that the player's
@@ -167,4 +173,12 @@ end )
 RegisterNetEvent( "wk_wars2x_sync:receiveRadarData" )
 AddEventHandler( "wk_wars2x_sync:receiveRadarData", function( data )
 	RADAR:LoadDataFromDriver( data )
+end )
+
+RegisterNetEvent( "wk_wars2x_sync:receiveUpdatedOMData" )
+AddEventHandler( "wk_wars2x_sync:receiveUpdatedOMData", function( data )
+	if ( PLY:IsPassenger() and RADAR:IsThereBackupData() ) then
+		RADAR:SetOMTableData( data )
+		RADAR:SendSettingUpdate()
+	end
 end )

@@ -72,3 +72,8 @@ RegisterNetEvent( "wk_wars2x_sync:sendRadarDataForPassenger" )
 AddEventHandler( "wk_wars2x_sync:sendRadarDataForPassenger", function( playerFor, data )
 	TriggerClientEvent( "wk_wars2x_sync:receiveRadarData", playerFor, data )
 end )
+
+RegisterNetEvent( "wk_wars2x_sync:sendUpdatedOMData" )
+AddEventHandler( "wk_wars2x_sync:sendUpdatedOMData", function( playerFor, data )
+	TriggerClientEvent( "wk_wars2x_sync:receiveUpdatedOMData", playerFor, data )
+end )
