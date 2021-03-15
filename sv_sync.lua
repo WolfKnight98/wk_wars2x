@@ -35,31 +35,26 @@
 ----------------------------------------------------------------------------------]]--
 RegisterNetEvent( "wk_wars2x_sync:sendPowerState" )
 AddEventHandler( "wk_wars2x_sync:sendPowerState", function( target, state )
-	print( "[wk_wars2x]: Received \"wk_wars2x_sync:sendPowerState\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
 	TriggerClientEvent( "wk_wars2x_sync:receivePowerState", target, state )
 end )
 
 RegisterNetEvent( "wk_wars2x_sync:sendAntennaPowerState" )
 AddEventHandler( "wk_wars2x_sync:sendAntennaPowerState", function( target, state, ant )
-	print( "[wk_wars2x]: Received \"wk_wars2x_sync:sendAntennaPowerState\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
 	TriggerClientEvent( "wk_wars2x_sync:receiveAntennaPowerState", target, state, ant )
 end )
 
 RegisterNetEvent( "wk_wars2x_sync:sendAntennaMode" )
 AddEventHandler( "wk_wars2x_sync:sendAntennaMode", function( target, ant, mode )
-	print( "[wk_wars2x]: Received \"wk_wars2x_sync:sendAntennaMode\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
 	TriggerClientEvent( "wk_wars2x_sync:receiveAntennaMode", target, ant, mode )
 end )
 
 RegisterNetEvent( "wk_wars2x_sync:sendLockAntennaSpeed" )
 AddEventHandler( "wk_wars2x_sync:sendLockAntennaSpeed", function( target, ant, data )
-	print( "[wk_wars2x]: Received \"wk_wars2x_sync:sendLockAntennaSpeed\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
 	TriggerClientEvent( "wk_wars2x_sync:receiveLockAntennaSpeed", target, ant, data )
 end )
 
 RegisterNetEvent( "wk_wars2x_sync:sendLockCameraPlate" )
 AddEventHandler( "wk_wars2x_sync:sendLockCameraPlate", function( target, cam, data )
-	print( "[wk_wars2x]: Received \"wk_wars2x_sync:sendLockCameraPlate\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
 	TriggerClientEvent( "wk_wars2x_sync:receiveLockCameraPlate", target, cam, data )
 end )
 
@@ -69,8 +64,6 @@ end )
 ----------------------------------------------------------------------------------]]--
 RegisterNetEvent( "wk_wars2x_sync:requestRadarData" )
 AddEventHandler( "wk_wars2x_sync:requestRadarData", function( target )
-	print( "[wk_wars2x]: Received \"wk_wars2x_sync:requestRadarData\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
-
 	TriggerClientEvent( "wk_wars2x_sync:getRadarDataFromDriver", target, source )
 end )
 

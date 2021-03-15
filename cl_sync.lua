@@ -173,7 +173,6 @@ function RADAR:SetBackupOMData( data )
 end
 
 function RADAR:SetBackupAntennaData( ant, data )
-	-- UTIL:Notify( "Trying to set backup for antenna: " .. ant .. " (type: " .. type( ant ) .. ") with data: (type: " .. type( data ) .. ")" )
 	self.backupData.antennas[ant] = data
 end
 
@@ -249,10 +248,7 @@ function RADAR:RestoreFromBackup()
 
 		-- Restore the antenna data
 		if ( antData ~= nil ) then
-			-- UTIL:Notify( "Restoring backup " .. ant .. " antenna data" )
 			self:SetAntennaTableData( ant, antData )
-
-			-- UTIL:Log( "Backup " .. ant .. " antenna, data: (xmit: " .. tostring( antData.xmit ) .. ") (mode: " .. tostring( antData.mode ) .. ") (speedLocked: " .. tostring( antData.speedLocked ) .. ") (fast: " .. tostring( antData.fast ) .. ")" )
 
 			-- Clear the backup
 			self:SetBackupAntennaData( ant, nil )
@@ -261,8 +257,6 @@ function RADAR:RestoreFromBackup()
 
 	-- Get the power state
 	local pwrState = self:GetBackupPowerState()
-
-	-- UTIL:Notify( "Backup power state: " .. tostring( pwrState ) )
 
 	if ( pwrState ~= nil ) then
 		self:SetPowerState( pwrState, true )
