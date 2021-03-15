@@ -34,6 +34,84 @@ DecorRegister( "wk_wars2x_sync_remoteOpen", 2 )
 
 
 --[[----------------------------------------------------------------------------------
+	Plate reader sync variables and functions
+----------------------------------------------------------------------------------]]--
+READER.backupData =
+{
+	cams = {
+		["front"] = nil,
+		["rear"] = nil
+	}
+}
+
+function READER:GetReaderDataForSync()
+	return {
+		["front"] = self.vars.cams["front"],
+		["rear"] = self.vars.cams["rear"]
+	}
+end
+
+function READER:SetReaderCamData( cam, data )
+	if ( type( data ) == "table" ) then
+		self.vars.cams[cam] = data
+	end
+end
+
+function READER:GetBackupReaderData( cam )
+	return self.backupData.cams[cam]
+end
+
+function READER:SetBackupReaderData( cam, data )
+	self.backupData.cams[cam] = data
+end
+
+function READER:IsThereBackupData()
+	return self:GetBackupReaderData( "front" ) ~= nil or self:GetBackupReaderData( "rear" ) ~= nil
+end
+
+function READER:BackupData()
+	local data = self:GetReaderDataForSync()
+
+	for cam in UTIL:Values( { "front", "rear" } ) do
+		if ( self:GetBackupReaderData( cam ) == nil ) then
+			self:SetBackupReaderData( cam, data[cam] )
+		end
+	end
+end
+
+function READER:LoadDataFromDriver( data )
+	-- Backup the local data first
+	self:BackupData()
+
+	-- As a precaution, give the system 50ms before it replaces the local data with the data from the driver
+	Citizen.SetTimeout( 50, function()
+		-- Set the camera data
+		for cam in UTIL:Values( { "front", "rear" } ) do
+			self:SetReaderCamData( cam, data[cam] )
+
+			self:ForceNUIUpdate( true )
+		end
+	end )
+end
+
+function READER:RestoreFromBackup()
+	-- Iterate through the cameras and restore their backups
+	for cam in UTIL:Values( { "front", "rear" } ) do
+		-- Get the camera backup data
+		local camData = self:GetBackupReaderData( cam )
+
+		-- Restore the camera data
+		if ( camData ~= nil ) then
+			self:SetReaderCamData( cam, camData )
+
+			-- Clear the backup
+			self:SetBackupReaderData( cam, nil )
+		end
+	end
+end
+
+
+--[[----------------------------------------------------------------------------------
 	Radar sync variables and functions
 ----------------------------------------------------------------------------------]]--
 -- Used to back up the operator menu and antenna data when the player becomes a passenger
@@ -267,6 +345,12 @@ function SYNC:SendUpdatedOMData( data )
 	end )
 end
 
+function SYNC:LockReaderCam( cam, data )
+	self:SyncData( function( ply )
+		TriggerServerEvent( "wk_wars2x_sync:sendLockCameraPlate", ply, cam, data )
+	end )
+end
+
 -- Requests radar data from the driver if the player has just entered a valid vehicle as a front seat passenger
 function SYNC:SyncDataOnEnter()
 	-- Make sure passenger view is allowed, also, using PLY:IsPassenger() already checks that the player's
@@ -284,6 +368,7 @@ function SYNC:SyncDataOnEnter()
 			if ( RADAR:IsThereBackupData() ) then
 				-- Restore the local data
 				RADAR:RestoreFromBackup()
+				READER:RestoreFromBackup()
 			end
 		end
 	end
@@ -324,18 +409,25 @@ AddEventHandler( "wk_wars2x_sync:receiveLockAntennaSpeed", function( antenna, da
 	RADAR:LockAntennaSpeed( antenna, data, true )
 end )
 
+RegisterNetEvent( "wk_wars2x_sync:receiveLockCameraPlate" )
+AddEventHandler( "wk_wars2x_sync:receiveLockCameraPlate", function( camera, data )
+	READER:LockCam( camera, true, false, data )
+end )
+
 -- Event for gathering the radar data and sending it to another player
 RegisterNetEvent( "wk_wars2x_sync:getRadarDataFromDriver" )
 AddEventHandler( "wk_wars2x_sync:getRadarDataFromDriver", function( playerFor )
-	local data = RADAR:GetRadarDataForSync()
+	local radarData = RADAR:GetRadarDataForSync()
+	local readerData = READER:GetReaderDataForSync()
 
-	TriggerServerEvent( "wk_wars2x_sync:sendRadarDataForPassenger", playerFor, data )
+	TriggerServerEvent( "wk_wars2x_sync:sendRadarDataForPassenger", playerFor, { radarData, readerData } )
 end )
 
 -- Event for receiving radar data from another player
 RegisterNetEvent( "wk_wars2x_sync:receiveRadarData" )
 AddEventHandler( "wk_wars2x_sync:receiveRadarData", function( data )
-	RADAR:LoadDataFromDriver( data )
+	RADAR:LoadDataFromDriver( data[1] )
+	READER:LoadDataFromDriver( data[2] )
 end )
 
 -- Event for receiving updated operator menu data from another player

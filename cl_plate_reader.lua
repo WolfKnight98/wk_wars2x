@@ -141,17 +141,23 @@ function READER:GetCamLocked( cam )
 end
 
 -- Locks the given reader
-function READER:LockCam( cam, playBeep, isBolo )
+function READER:LockCam( cam, playBeep, isBolo, override )
 	-- Check that plate readers can actually be locked
-	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() ) then
+	if ( PLY:VehicleStateValid() and self:CanPerformMainTask() and self:GetPlate( cam ) ~= "" ) then
 		-- Toggle the lock state
 		self.vars.cams[cam].locked = not self.vars.cams[cam].locked
 
-		-- Tell the NUI side to show/hide the lock icon
-		SendNUIMessage( { _type = "lockPlate", cam = cam, state = self:GetCamLocked( cam ), isBolo = isBolo } )
-
 		-- Play a beep
 		if ( self:GetCamLocked( cam ) ) then
+			-- Here we check if the override parameter is valid, if so then we set the reader's plate data to the
+			-- plate data provided in the override table.
+			if ( override ~= nil ) then
+				self:SetPlate( cam, override[1] )
+				self:SetIndex( cam, override[2] )
+
+				self:ForceNUIUpdate( false )
+			end
+
 			if ( playBeep ) then
 				SendNUIMessage( { _type = "audio", name = "beep", vol = RADAR:GetSettingValue( "plateAudio" ) } )
 			end
@@ -163,6 +169,9 @@ function READER:LockCam( cam, playBeep, isBolo )
 			-- Trigger an event so developers can hook into the scanner every time a plate is locked
 			TriggerServerEvent( "wk:onPlateLocked", cam, self:GetPlate( cam ), self:GetIndex( cam ) )
 		end
+
+		-- Tell the NUI side to show/hide the lock icon
+		SendNUIMessage( { _type = "lockPlate", cam = cam, state = self:GetCamLocked( cam ), isBolo = isBolo } )
 	end
 end
 
@@ -178,6 +187,30 @@ function READER:GetCamFromNum( relPos )
 	elseif ( relPos == -1 ) then
 		return "rear"
 	end
+end
+
+-- Forces an NUI update, used by the passenger control system
+function READER:ForceNUIUpdate( lock )
+	for cam in UTIL:Values( { "front", "rear" } ) do
+		local plate = self:GetPlate( cam )
+		local index = self:GetIndex( cam )
+
+		if ( plate ~= "" and index ~= "" ) then
+			SendNUIMessage( { _type = "changePlate", cam = cam, plate = plate, index = index } )
+
+			if ( lock ) then
+				SendNUIMessage( { _type = "lockPlate", cam = cam, state = self:GetCamLocked( cam ), isBolo = false } )
+			end
+		end
+	end
+end
+
+-- Returns a table with both antenna's speed data and directions
+function READER:GetCameraDataPacket( cam )
+	return {
+		self:GetPlate( cam ),
+		self:GetIndex( cam )
+	}
 end
 
 RegisterNetEvent( "wk:togglePlateLock" )
@@ -264,6 +297,8 @@ function READER:Main()
 						-- Automatically lock the plate if the scanned plate matches the BOLO
 						if ( plate == self:GetBoloPlate() ) then
 							self:LockCam( cam, false, true )
+
+							SYNC:LockReaderCam( cam, READER:GetCameraDataPacket( cam ) )
 						end
 
 						-- Send the plate information to the NUI side to update the UI

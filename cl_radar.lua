@@ -79,6 +79,8 @@ local function RegisterKeyBinds()
 		RegisterCommand( "radar_fr_cam", function()
 			if ( not RADAR:GetKeyLockState() ) then
 				READER:LockCam( "front", true, false )
+
+				SYNC:LockReaderCam( "front", READER:GetCameraDataPacket( "front" ) )
 			end
 		end )
 		RegisterKeyMapping( "radar_fr_cam", "Front Plate Reader Lock/Unlock", "keyboard", CONFIG.keyDefaults.plate_front_lock )
@@ -87,6 +89,8 @@ local function RegisterKeyBinds()
 		RegisterCommand( "radar_bk_cam", function()
 			if ( not RADAR:GetKeyLockState() ) then
 				READER:LockCam( "rear", true, false )
+
+				SYNC:LockReaderCam( "rear", READER:GetCameraDataPacket( "rear" ) )
 			end
 		end )
 		RegisterKeyMapping( "radar_bk_cam", "Rear Plate Reader Lock/Unlock", "keyboard", CONFIG.keyDefaults.plate_rear_lock )
@@ -1279,7 +1283,7 @@ function RADAR:ResetAntenna( ant )
 	self:ResetAntennaSpeedLock( ant )
 end
 
--- Returns a table with both antenna's speed data and directions
+-- Returns a table with the given antenna's speed data and directions
 function RADAR:GetAntennaDataPacket( ant )
 	return {
 		self:GetAntennaSpeed( ant ),

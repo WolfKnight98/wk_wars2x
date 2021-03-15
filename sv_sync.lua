@@ -57,6 +57,12 @@ AddEventHandler( "wk_wars2x_sync:sendLockAntennaSpeed", function( target, ant, d
 	TriggerClientEvent( "wk_wars2x_sync:receiveLockAntennaSpeed", target, ant, data )
 end )
 
+RegisterNetEvent( "wk_wars2x_sync:sendLockCameraPlate" )
+AddEventHandler( "wk_wars2x_sync:sendLockCameraPlate", function( target, cam, data )
+	print( "[wk_wars2x]: Received \"wk_wars2x_sync:sendLockCameraPlate\" event from " .. GetPlayerName( source ) .. " (" .. tostring( source ) .. ") for " .. GetPlayerName( target ) .. " (" .. tostring( target ) .. ")" )
+	TriggerClientEvent( "wk_wars2x_sync:receiveLockCameraPlate", target, cam, data )
+end )
+
 
 --[[----------------------------------------------------------------------------------
 	Radar data sync server events
