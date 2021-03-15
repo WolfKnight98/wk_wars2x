@@ -141,6 +141,7 @@ end
 function RADAR:SetOMTableData( data )
 	if ( type( data ) == "table" ) then
 		self.vars.settings = data
+		self:UpdateOptionIndexes( false )
 	end
 end
 
@@ -433,7 +434,7 @@ end )
 -- Event for receiving updated operator menu data from another player
 RegisterNetEvent( "wk_wars2x_sync:receiveUpdatedOMData" )
 AddEventHandler( "wk_wars2x_sync:receiveUpdatedOMData", function( data )
-	if ( PLY:IsPassenger() and RADAR:IsThereBackupData() ) then
+	if ( PLY:IsDriver() or ( PLY:IsPassenger() and RADAR:IsThereBackupData() ) ) then
 		RADAR:SetOMTableData( data )
 		RADAR:SendSettingUpdate()
 	end

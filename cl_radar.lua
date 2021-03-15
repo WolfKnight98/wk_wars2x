@@ -731,8 +731,10 @@ end
 
 -- Updates the operator menu option indexes, as the default menu values can be changed in the config, we
 -- need to update the indexes otherwise the menu will display the wrong values
-function RADAR:UpdateOptionIndexes()
-	self:LoadOMData()
+function RADAR:UpdateOptionIndexes( loadSaved )
+	if ( loadSaved ) then
+		self:LoadOMData()
+	end
 
 	-- Iterate through each of the internal settings
 	for k, v in pairs( self.vars.settings ) do
@@ -1650,7 +1652,7 @@ end )
 RegisterNUICallback( "menu", function( data, cb )
 	if ( PLY:CanControlRadar() ) then
 		-- Only run the codw if the radar has power and is not powering up
-		if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() and PLY:IsDriver() ) then
+		if ( RADAR:IsPowerOn() and not RADAR:IsPoweringUp() ) then
 			-- As the menu button is a multipurpose button, we first check to see if the menu is already open
 			if ( RADAR:IsMenuOpen() ) then
 				-- As the menu is already open, we then iterate to the next option in the settings list
@@ -1875,7 +1877,7 @@ Citizen.CreateThread( function()
 	RADAR:UpdateRayEndCoords()
 
 	-- Update the operator menu positions
-	RADAR:UpdateOptionIndexes()
+	RADAR:UpdateOptionIndexes( true )
 
 	-- If the fast limit feature is allowed, create the config in the radar variables
 	if ( RADAR:IsFastLimitAllowed() ) then
