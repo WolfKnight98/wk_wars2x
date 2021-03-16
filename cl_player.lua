@@ -42,6 +42,7 @@ PLY =
 	vehClassValid = false
 }
 
+-- Returns if the current vehicle fits the validity requirements for the radar to work
 function PLY:VehicleStateValid()
 	return DoesEntityExist( self.veh ) and self.veh > 0 and self.vehClassValid
 end
@@ -78,6 +79,7 @@ function PLY:GetOtherPed()
 	return nil
 end
 
+-- Returns the server ID of the player in the opposite seat (driver/passenger)
 function PLY:GetOtherPedServerId()
 	local otherPed = self:GetOtherPed()
 
@@ -105,18 +107,26 @@ Citizen.CreateThread( function()
 	end
 end )
 
+-- This thread is used to check when the player is entering a vehicle and then triggers the sync system 
 Citizen.CreateThread( function()
 	while ( true ) do
+		-- The sync trigger should only start when the player is getting into a vehicle
 		if ( IsPedGettingIntoAVehicle( PLY.ped ) ) then
+			-- Get the vehicle the player is entering
 			local vehEntering = GetVehiclePedIsEntering( PLY.ped )
 
-			Citizen.Wait( 2000 )
+			-- Only proceed if the vehicle the player is entering is an emergency vehicle
 			if ( GetVehicleClass( vehEntering ) == 18 ) then
+				-- Wait two seconds, this gives enough time for the player to get sat in the seat
+				Citizen.Wait( 2000 )
 
-			local veh = GetVehiclePedIsIn( PLY.ped, false )
+				-- Get the vehicle the player is now in
+				local veh = GetVehiclePedIsIn( PLY.ped, false )
 
-			if ( veh == vehEntering ) then
-				SYNC:SyncDataOnEnter()
+				-- Trigger the main sync data function if the vehicle the player is now in is the same as the one they
+				-- began entering
+				if ( veh == vehEntering ) then
+					SYNC:SyncDataOnEnter()
 				end
 			end
 		end
