@@ -111,11 +111,13 @@ Citizen.CreateThread( function()
 			local vehEntering = GetVehiclePedIsEntering( PLY.ped )
 
 			Citizen.Wait( 2000 )
+			if ( GetVehicleClass( vehEntering ) == 18 ) then
 
 			local veh = GetVehiclePedIsIn( PLY.ped, false )
 
 			if ( veh == vehEntering ) then
 				SYNC:SyncDataOnEnter()
+				end
 			end
 		end
 
