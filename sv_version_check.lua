@@ -71,7 +71,7 @@ PerformHttpRequest( "https://wolfknight98.github.io/wk_wars2x_web/version.txt", 
 		end
 	else
 		-- In case the version can not be requested, print out an error message
-		print( "  ||    ^1There was an error getting the latest version information, if the issue persists contact WolfKnight#8586 on Discord.\n^0  ||\n  \\\\\n" )
+		print( "  ||    ^1There was an error getting the latest version information.\n^0  ||\n  \\\\\n" )
 	end
 
 	-- Warn the console if the resource has been renamed, as this will cause issues with the resource's functionality.
