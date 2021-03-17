@@ -108,6 +108,8 @@ function READER:RestoreFromBackup()
 			self:SetBackupReaderData( cam, nil )
 		end
 	end
+
+	self:ForceNUIUpdate( true )
 end
 
 
