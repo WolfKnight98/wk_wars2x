@@ -32,6 +32,24 @@
 
 DecorRegister( "wk_wars2x_sync_remoteOpen", 2 )
 
+local function RestoreData( obj, getFunc, setFunc, setBackupFunc, key )
+	if ( key ~= nil ) then
+		local data = getFunc( obj, key )
+
+		if ( data ~= nil ) then
+			setFunc( obj, key, data )
+			setBackupFunc( obj, key, nil )
+		end
+	else
+		local data = getFunc( obj )
+
+		if ( data ~= nil ) then
+			setFunc( obj, data )
+			setBackupFunc( obj, nil )
+		end
+	end
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Plate reader sync variables and functions
@@ -57,13 +75,8 @@ function READER:SetReaderCamData( cam, data )
 	end
 end
 
-function READER:GetBackupReaderData( cam )
-	return self.backupData.cams[cam]
-end
-
-function READER:SetBackupReaderData( cam, data )
-	self.backupData.cams[cam] = data
-end
+function READER:GetBackupReaderData( cam ) return self.backupData.cams[cam] end
+function READER:SetBackupReaderData( cam, data ) self.backupData.cams[cam] = data end
 
 function READER:IsThereBackupData()
 	return self:GetBackupReaderData( "front" ) ~= nil or self:GetBackupReaderData( "rear" ) ~= nil
@@ -88,25 +101,16 @@ function READER:LoadDataFromDriver( data )
 		-- Set the camera data
 		for cam in UTIL:Values( { "front", "rear" } ) do
 			self:SetReaderCamData( cam, data[cam] )
-
-			self:ForceNUIUpdate( true )
 		end
+
+		self:ForceNUIUpdate( true )
 	end )
 end
 
 function READER:RestoreFromBackup()
 	-- Iterate through the cameras and restore their backups
 	for cam in UTIL:Values( { "front", "rear" } ) do
-		-- Get the camera backup data
-		local camData = self:GetBackupReaderData( cam )
-
-		-- Restore the camera data
-		if ( camData ~= nil ) then
-			self:SetReaderCamData( cam, camData )
-
-			-- Clear the backup
-			self:SetBackupReaderData( cam, nil )
-		end
+		RestoreData( READER, READER.GetBackupReaderData, READER.SetReaderCamData, READER.SetBackupReaderData, cam )
 	end
 
 	self:ForceNUIUpdate( true )
@@ -135,9 +139,7 @@ function RADAR:GetRadarDataForSync()
 	}
 end
 
-function RADAR:GetOMTableData()
-	return self.vars.settings
-end
+function RADAR:GetOMTableData()	return self.vars.settings end
 
 -- Sets the operator menu settings table within the radar's main variables table
 function RADAR:SetOMTableData( data )
@@ -154,29 +156,14 @@ function RADAR:SetAntennaTableData( ant, data )
 	end
 end
 
-function RADAR:GetBackupPowerState()
-	return self.backupData.power
-end
+function RADAR:GetBackupPowerState() return self.backupData.power end
+function RADAR:SetBackupPowerState( state ) self.backupData.power = state end
 
-function RADAR:GetBackupOMData()
-	return self.backupData.om
-end
+function RADAR:GetBackupOMData() return self.backupData.om end
+function RADAR:SetBackupOMData( data ) self.backupData.om = data end
 
-function RADAR:GetBackupAntennaData( ant )
-	return self.backupData.antennas[ant]
-end
-
-function RADAR:SetBackupPowerState( state )
-	self.backupData.power = state
-end
-
-function RADAR:SetBackupOMData( data )
-	self.backupData.om = data
-end
-
-function RADAR:SetBackupAntennaData( ant, data )
-	self.backupData.antennas[ant] = data
-end
+function RADAR:GetBackupAntennaData( ant ) return self.backupData.antennas[ant] end
+function RADAR:SetBackupAntennaData( ant, data ) self.backupData.antennas[ant] = data end
 
 function RADAR:IsThereBackupData()
 	return self:GetBackupOMData() ~= nil or self:GetBackupAntennaData( "front" ) ~= nil or self:GetBackupAntennaData( "rear" ) ~= nil
@@ -232,37 +219,20 @@ end
 
 -- Restores the local player's operator menu and antenna data
 function RADAR:RestoreFromBackup()
-	-- Get the operator menu data
-	local omData = self:GetBackupOMData()
-
 	-- Restore the operator menu data
-	if ( omData ~= nil ) then
-		self:SetOMTableData( omData )
-
-		-- Clear the backup
-		self:SetBackupOMData( nil )
-	end
+	RestoreData( RADAR, RADAR.GetBackupOMData, RADAR.SetOMTableData, RADAR.SetBackupOMData )
 
 	-- Iterate through the antennas and restore their backups
 	for ant in UTIL:Values( { "front", "rear" } ) do
-		-- Get the antenna backup data
-		local antData = self:GetBackupAntennaData( ant )
-
-		-- Restore the antenna data
-		if ( antData ~= nil ) then
-			self:SetAntennaTableData( ant, antData )
-
-			-- Clear the backup
-			self:SetBackupAntennaData( ant, nil )
-		end
+		RestoreData( RADAR, RADAR.GetBackupAntennaData, RADAR.SetAntennaTableData, RADAR.SetBackupAntennaData, ant )
 	end
 
 	-- Get the power state
 	local pwrState = self:GetBackupPowerState()
 
+	-- Restore the power state
 	if ( pwrState ~= nil ) then
 		self:SetPowerState( pwrState, true )
-
 		self:SetBackupPowerState( nil )
 	end
 
@@ -342,6 +312,7 @@ function SYNC:SendUpdatedOMData( data )
 	end )
 end
 
+-- Sends the plate reader lock event with the data from the reader that was locked
 function SYNC:LockReaderCam( cam, data )
 	self:SyncData( function( ply )
 		TriggerServerEvent( "wk_wars2x_sync:sendLockCameraPlate", ply, cam, data )
