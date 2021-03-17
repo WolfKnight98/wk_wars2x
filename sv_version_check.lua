@@ -58,9 +58,10 @@ PerformHttpRequest( "https://wolfknight98.github.io/wk_wars2x_web/version.txt", 
 	-- Get the current resource version
 	local curVer = GetCurrentVersion()
 
+	print( "  ||    Current version: " .. curVer )
+
 	if ( text ~= nil ) then
-		-- Print out the current and latest version
-		print( "  ||    Current version: " .. curVer )
+		-- Print latest version
 		print( "  ||    Latest recommended version: " .. text .."\n  ||" )
 
 		-- If the versions are different, print it out
