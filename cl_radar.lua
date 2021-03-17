@@ -207,7 +207,13 @@ RADAR.vars =
 		["plateAudio"] = CONFIG.menuDefaults["plateAudio"],
 
 		-- The speed unit used in conversions
-		["speedType"] = CONFIG.menuDefaults["speedType"]
+		["speedType"] = CONFIG.menuDefaults["speedType"],
+
+		-- The state of automatic speed locking
+		["fastLock"] = CONFIG.menuDefaults["fastLock"],
+
+		-- The speed limit for automatic speed locking
+		["fastLimit"] = CONFIG.menuDefaults["fastLimit"]
 	},
 
 	-- These 3 variables are for the in-radar menu that can be accessed through the remote control, the menuOptions table
@@ -539,10 +545,6 @@ if ( RADAR:IsFastLimitAllowed() ) then
 			table.insert( fastOptions[2].optionsText, text )
 			table.insert( fastOptions[2].options, i )
 		end
-
-		-- Create the settings with the default options
-		self:SetSettingValue( "fastLock", false )
-		self:SetSettingValue( "fastLimit", 60 )
 
 		-- Add the fast options to the main menu options table
 		table.insert( self.vars.menuOptions, fastOptions[1] )
@@ -1874,13 +1876,13 @@ Citizen.CreateThread( function()
 	-- Update the end coordinates for the ray traces based on the config, again, reduced hard coding
 	RADAR:UpdateRayEndCoords()
 
-	-- Update the operator menu positions
-	RADAR:UpdateOptionIndexes( true )
-
 	-- If the fast limit feature is allowed, create the config in the radar variables
 	if ( RADAR:IsFastLimitAllowed() ) then
 		RADAR:CreateFastLimitConfig()
 	end
+
+	-- Update the operator menu positions
+	RADAR:UpdateOptionIndexes( true )
 
 	-- Run the main radar function
 	while ( true ) do

@@ -112,7 +112,15 @@ CONFIG.menuDefaults =
 
 	-- The speed unit used in conversions
 	-- Options: mph or kmh
-	["speedType"] = "mph"
+	["speedType"] = "mph",
+
+	-- The state for automatic speed locking. This requires CONFIG.allow_fast_limit to be true.
+	-- Options: true or false
+	["fastLock"] = false,
+
+	-- The speed limit required for automatic speed locking. This requires CONFIG.allow_fast_limit to be true.
+	-- Options: 0 to 200
+	["fastLimit"] = 60
 }
 
 -- Here you can change the default scale of the UI elements, as well as the safezone size
