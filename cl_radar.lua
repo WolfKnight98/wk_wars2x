@@ -1261,7 +1261,7 @@ function RADAR:LockAntennaSpeed( ant, override, lockRegardless )
 			end
 
 			-- Lock in the speed data for the antenna
-			self:SetAntennaSpeedLock( ant, data[1], data[2], data[3], isMenuOpen )
+			self:SetAntennaSpeedLock( ant, data[1], data[2], data[3], not isMenuOpen )
 		else
 			self:ResetAntennaSpeedLock( ant )
 		end
