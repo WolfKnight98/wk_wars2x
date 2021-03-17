@@ -41,7 +41,7 @@ CONFIG.debug = true
 -- exceeds the fast limit, it will be locked into the fast box. Default setting is disabled to maintain realism
 CONFIG.allow_fast_limit = true
 
--- Radar only lock playersw with auto fast locking
+-- Radar only lock players with auto fast locking
 -- When enabled, the radar will only automatically lock a speed if the caught vehicle has a real player in it.
 CONFIG.only_lock_players = false
 
