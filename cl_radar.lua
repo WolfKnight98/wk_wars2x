@@ -549,12 +549,12 @@ if ( RADAR:IsFastLimitAllowed() ) then
 
 	-- Returns the numerical fast limit
 	function RADAR:GetFastLimit()
-		return self.vars.settings["fastLimit"]
+		return self:GetSettingValue( "fastLimit" )
 	end
 
 	-- Returns if the fast lock menu option is on or off
 	function RADAR:IsFastLockEnabled()
-		return self.vars.settings["fastLock"]
+		return self:GetSettingValue( "fastLock" )
 	end
 end
 
