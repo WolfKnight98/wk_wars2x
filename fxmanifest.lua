@@ -38,7 +38,7 @@ game "gta5"
 name "Wraith ARS 2X"
 description "Police radar and plate reader system for FiveM"
 author "WolfKnight"
-version "beta"
+version "1.3.0"
 
 -- Include the files
 files {
