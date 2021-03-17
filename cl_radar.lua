@@ -274,10 +274,6 @@ RADAR.vars =
 	-- Table to store tables for hit entities of captured vehicles
 	capturedVehicles = {},
 
-	-- Table for temp id storage to stop unnecessary trace checks
-	-- needs to be redone
-	-- tempVehicleIDs = {},
-
 	-- Table to store the valid vehicle models
 	validVehicles = {},
 
