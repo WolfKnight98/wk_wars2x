@@ -86,35 +86,17 @@ function READER:ToggleDisplayState()
 	SendNUIMessage( { _type = "setReaderDisplayState", state = self:GetDisplayState() } )
 end
 
--- Sets the display's hidden state to the given state
-function READER:SetDisplayHidden( state )
-	self.vars.hidden = state
-end
+-- Getter and setter for the display hidden state
+function READER:GetDisplayHidden() return self.vars.hidden end
+function READER:SetDisplayHidden( state ) self.vars.hidden = state end
 
--- Returns if the display is hidden
-function READER:GetDisplayHidden()
-	return self.vars.hidden
-end
+-- Getter and setter for the given camera's plate
+function READER:GetPlate( cam )	return self.vars.cams[cam].plate end
+function READER:SetPlate( cam, plate ) self.vars.cams[cam].plate = plate end
 
--- Returns the stored plate for the given reader
-function READER:GetPlate( cam )
-	return self.vars.cams[cam].plate
-end
-
--- Sets the plate for the given reader to the given plate
-function READER:SetPlate( cam, plate )
-	self.vars.cams[cam].plate = plate
-end
-
--- Returns the stored plate index for the given reader
-function READER:GetIndex( cam )
-	return self.vars.cams[cam].index
-end
-
--- Sets the plate index for the given reader to the given index
-function READER:SetIndex( cam, index )
-	self.vars.cams[cam].index = index
-end
+-- Getter and setter for the given camera's plate display index
+function READER:GetIndex( cam ) return self.vars.cams[cam].index end
+function READER:SetIndex( cam, index ) self.vars.cams[cam].index = index end
 
 -- Returns the bolo plate
 function READER:GetBoloPlate()
@@ -136,9 +118,7 @@ function READER:ClearBoloPlate()
 end
 
 -- Returns if the given reader is locked
-function READER:GetCamLocked( cam )
-	return self.vars.cams[cam].locked
-end
+function READER:GetCamLocked( cam )	return self.vars.cams[cam].locked end
 
 -- Locks the given reader
 function READER:LockCam( cam, playBeep, isBolo, override )
