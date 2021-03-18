@@ -184,10 +184,14 @@ function RADAR:BackupData()
 		self:SetBackupOMData( data.om )
 	end
 
-	-- Backup front and rear antenna data
-	for ant in UTIL:Values( { "front", "rear" } ) do
-		if ( self:GetBackupAntennaData( ant ) == nil ) then
-			self:SetBackupAntennaData( ant, data[ant] )
+	-- Only backup the radar data if the player has the power on. There's no point backing up the data as it'll just
+	-- get reset when they turn the power on anyway
+	if ( data.power ) then
+		-- Backup front and rear antenna data
+		for ant in UTIL:Values( { "front", "rear" } ) do
+			if ( self:GetBackupAntennaData( ant ) == nil ) then
+				self:SetBackupAntennaData( ant, data[ant] )
+			end
 		end
 	end
 end
