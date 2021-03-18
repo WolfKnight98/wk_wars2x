@@ -1187,12 +1187,12 @@ function RADAR:LockAntennaSpeed( ant, override, lockRegardless )
 			-- As the lock system is based on which speed is displayed, we have to check if there is a speed in the
 			-- fast box, if there is then we lock in the fast speed, otherwise we lock in the strongest speed
 			if ( self:IsFastDisplayEnabled() and self:DoesAntennaHaveValidFastData( ant ) ) then
-				data[1] = override[3] or self:GetAntennaFastSpeed( ant )
-				data[2] = override[4] or self:GetAntennaFastDir( ant )
+				data[1] = self:GetAntennaFastSpeed( ant )
+				data[2] = self:GetAntennaFastDir( ant )
 				data[3] = 2
 			else
-				data[1] = override[1] or self:GetAntennaSpeed( ant )
-				data[2] = override[2] or self:GetAntennaDir( ant )
+				data[1] = self:GetAntennaSpeed( ant )
+				data[2] = self:GetAntennaDir( ant )
 				data[3] = 1
 			end
 
