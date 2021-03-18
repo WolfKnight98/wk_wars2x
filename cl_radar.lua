@@ -1773,7 +1773,10 @@ function RADAR:Main()
 								-- Make sure the speed is larger than the limit, and that there isn't already a locked speed
 								if ( self:IsFastLockEnabled() and convertedSpeed > self:GetFastLimit() and not self:IsAntennaSpeedLocked( ant ) ) then
 									if ( ( self:OnlyLockFastPlayers() and UTIL:IsPlayerInVeh( av[ant][i].veh ) ) or not self:OnlyLockFastPlayers() ) then
-										self:LockAntennaSpeed( ant )
+										if ( PLY:IsDriver() ) then
+											self:LockAntennaSpeed( ant, nil, false )
+											SYNC:LockAntennaSpeed( ant, RADAR:GetAntennaDataPacket( ant ) )
+										end
 									end
 								end
 							end
