@@ -390,26 +390,6 @@ function RADAR:GetDisplayState()
 	return self.vars.displayed
 end
 
--- Used to set individual settings within RADAR.vars.settings, as all of the settings use string keys, using this
--- function makes updating settings easier
-function RADAR:SetSettingValue( setting, value )
-	-- Make sure that we're not trying to set a nil value for the setting
-	if ( value ~= nil ) then
-		-- Set the setting's value
-		self.vars.settings[setting] = value
-
-		-- If the setting that's being updated is same or opp, then we update the end coordinates for the ray tracer
-		if ( setting == "same" or setting == "opp" ) then
-			self:UpdateRayEndCoords()
-		end
-	end
-end
-
--- Returns the value of the given setting
-function RADAR:GetSettingValue( setting )
-	return self.vars.settings[setting]
-end
-
 -- Return the state of the fastDisplay setting, short hand direct way to check if the fast system is enabled
 function RADAR:IsFastDisplayEnabled()
 	return self:GetSettingValue( "fastDisplay" )
@@ -445,25 +425,13 @@ function RADAR:CanPerformMainTask()
 	return self:IsPowerOn() and not self:IsPoweringUp() and not self:IsMenuOpen()
 end
 
--- Returns what the dynamic thread wait time is
-function RADAR:GetThreadWaitTime()
-	return self.vars.threadWaitTime
-end
+-- Returns/sets what the dynamic thread wait time is
+function RADAR:GetThreadWaitTime() return self.vars.threadWaitTime end
+function RADAR:SetThreadWaitTime( time ) self.vars.threadWaitTime = time end
 
--- Sets the dynamic thread wait time to the given value
-function RADAR:SetThreadWaitTime( time )
-	self.vars.threadWaitTime = time
-end
-
--- Sets the display's hidden state to the given state
-function RADAR:SetDisplayHidden( state )
-	self.vars.hidden = state
-end
-
--- Returns if the display is hidden
-function RADAR:GetDisplayHidden()
-	return self.vars.hidden
-end
+-- Returns/sets the radr's display hidden state
+function RADAR:GetDisplayHidden() return self.vars.hidden end
+function RADAR:SetDisplayHidden( state ) self.vars.hidden = state end
 
 -- Opens the remote only if the pause menu is not open and the player's vehicle state is valid, as the
 -- passenger can also open the remote, we check the config variable as well.
@@ -707,6 +675,26 @@ function RADAR:SendMenuUpdate()
 	SendNUIMessage( { _type = "menu", text = self:GetMenuOptionDisplayText(), option = self:GetMenuOptionText() } )
 end
 
+-- Used to set individual settings within RADAR.vars.settings, as all of the settings use string keys, using this
+-- function makes updating settings easier
+function RADAR:SetSettingValue( setting, value )
+	-- Make sure that we're not trying to set a nil value for the setting
+	if ( value ~= nil ) then
+		-- Set the setting's value
+		self.vars.settings[setting] = value
+
+		-- If the setting that's being updated is same or opp, then we update the end coordinates for the ray tracer
+		if ( setting == "same" or setting == "opp" ) then
+			self:UpdateRayEndCoords()
+		end
+	end
+end
+
+-- Returns the value of the given setting
+function RADAR:GetSettingValue( setting )
+	return self.vars.settings[setting]
+end
+
 -- Attempts to load the saved operator menu data
 function RADAR:LoadOMData()
 	UTIL:Log( "Attempting to load saved operator menu data." )
@@ -756,29 +744,19 @@ end
 	Radar basics functions
 ----------------------------------------------------------------------------------]]--
 -- Returns the patrol speed value stored
-function RADAR:GetPatrolSpeed()
-	return self.vars.patrolSpeed
-end
+function RADAR:GetPatrolSpeed()	return self.vars.patrolSpeed end
 
 -- Returns the current vehicle pool
-function RADAR:GetVehiclePool()
-	return self.vars.vehiclePool
-end
+function RADAR:GetVehiclePool()	return self.vars.vehiclePool end
 
 -- Returns the maximum distance a ray trace can go
-function RADAR:GetMaxCheckDist()
-	return self.vars.maxCheckDist
-end
+function RADAR:GetMaxCheckDist() return self.vars.maxCheckDist end
 
 -- Returns the table sorting function 'strongest'
-function RADAR:GetStrongestSortFunc()
-	return self.sorting.strongest
-end
+function RADAR:GetStrongestSortFunc() return self.sorting.strongest end
 
 -- Returns the table sorting function 'fastest'
-function RADAR:GetFastestSortFunc()
-	return self.sorting.fastest
-end
+function RADAR:GetFastestSortFunc() return self.sorting.fastest end
 
 -- Sets the patrol speed to a formatted version of the given number
 function RADAR:SetPatrolSpeed( speed )
@@ -799,29 +777,19 @@ end
 	Radar ray trace functions
 ----------------------------------------------------------------------------------]]--
 -- Returns what the current ray trace state is
-function RADAR:GetRayTraceState()
-	return self.vars.rayTraceState
-end
+function RADAR:GetRayTraceState() return self.vars.rayTraceState end
 
 -- Caches the number of ray traces in RADAR.rayTraces
-function RADAR:CacheNumRays()
-	self.vars.numberOfRays = #self.rayTraces
-end
+function RADAR:CacheNumRays() self.vars.numberOfRays = #self.rayTraces end
 
 -- Returns the number of ray traces the system has
-function RADAR:GetNumOfRays()
-	return self.vars.numberOfRays
-end
+function RADAR:GetNumOfRays() return self.vars.numberOfRays end
 
 -- Increases the system's ray trace state ny 1
-function RADAR:IncreaseRayTraceState()
-	self.vars.rayTraceState = self.vars.rayTraceState + 1
-end
+function RADAR:IncreaseRayTraceState() self.vars.rayTraceState = self.vars.rayTraceState + 1 end
 
 -- Resets the ray trace state to 0
-function RADAR:ResetRayTraceState()
-	self.vars.rayTraceState = 0
-end
+function RADAR:ResetRayTraceState() self.vars.rayTraceState = 0 end
 
 -- This function is used to determine if a sphere intersect is in front or behind the player's vehicle, the
 -- sphere intersect calculation has a 'tProj' value that is a line from the centre of the sphere that goes onto
@@ -1037,9 +1005,7 @@ function RADAR:ToggleAntenna( ant )
 end
 
 -- Returns if the given antenna is transmitting
-function RADAR:IsAntennaTransmitting( ant )
-	return self.vars.antennas[ant].xmit
-end
+function RADAR:IsAntennaTransmitting( ant ) return self.vars.antennas[ant].xmit end
 
 -- Returns if the given relative position value is for the front or rear antenna
 function RADAR:GetAntennaTextFromNum( relPos )
@@ -1051,9 +1017,7 @@ function RADAR:GetAntennaTextFromNum( relPos )
 end
 
 -- Returns the mode of the given antenna
-function RADAR:GetAntennaMode( ant )
-	return self.vars.antennas[ant].mode
-end
+function RADAR:GetAntennaMode( ant ) return self.vars.antennas[ant].mode end
 
 -- Sets the mode of the given antenna if the mode is valid and the power is on. Also runs a callback function
 -- when present.
@@ -1075,51 +1039,27 @@ function RADAR:SetAntennaMode( ant, mode )
 	end
 end
 
--- Returns the speed stored for the given antenna
-function RADAR:GetAntennaSpeed( ant )
-	return self.vars.antennas[ant].speed
-end
+-- Returns/sets the speed for the given antenna
+function RADAR:GetAntennaSpeed( ant ) return self.vars.antennas[ant].speed end
+function RADAR:SetAntennaSpeed( ant, speed ) self.vars.antennas[ant].speed = speed end
 
--- Sets the speed of the given antenna to the given speed
-function RADAR:SetAntennaSpeed( ant, speed )
-	self.vars.antennas[ant].speed = speed
-end
+-- Returns/sets the direction for the given antenna
+function RADAR:GetAntennaDir( ant ) return self.vars.antennas[ant].dir end
+function RADAR:SetAntennaDir( ant, dir ) self.vars.antennas[ant].dir = dir end
 
--- Returns the direction value stored for the given antenna
-function RADAR:GetAntennaDir( ant )
-	return self.vars.antennas[ant].dir
-end
-
--- Sets the direction value of the given antenna to the given direction
-function RADAR:SetAntennaDir( ant, dir )
-	self.vars.antennas[ant].dir = dir
-end
-
--- Sets the fast speed and direction in one go
+-- Sets the speed and direction in one go
 function RADAR:SetAntennaData( ant, speed, dir )
 	self:SetAntennaSpeed( ant, speed )
 	self:SetAntennaDir( ant, dir )
 end
 
--- Returns the fast speed stored for the given antenna
-function RADAR:GetAntennaFastSpeed( ant )
-	return self.vars.antennas[ant].fastSpeed
-end
+-- Returns/sets the fast speed for the given antenna
+function RADAR:GetAntennaFastSpeed( ant ) return self.vars.antennas[ant].fastSpeed end
+function RADAR:SetAntennaFastSpeed( ant, speed ) self.vars.antennas[ant].fastSpeed = speed end
 
--- Sets the fast speed of the given antenna to the given speed
-function RADAR:SetAntennaFastSpeed( ant, speed )
-	self.vars.antennas[ant].fastSpeed = speed
-end
-
--- Returns the direction value for the fast box stored for the given antenna
-function RADAR:GetAntennaFastDir( ant )
-	return self.vars.antennas[ant].fastDir
-end
-
--- Sets the direction value of the given antenna's fast box to the given direction
-function RADAR:SetAntennaFastDir( ant, dir )
-	self.vars.antennas[ant].fastDir = dir
-end
+-- Returns/sets the fast direction for the given antenna
+function RADAR:GetAntennaFastDir( ant ) return self.vars.antennas[ant].fastDir end
+function RADAR:SetAntennaFastDir( ant, dir ) self.vars.antennas[ant].fastDir = dir end
 
 -- Sets the fast speed and direction in one go
 function RADAR:SetAntennaFastData( ant, speed, dir )
@@ -1412,15 +1352,9 @@ function RADAR:GetVehSpeedConverted( speed )
 	return UTIL:Round( speed * self.speedConversions[unit], 0 )
 end
 
--- Returns the validity of the given vehicle model
-function RADAR:GetVehicleValidity( key )
-	return self.vars.validVehicles[key]
-end
-
--- Sets the validity for the given vehicle model
-function RADAR:SetVehicleValidity( key, validity )
-	self.vars.validVehicles[key] = validity
-end
+-- Returns/sets the validity of the given vehicle model
+function RADAR:GetVehicleValidity( key ) return self.vars.validVehicles[key] end
+function RADAR:SetVehicleValidity( key, validity ) self.vars.validVehicles[key] = validity end
 
 -- Returns if vehicle validity data exists for the given vehicle model
 function RADAR:DoesVehicleValidityExist( key )
