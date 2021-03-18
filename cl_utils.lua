@@ -130,10 +130,12 @@ function UTIL:Notify( text )
 	DrawNotification( false, true )
 end
 
+-- Prints the given message to the client console
 function UTIL:Log( msg )
 	print( "[Wraith ARS 2X]: " .. msg )
 end
 
+-- Used to draw text to the screen, helpful for debugging issues
 function UTIL:DrawDebugText( x, y, scale, centre, text )
 	SetTextFont( 4 )
 	SetTextProportional( 0 )
@@ -149,6 +151,7 @@ function UTIL:DrawDebugText( x, y, scale, centre, text )
 	DrawText( x, y )
 end
 
+-- Returns if the current resource name is valid
 function UTIL:IsResourceNameValid()
 	return GetCurrentResourceName() == "wk_wars2x"
 end
