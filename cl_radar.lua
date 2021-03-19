@@ -77,7 +77,7 @@ local function RegisterKeyBinds()
 
 		-- Locks front plate reader
 		RegisterCommand( "radar_fr_cam", function()
-			if ( not RADAR:GetKeyLockState() ) then
+			if ( not RADAR:GetKeyLockState() and PLY:CanControlRadar() ) then
 				READER:LockCam( "front", true, false )
 
 				SYNC:LockReaderCam( "front", READER:GetCameraDataPacket( "front" ) )
@@ -87,7 +87,7 @@ local function RegisterKeyBinds()
 
 		-- Locks rear plate reader
 		RegisterCommand( "radar_bk_cam", function()
-			if ( not RADAR:GetKeyLockState() ) then
+			if ( not RADAR:GetKeyLockState() and PLY:CanControlRadar() ) then
 				READER:LockCam( "rear", true, false )
 
 				SYNC:LockReaderCam( "rear", READER:GetCameraDataPacket( "rear" ) )
