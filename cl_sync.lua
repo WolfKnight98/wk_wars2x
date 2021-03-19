@@ -281,12 +281,18 @@ SYNC = {}
 ----------------------------------------------------------------------------------]]--
 -- Returns if the given player has the remote open
 function SYNC:IsRemoteAlreadyOpen( ply )
-	return DecorGetBool( ply, "wk_wars2x_sync_remoteOpen" )
+	if ( not RADAR:IsPassengerViewAllowed() ) then
+		return false
+	else
+		return DecorGetBool( ply, "wk_wars2x_sync_remoteOpen" )
+	end
 end
 
 -- Sets the remote open decor for the local player to the given state
 function SYNC:SetRemoteOpenState( state )
-	DecorSetBool( PLY.ped, "wk_wars2x_sync_remoteOpen", state )
+	if ( RADAR:IsPassengerViewAllowed() ) then
+		DecorSetBool( PLY.ped, "wk_wars2x_sync_remoteOpen", state )
+	end
 end
 
 -- Used to get the other ped (driver/passenger) in a vehicle and calls the given callback. This function will only work
