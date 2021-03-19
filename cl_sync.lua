@@ -349,20 +349,18 @@ function SYNC:SyncDataOnEnter()
 	-- Make sure passenger view is allowed, also, using PLY:IsPassenger() already checks that the player's
 	-- vehicle meets the requirements of what the radar requires. This way we don't have to do additional
 	-- checks manually.
-	if ( RADAR:IsPassengerViewAllowed() ) then
-		if ( PLY:IsPassenger() ) then
-			local driver = PLY:GetOtherPedServerId()
+	if ( PLY:IsPassenger() ) then
+		local driver = PLY:GetOtherPedServerId()
 
-			-- Only trigger the event if there is actually a driver
-			if ( driver ~= nil ) then
-				TriggerServerEvent( "wk_wars2x_sync:requestRadarData", driver )
-			end
-		elseif ( PLY:IsDriver() ) then
-			if ( RADAR:IsThereBackupData() ) then
-				-- Restore the local data
-				RADAR:RestoreFromBackup()
-				READER:RestoreFromBackup()
-			end
+		-- Only trigger the event if there is actually a driver
+		if ( driver ~= nil ) then
+			TriggerServerEvent( "wk_wars2x_sync:requestRadarData", driver )
+		end
+	elseif ( PLY:IsDriver() ) then
+		if ( RADAR:IsThereBackupData() ) then
+			-- Restore the local data
+			RADAR:RestoreFromBackup()
+			READER:RestoreFromBackup()
 		end
 	end
 end

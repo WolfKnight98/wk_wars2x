@@ -111,7 +111,7 @@ end )
 Citizen.CreateThread( function()
 	while ( true ) do
 		-- The sync trigger should only start when the player is getting into a vehicle
-		if ( IsPedGettingIntoAVehicle( PLY.ped ) ) then
+		if ( IsPedGettingIntoAVehicle( PLY.ped ) and RADAR:IsPassengerViewAllowed() ) then
 			-- Get the vehicle the player is entering
 			local vehEntering = GetVehiclePedIsEntering( PLY.ped )
 
