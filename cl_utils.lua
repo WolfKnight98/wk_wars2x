@@ -2,13 +2,13 @@
 
 	Wraith ARS 2X
 	Created by WolfKnight
-	
-	For discussions, information on future updates, and more, join 
-	my Discord: https://discord.gg/fD4e6WD 
-	
+
+	For discussions, information on future updates, and more, join
+	my Discord: https://discord.gg/fD4e6WD
+
 	MIT License
 
-	Copyright (c) 2020 WolfKnight
+	Copyright (c) 2020-2021 WolfKnight
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -35,49 +35,49 @@ UTIL = {}
 -- Returns a number to a set number of decimal places
 function UTIL:Round( num, numDecimalPlaces )
 	return tonumber( string.format( "%." .. ( numDecimalPlaces or 0 ) .. "f", num ) )
-end 
+end
 
--- The custom font used for the digital displays have the ¦ symbol as an empty character, this function 
--- takes a speed and returns a formatted speed that can be displayed on the radar 
+-- The custom font used for the digital displays have the ¦ symbol as an empty character, this function
+-- takes a speed and returns a formatted speed that can be displayed on the radar
 function UTIL:FormatSpeed( speed )
-	-- Return "Err" (Error) if the given speed is outside the 0-999 range 
-	if ( speed < 0 or speed > 999 ) then return "Err" end 
+	-- Return "Err" (Error) if the given speed is outside the 0-999 range
+	if ( speed < 0 or speed > 999 ) then return "Err" end
 
-	-- Convert the speed to a string 
+	-- Convert the speed to a string
 	local text = tostring( speed )
 	local pipes = ""
 
 	-- Create a string of pipes (¦) for the number of spaces
-	for i = 1, 3 - string.len( text ) do 
+	for i = 1, 3 - string.len( text ) do
 		pipes = pipes .. "¦"
-	end 
-	
+	end
+
 	-- Return the formatted speed
 	return pipes .. text
-end 
+end
 
--- Returns a clamped numerical value based on the given parameters 
+-- Returns a clamped numerical value based on the given parameters
 function UTIL:Clamp( val, min, max )
 	-- Return the min value if the given value is less than the min
-	if ( val < min ) then 
-		return min 
+	if ( val < min ) then
+		return min
 	-- Return the max value if the given value is larger than the max
-	elseif ( val > max ) then 
-		return max 
-	end 
+	elseif ( val > max ) then
+		return max
+	end
 
 	-- Return the given value if it's between the min and max
-	return val 
-end 
+	return val
+end
 
 -- Returns if the given table is empty, includes numerical and non-numerical key values
 function UTIL:IsTableEmpty( t )
-	local c = 0 
+	local c = 0
 
-	for _ in pairs( t ) do c = c + 1 end 
+	for _ in pairs( t ) do c = c + 1 end
 
 	return c == 0
-end 
+end
 
 -- Credit to Deltanic for this function
 function UTIL:Values( xs )
@@ -96,31 +96,46 @@ function UTIL:GetVehicleInDirection( entFrom, coordFrom, coordTo )
 	return vehicle
 end
 
--- Returns if a target vehicle is coming towards or going away from the patrol vehicle, it has a range 
--- so if a vehicle is sideways compared to the patrol vehicle, the directional arrows won't light up 
+-- Returns if a target vehicle is coming towards or going away from the patrol vehicle, it has a range
+-- so if a vehicle is sideways compared to the patrol vehicle, the directional arrows won't light up
 function UTIL:GetEntityRelativeDirection( myAng, tarAng )
 	local angleDiff = math.abs( ( myAng - tarAng + 180 ) % 360 - 180 )
 
-	if ( angleDiff < 45 ) then 
+	if ( angleDiff < 45 ) then
 		return 1
-	elseif ( angleDiff > 135 ) then 
+	elseif ( angleDiff > 135 ) then
 		return 2
-	end 
+	end
 
 	return 0
 end
 
--- Your everyday GTA notification function 
+-- Returns if there is a player in the given vehicle
+function UTIL:IsPlayerInVeh( veh )
+	for i = -1, GetVehicleMaxNumberOfPassengers( veh ) + 1, 1 do
+		local ped = GetPedInVehicleSeat( veh, i )
+
+		if ( DoesEntityExist( ped ) ) then
+			if ( IsPedAPlayer( ped ) ) then return true end
+		end
+	end
+
+	return false
+end
+
+-- Your everyday GTA notification function
 function UTIL:Notify( text )
 	SetNotificationTextEntry( "STRING" )
 	AddTextComponentSubstringPlayerName( text )
 	DrawNotification( false, true )
 end
 
+-- Prints the given message to the client console
 function UTIL:Log( msg )
 	print( "[Wraith ARS 2X]: " .. msg )
-end 
+end
 
+-- Used to draw text to the screen, helpful for debugging issues
 function UTIL:DrawDebugText( x, y, scale, centre, text )
 	SetTextFont( 4 )
 	SetTextProportional( 0 )
@@ -134,6 +149,11 @@ function UTIL:DrawDebugText( x, y, scale, centre, text )
 	SetTextEntry( "STRING" )
 	AddTextComponentString( text )
 	DrawText( x, y )
+end
+
+-- Returns if the current resource name is valid
+function UTIL:IsResourceNameValid()
+	return GetCurrentResourceName() == "wk_wars2x"
 end
 
 --[[The MIT License (MIT)

@@ -8,7 +8,7 @@
 	
 	MIT License
 
-	Copyright (c) 2020 WolfKnight
+	Copyright (c) 2020-2021 WolfKnight
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,6 @@
 /*------------------------------------------------------------------------------------
 	Variables
 ------------------------------------------------------------------------------------*/
-var resourceName; 
 var uiEdited = false;
 
 // All of the audio file names
@@ -90,6 +89,7 @@ const elements =
 	plateReaderBox: $( "#plateReaderBox" ), 
 	boloText: $( "#boloText" ), 
 	setBoloBtn: $( "#setBoloPlate" ), 
+	clearBoloBtn: $( "#clearBoloPlate" ), 
 	closePrBtn: $( "#closePlateReaderSettings" ),
 
 	openHelp: $( "#helpBtn" ), 
@@ -494,7 +494,7 @@ function poweringUp()
 } 
 
 // Simulates the 'fully powered' state of the radar unit 
-function poweredUp()
+function poweredUp( fastDisplay )
 {
 	// Completely clear everything
 	clearEverything(); 
@@ -505,14 +505,14 @@ function poweredUp()
 		// Even though the clearEverything() function is called above, we run this so the fast window
 		// displays 'HLd'
 		setAntennaXmit( ant, false );
-		setAntennaFastMode( ant, true );    
+		setAntennaFastMode( ant, fastDisplay );    
 	}
 }
 
 // Runs the startup process or clears everything, the Lua side calls for the full powered up state
-function radarPower( state )
+function radarPower( state, override, fastDisplay )
 {
-	state ? poweringUp() : clearEverything();
+	state ? ( override ? poweredUp( fastDisplay ) : poweringUp() ) : clearEverything();
 }
 
 
@@ -605,17 +605,27 @@ function menu( optionText, option )
 	elements.patrolSpeed.html( option );
 }
 
+var keyLockTimeout; 
+
 // Makes the key lock label fade in then fade out after 2 seconds
 function displayKeyLock( state )
 {
+	let sl = elements.keyLock.stateLabel; 
+
 	// Set the state label text to enabled or disabled
-	elements.keyLock.stateLabel.html( state ? "enabled" : "disabled" );
+	sl.html( state ? "blocked" : "enabled" );
+
+	// Change the colour of the altered text 
+	state ? sl.addClass( "red" ).removeClass( "green" ) : sl.addClass( "green" ).removeClass( "red" );
 
 	// Fade in the label 
 	elements.keyLock.label.fadeIn();
 
+	// Clear the timeout if it already exists 
+	clearTimeout( keyLockTimeout );
+
 	// Make the label fade out after 2 seconds
-	setTimeout( function() {
+	keyLockTimeout = setTimeout( function() {
 		elements.keyLock.label.fadeOut();
 	}, 2000 ); 
 }
@@ -629,7 +639,7 @@ $.ajaxSetup({
 
 // This function is used to send data back through to the LUA side 
 function sendData( name, data ) {
-	$.post( "https://" + resourceName + "/" + name, JSON.stringify( data ), function( datab ) {
+	$.post( "https://wk_wars2x/" + name, JSON.stringify( data ), function( datab ) {
 		if ( datab != "ok" ) {
 			console.log( datab );
 		}            
@@ -765,6 +775,11 @@ elements.setBoloBtn.click( function() {
 	} else {
 		sendData( "setBoloPlate", plate ); 
 	}
+} )
+
+// Sets the on click function for the clear BOLO button
+elements.clearBoloBtn.click( function() {
+	sendData( "clearBoloPlate", null ); 
 } )
 
 // Checks what the user is typing into the plate box
@@ -1077,9 +1092,6 @@ window.addEventListener( "message", function( event ) {
 
 	switch ( type ) {
 		// System events 
-		case "updatePathName":
-			resourceName = item.pathName
-			break;
 		case "loadUiSettings":
 			loadUiSettings( item.data, true );
 			break;
@@ -1102,10 +1114,10 @@ window.addEventListener( "message", function( event ) {
 			setEleVisible( elements.radar, item.state ); 
 			break; 
 		case "radarPower":
-			radarPower( item.state );
+			radarPower( item.state, item.override, item.fast );
 			break; 
 		case "poweredUp":
-			poweredUp();
+			poweredUp( item.fast );
 			break;
 		case "update":
 			updateDisplays( item.speed, item.antennas );

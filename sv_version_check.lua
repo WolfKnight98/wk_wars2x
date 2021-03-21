@@ -2,13 +2,13 @@
 
 	Wraith ARS 2X
 	Created by WolfKnight
-	
-	For discussions, information on future updates, and more, join 
-	my Discord: https://discord.gg/fD4e6WD 
-	
+
+	For discussions, information on future updates, and more, join
+	my Discord: https://discord.gg/fD4e6WD
+
 	MIT License
 
-	Copyright (c) 2020 WolfKnight
+	Copyright (c) 2020-2021 WolfKnight
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -31,48 +31,52 @@
 ---------------------------------------------------------------------------------------]]--
 
 -- Branding!
-local label = 
+local label =
 [[ 
   //
-  ||    __          __        _ _   _                _____   _____   ___ __   __
-  ||    \ \        / /       (_) | | |         /\   |  __ \ / ____| |__ \\ \ / /
-  ||     \ \  /\  / / __ __ _ _| |_| |__      /  \  | |__) | (___      ) |\ V / 
-  ||      \ \/  \/ / '__/ _` | | __| '_ \    / /\ \ |  _  / \___ \    / /  > <  
-  ||       \  /\  /| | | (_| | | |_| | | |  / ____ \| | \ \ ____) |  / /_ / . \ 
-  ||        \/  \/ |_|  \__,_|_|\__|_| |_| /_/    \_\_|  \_\_____/  |____/_/ \_\
-  ||
-  ||                             Created by WolfKnight
+  ||       __      __        _ _   _        _   ___  ___   _____  __
+  ||       \ \    / / _ __ _(_) |_| |_     /_\ | _ \/ __| |_  ) \/ /
+  ||        \ \/\/ / '_/ _` | |  _| ' \   / _ \|   /\__ \  / / >  < 
+  ||         \_/\_/|_| \__,_|_|\__|_||_| /_/ \_\_|_\|___/ /___/_/\_\
+  || 
+  ||                        Created by WolfKnight
   ||]]
 
 -- Returns the current version set in fxmanifest.lua
 function GetCurrentVersion()
 	return GetResourceMetadata( GetCurrentResourceName(), "version" )
-end 
+end
 
 -- Grabs the latest version number from the web GitHub
 PerformHttpRequest( "https://wolfknight98.github.io/wk_wars2x_web/version.txt", function( err, text, headers )
-	-- Wait to reduce spam 
+	-- Wait to reduce spam
 	Citizen.Wait( 2000 )
 
 	-- Print the branding!
 	print( label )
 
-	-- Get the current resource version 
+	-- Get the current resource version
 	local curVer = GetCurrentVersion()
-	
-	if ( text ~= nil ) then 
-		-- Print out the current and latest version 
-		print( "  ||    Current version: " .. curVer )
+
+	print( "  ||    Current version: " .. curVer )
+
+	if ( text ~= nil ) then
+		-- Print latest version
 		print( "  ||    Latest recommended version: " .. text .."\n  ||" )
-		
+
 		-- If the versions are different, print it out
 		if ( text ~= curVer ) then
 			print( "  ||    ^1Your Wraith ARS 2X version is outdated, visit the FiveM forum post to get the latest version.\n^0  \\\\\n" )
 		else
 			print( "  ||    ^2Wraith ARS 2X is up to date!\n^0  ||\n  \\\\\n" )
 		end
-	else 
+	else
 		-- In case the version can not be requested, print out an error message
-		print( "  ||    ^1There was an error getting the latest version information, if the issue persists contact WolfKnight#8586 on Discord.\n^0  ||\n  \\\\\n" )
-	end 
+		print( "  ||    ^1There was an error getting the latest version information.\n^0  ||\n  \\\\\n" )
+	end
+
+	-- Warn the console if the resource has been renamed, as this will cause issues with the resource's functionality.
+	if ( GetCurrentResourceName() ~= "wk_wars2x" ) then
+		print( "^1ERROR: Resource name is not wk_wars2x, expect there to be issues with the resource. To ensure there are no issues, please leave the resource name as wk_wars2x^0\n\n" )
+	end
 end )

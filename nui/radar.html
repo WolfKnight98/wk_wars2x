@@ -8,7 +8,7 @@
 	
 	MIT License
 
-	Copyright (c) 2020 WolfKnight
+	Copyright (c) 2020-2021 WolfKnight
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -245,6 +245,8 @@
 				<input id="boloText" type="text" maxlength="8" placeholder="12ABC345" onkeypress="checkPlateInput(event)" class="plate_input"/>
 
 				<button id="setBoloPlate" class="btn">Set BOLO Plate</button>
+
+				<button id="clearBoloPlate" class="btn">Clear BOLO Plate</button>
 			</div>
 
 			<button id="closePlateReaderSettings" class="close">CLOSE</button>
@@ -298,7 +300,7 @@
 			<button id="closeUiSettings" class="close">CLOSE</button>
 		</div>
 		
-		<p id="keyLockLabel">Radar key lock <span id="keyLockStateLabel"></span></p>
+		<p id="keyLockLabel">Radar key binds <span id="keyLockStateLabel"></span></p>
 
 		<div id="helpWindow">
 			<iframe id="helpWeb" src="about:blank"></iframe>
@@ -317,7 +319,7 @@
 		</div>
 
 		<!-- Load JavaScript files -->
-		<script src="jquery-3.4.1.min.js"></script>
+		<script src="nui://game/ui/jquery.js" type="text/javascript"></script>
 		<script src="radar.js"></script>
 	</body>
 </html>
