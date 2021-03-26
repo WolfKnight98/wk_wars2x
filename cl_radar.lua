@@ -511,7 +511,7 @@ if ( RADAR:IsFastLimitAllowed() ) then
 		end
 
 		-- Add the fast options to the main menu options table
-		if CONFIG.fast_limit_menu_first == true then
+		if ( CONFIG.fast_limit_first_in_menu ) then
 			table.insert( self.vars.menuOptions, 1, fastOptions[2] )	--FasSpd
 			table.insert( self.vars.menuOptions, 2, fastOptions[1] )	--FasLoc
 		else

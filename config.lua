@@ -40,7 +40,7 @@ CONFIG.allow_fast_limit = true
 
 -- Radar fast limit menu order
 -- When enabled, the fast limit options menu will be displayed first followed by fast lock toggle, then all default menu options. 
-CONFIG.fast_limit_menu_first = true
+CONFIG.fast_limit_first_in_menu = false
 
 -- Radar only lock players with auto fast locking
 -- When enabled, the radar will only automatically lock a speed if the caught vehicle has a real player in it.
