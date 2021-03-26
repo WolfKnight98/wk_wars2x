@@ -511,8 +511,9 @@ if ( RADAR:IsFastLimitAllowed() ) then
 		end
 
 		-- Add the fast options to the main menu options table
-		table.insert( self.vars.menuOptions, fastOptions[1] )
-		table.insert( self.vars.menuOptions, fastOptions[2] )
+			--PR TrevorBarns: push to front of table, for ease of access.
+		table.insert( self.vars.menuOptions, 1, fastOptions[1] )
+		table.insert( self.vars.menuOptions, 2, fastOptions[2] )
 	end
 
 	-- Returns the numerical fast limit
