@@ -41,7 +41,7 @@ local pairs = pairs
 
 
 --[[----------------------------------------------------------------------------------
-	Key bind registering
+	UI loading and key binds registering
 ----------------------------------------------------------------------------------]]--
 local function RegisterKeyBinds()
 	if ( UTIL:IsResourceNameValid() ) then
@@ -115,12 +115,6 @@ local function RegisterKeyBinds()
 	end
 end
 
-
---[[----------------------------------------------------------------------------------
-	UI loading and key binds trigger
-----------------------------------------------------------------------------------]]--
-local spawned = false
-
 local function LoadUISettings()
 	UTIL:Log( "Attempting to load saved UI settings data." )
 
@@ -139,32 +133,6 @@ local function LoadUISettings()
 		UTIL:Log( "Could not find any saved UI settings data." )
 	end
 end
-
--- Runs every time the player spawns, but the additional check means it only runs the first time
--- the player spawns
-AddEventHandler( "playerSpawned", function()
-	if ( not spawned ) then
-		RegisterKeyBinds()
-		LoadUISettings()
-
-		spawned = true
-	end
-end )
-
--- Loads the UI settings when the resource gets restarted, this way active users don't have the
--- default settings applied
-AddEventHandler( "onResourceStart", function( resourceName )
-	if ( GetCurrentResourceName() == resourceName ) then
-		Citizen.CreateThread( function()
-			Citizen.Wait( 1000 )
-
-			RegisterKeyBinds()
-			LoadUISettings()
-
-			DecorSetBool( PlayerPedId(), "wk_wars2x_sync_remoteOpen", false )
-		end )
-	end
-end )
 
 
 --[[----------------------------------------------------------------------------------
@@ -1818,6 +1786,18 @@ Citizen.CreateThread( function()
 	if ( RADAR:IsFastLimitAllowed() ) then
 		RADAR:CreateFastLimitConfig()
 	end
+
+	-- Register the key binds
+	RegisterKeyBinds()
+
+	-- Wait a short period of time
+	Citizen.Wait( 1000 )
+
+	-- Load the saved UI settings (if available)
+	LoadUISettings()
+
+	-- Set the player's remoteOpen decorator to false
+	DecorSetBool( PlayerPedId(), "wk_wars2x_sync_remoteOpen", false )
 
 	-- Update the operator menu positions
 	RADAR:UpdateOptionIndexes( true )
