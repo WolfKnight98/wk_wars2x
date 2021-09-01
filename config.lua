@@ -111,6 +111,10 @@ CONFIG.menuDefaults =
 	-- Options: 0.0, 0.2, 0.4, 0.6, 0.8, 1.0
 	["plateAudio"] = 0.6,
 
+	-- The volume of the doppler audio
+	-- Options: 0.0, 0.2, 0.4, 0.6, 0.8, 1.0
+	["dopAud"] = 0.6,
+
 	-- The speed unit used in conversions
 	-- Options: mph or kmh
 	["speedType"] = "mph",
