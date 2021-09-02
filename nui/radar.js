@@ -618,8 +618,7 @@ function createDopplerObject( audioContext )
 function updateDoppler( ant, speed )
 {
 	if ( speed > 0 ) {
-		// let freq = ( speed * 36 ) + ( Math.random() * 10 );
-		let freq = 200 + ( speed * 18 ) + ( Math.random() * 10 );
+		let freq = ( speed * 36 ) + ( Math.random() * 10 );
 		console.log( freq );
 
 		dopplerObjects[ant].osc.frequency.exponentialRampToValueAtTime( freq, context.currentTime + 0.1 );
