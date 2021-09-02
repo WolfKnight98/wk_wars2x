@@ -621,7 +621,7 @@ function updateDoppler( ant, speed )
 		let freq = ( speed * 16 ) + ( Math.random() * 10 );
 		console.log( freq );
 
-		dopplerObjects[ant].osc.frequency.value = freq;
+		dopplerObjects[ant].osc.frequency.exponentialRampToValueAtTime( freq, context.currentTime + 0.1 );
 		dopplerObjects[ant].vol.gain.value = 0.2;
 	} else {
 		dopplerObjects[ant].vol.gain.value = 0.0;
