@@ -622,9 +622,9 @@ function updateDoppler( ant, speed )
 		console.log( freq );
 
 		dopplerObjects[ant].osc.frequency.exponentialRampToValueAtTime( freq, context.currentTime + 0.1 );
-		dopplerObjects[ant].vol.gain.value = 0.2;
+		dopplerObjects[ant].vol.gain.exponentialRampToValueAtTime( 0.2, context.currentTime + 0.1 );
 	} else {
-		dopplerObjects[ant].vol.gain.value = 0.0;
+		dopplerObjects[ant].vol.gain.exponentialRampToValueAtTime( 0.00001, context.currentTime + 0.1 );
 	}
 }
 
