@@ -1714,7 +1714,7 @@ function RADAR:Main()
 				-- see if it is a particular type (e.g. if i % 2 == 0 then it's the 'fastest' vehicle)
 				for i = 1, 2 do
 					-- Create the table to store the speed and direction for this vehicle data
-					data.antennas[ant][i] = { speed = "¦¦¦", dir = 0 }
+					data.antennas[ant][i] = { speed = "¦¦¦", dir = 0, dopValue = nil }
 
 					-- If the current iteration is the number 2 ('fastest') and there's a speed locked, grab the locked speed
 					-- and direction
@@ -1732,6 +1732,10 @@ function RADAR:Main()
 							local vehSpeed = GetEntitySpeed( av[ant][i].veh )
 							local convertedSpeed = self:GetVehSpeedConverted( vehSpeed )
 							data.antennas[ant][i].speed = UTIL:FormatSpeed( convertedSpeed )
+
+							-- Set the doppler audio value to the exact vehicle entity speed, this way the doppler audio will be the same for
+							-- MPH and KMH
+							data.antennas[ant][i].dopValue = vehSpeed
 
 							-- Work out if the vehicle is closing or away
 							local ownH = UTIL:Round( GetEntityHeading( PLY.veh ), 0 )

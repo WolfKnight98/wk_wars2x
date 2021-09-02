@@ -618,7 +618,7 @@ function createDopplerObject( audioContext )
 function updateDoppler( ant, speed )
 {
 	if ( speed > 0 ) {
-		let freq = ( speed * 16 ) + ( Math.random() * 10 );
+		let freq = ( speed * 36 ) + ( Math.random() * 10 );
 		console.log( freq );
 
 		dopplerObjects[ant].osc.frequency.exponentialRampToValueAtTime( freq, context.currentTime + 0.1 );
@@ -636,10 +636,10 @@ function playDoppler( ants )
 		{
 			var speed; 
 
-			if ( ants[ant][1].speed != "¦¦¦" ) {
-				speed = parseInt( ants[ant][1].speed.replace( /\D/g, "" ) );
+			if ( ants[ant][1].dopValue != null ) {
+				speed = ants[ant][1].dopValue;
 			} else {
-				speed = parseInt( ants[ant][0].speed.replace( /\D/g, "" ) );
+				speed = ants[ant][0].dopValue;
 			}
 
 			updateDoppler( ant, speed );
