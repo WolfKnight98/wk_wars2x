@@ -589,6 +589,68 @@ function settingUpdate( ants )
 
 
 /*------------------------------------------------------------------------------------
+	Doppler audio 
+------------------------------------------------------------------------------------*/
+let context = new AudioContext();
+
+let dopplerObjects = {
+	front: createDopplerObject( context ),
+	rear: createDopplerObject( context )
+} 
+
+function createDopplerObject( audioContext )
+{
+	let osc = audioContext.createOscillator();
+	let vol = audioContext.createGain();
+
+	osc.type = "triangle";
+	osc.frequency.value = 0.0;
+	vol.gain.value = 0.0; 
+
+	osc.connect( vol );
+	vol.connect( audioContext.destination );
+
+	osc.start( 0 );
+
+	return { osc: osc, vol: vol }
+}
+
+function updateDoppler( ant, speed )
+{
+	if ( speed > 0 ) {
+		let freq = ( speed * 16 ) + ( Math.random() * 10 );
+		console.log( freq );
+
+		dopplerObjects[ant].osc.frequency.value = freq;
+		dopplerObjects[ant].vol.gain.value = 0.2;
+	} else {
+		dopplerObjects[ant].vol.gain.value = 0.0;
+	}
+}
+
+function playDoppler( ants )
+{
+	for ( let ant of [ "front", "rear" ] )
+	{
+		if ( ants[ant] != null )
+		{
+			var speed; 
+
+			if ( ants[ant][1].speed != "¦¦¦" ) {
+				speed = parseInt( ants[ant][1].speed.replace( /\D/g, "" ) );
+			} else {
+				speed = parseInt( ants[ant][0].speed.replace( /\D/g, "" ) );
+			}
+
+			updateDoppler( ant, speed );
+		} else {
+			updateDoppler( ant, 0.0 );
+		}
+	}
+}
+
+
+/*------------------------------------------------------------------------------------
 	Misc
 ------------------------------------------------------------------------------------*/
 // Displays the given option text and current option value on the radar
@@ -1121,6 +1183,7 @@ window.addEventListener( "message", function( event ) {
 			break;
 		case "update":
 			updateDisplays( item.speed, item.antennas );
+			playDoppler( item.antennas );
 			break; 
 		case "antennaXmit":
 			setAntennaXmit( item.ant, item.on );
