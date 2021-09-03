@@ -95,6 +95,12 @@ local function RegisterKeyBinds()
 		end )
 		RegisterKeyMapping( "radar_bk_cam", "Rear Plate Reader Lock/Unlock", "keyboard", CONFIG.keyDefaults.plate_rear_lock )
 
+		-- Toggles the doppler audio (for testing)
+		RegisterCommand( "radar_doppler_audio", function()
+			RADAR:ToggleDopplerAudio()
+		end )
+		RegisterKeyMapping( "radar_doppler_audio", "Toggle Doppler Audio", "keyboard", "numpad1" )
+
 		-- Toggles the key lock state
 		RegisterCommand( "radar_key_lock", function()
 			RADAR:ToggleKeyLock()
@@ -268,7 +274,9 @@ RADAR.vars =
 	threadWaitTime = 500,
 
 	-- Key lock, when true, prevents any of the radar's key events from working, like the ELS key lock
-	keyLock = false
+	keyLock = false,
+
+	dopplerAudio = true
 }
 
 -- Speed conversion values
@@ -518,6 +526,14 @@ end
 -- Returns the key lock state
 function RADAR:GetKeyLockState()
 	return self.vars.keyLock
+end
+
+-- Toggles the doppler audio for testing
+function RADAR:ToggleDopplerAudio()
+	if ( PLY:CanViewRadar() ) then
+		self.vars.dopplerAudio = not self.vars.dopplerAudio
+		SendNUIMessage( { _type = "setDopplerAudioAllowed", state = self.vars.dopplerAudio } )
+	end
 end
 
 
