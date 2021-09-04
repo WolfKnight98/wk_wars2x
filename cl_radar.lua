@@ -397,7 +397,7 @@ end
 -- A main task such as the ray trace thread should only run if the radar's power is on, the system is not in the
 -- process of powering up, and the operator menu is not open
 function RADAR:CanPerformMainTask()
-	return self:IsPowerOn() and not self:IsPoweringUp() and not self:IsMenuOpen()
+	return self:IsPowerOn() and not self:IsPoweringUp() and not self:IsMenuOpen() and not self:GetDisplayHidden()
 end
 
 -- Returns/sets what the dynamic thread wait time is
