@@ -388,6 +388,9 @@ function RADAR:SendSettingUpdate()
 
 	-- Send a message to the NUI side with the current state of the antennas
 	SendNUIMessage( { _type = "settingUpdate", antennaData = antennas } )
+
+	-- Send a message to the NUI side with the current setting for the doppler audio volume
+	SendNUIMessage( { _type = "dopplerVolume", vol = self:GetSettingValue( "dopAudio" ) } )
 end
 
 -- Returns if a main task can be performed
@@ -520,6 +523,14 @@ function RADAR:GetKeyLockState()
 	return self.vars.keyLock
 end
 
+function RADAR:SetDopplerState( state )
+	local dopVol = self:GetSettingValue( "dopAudio" )
+
+	if ( dopVol ~= 0.0 ) then
+		SendNUIMessage( { _type = "dopplerState", state = state } )
+	end
+end
+
 
 --[[----------------------------------------------------------------------------------
 	Radar menu functions
@@ -534,6 +545,9 @@ function RADAR:SetMenuState( state )
 		-- If we are opening the menu, make sure the first item is displayed
 		if ( state ) then
 			self.vars.currentOptionIndex = 1
+
+			-- Stop the doppler audio
+			self:SetDopplerState( false )
 		end
 	end
 end
@@ -545,6 +559,9 @@ function RADAR:CloseMenu( playAudio )
 
 	-- Send a setting update to the NUI side
 	RADAR:SendSettingUpdate()
+
+	-- Allow the doppler audio
+	self:SetDopplerState( true )
 
 	-- Play a menu done beep
 	if ( playAudio or playAudio == nil ) then
@@ -683,6 +700,9 @@ function RADAR:LoadOMData()
 	if ( rawData ~= nil ) then
 		local omData = json.decode( rawData )
 		self.vars.settings = omData
+
+		-- Send the doppler volume
+		SendNUIMessage( { _type = "dopplerVolume", vol = self:GetSettingValue( "dopAudio" ) } )
 
 		UTIL:Log( "Saved operator menu data loaded!" )
 	else

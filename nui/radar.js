@@ -592,11 +592,25 @@ function settingUpdate( ants )
 	Doppler audio 
 ------------------------------------------------------------------------------------*/
 let context = new AudioContext();
+var dopplerVol = 0.2; 
 
 let dopplerObjects = {
 	front: createDopplerObject( context ),
 	rear: createDopplerObject( context )
 } 
+
+function setDopplerVol( vol )
+{
+	dopplerVol = clamp( 0.2 * vol, 0.0001, 0.2 );
+}
+
+function setDopplerState( state )
+{
+	for ( let ant of [ "front", "rear" ] )
+	{
+		dopplerObjects[ant].vol.gain.exponentialRampToValueAtTime( state ? dopplerVol : 0.0001, context.currentTime + 0.1 );
+	}
+}
 
 function createDopplerObject( audioContext )
 {
@@ -622,7 +636,7 @@ function updateDoppler( ant, speed )
 		console.log( freq );
 
 		dopplerObjects[ant].osc.frequency.exponentialRampToValueAtTime( freq, context.currentTime + 0.1 );
-		dopplerObjects[ant].vol.gain.exponentialRampToValueAtTime( 0.2, context.currentTime + 0.1 );
+		dopplerObjects[ant].vol.gain.exponentialRampToValueAtTime( dopplerVol, context.currentTime + 0.1 );
 	} else {
 		dopplerObjects[ant].vol.gain.exponentialRampToValueAtTime( 0.00001, context.currentTime + 0.1 );
 	}
@@ -1203,6 +1217,12 @@ window.addEventListener( "message", function( event ) {
 		case "settingUpdate":
 			settingUpdate( item.antennaData ); 
 			break; 
+		case "dopplerVolume":
+			setDopplerVol( item.vol );
+			break;
+		case "dopplerState":
+			setDopplerState( item.state );
+			break;
 
 		// Plate reader events
 		case "setReaderDisplayState":
