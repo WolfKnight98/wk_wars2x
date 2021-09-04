@@ -592,7 +592,6 @@ function settingUpdate( ants )
 	Doppler audio 
 ------------------------------------------------------------------------------------*/
 let context = new AudioContext();
-var dopplerAllowed = true; 
 
 let dopplerObjects = {
 	front: createDopplerObject( context ),
@@ -648,19 +647,6 @@ function playDoppler( ants )
 			updateDoppler( ant, 0.0 );
 		}
 	}
-}
-
-function setDopplerAllowed( state )
-{
-	if ( !state ) {
-		dopplerObjects["front"].vol.gain.exponentialRampToValueAtTime( 0.00001, context.currentTime + 0.1 );
-		dopplerObjects["rear"].vol.gain.exponentialRampToValueAtTime( 0.00001, context.currentTime + 0.1 );
-	} else {
-		dopplerObjects["front"].vol.gain.exponentialRampToValueAtTime( 0.2, context.currentTime + 0.1 );
-		dopplerObjects["rear"].vol.gain.exponentialRampToValueAtTime( 0.2, context.currentTime + 0.1 );
-	}
-
-	dopplerAllowed = state;
 }
 
 
@@ -1197,7 +1183,7 @@ window.addEventListener( "message", function( event ) {
 			break;
 		case "update":
 			updateDisplays( item.speed, item.antennas );
-			if ( dopplerAllowed ) { playDoppler( item.antennas ); }
+			playDoppler( item.antennas );
 			break; 
 		case "antennaXmit":
 			setAntennaXmit( item.ant, item.on );
@@ -1217,9 +1203,6 @@ window.addEventListener( "message", function( event ) {
 		case "settingUpdate":
 			settingUpdate( item.antennaData ); 
 			break; 
-		case "setDopplerAudioAllowed":
-			setDopplerAllowed( item.state );
-			break;
 
 		// Plate reader events
 		case "setReaderDisplayState":
