@@ -591,8 +591,9 @@ function settingUpdate( ants )
 /*------------------------------------------------------------------------------------
 	Doppler audio 
 ------------------------------------------------------------------------------------*/
-let context = new AudioContext();
+const context = new AudioContext();
 var dopplerVol = 0.2; 
+var wave = context.createPeriodicWave( wavetable.real, wavetable.imag );
 
 let dopplerObjects = {
 	front: createDopplerObject( context ),
@@ -601,7 +602,7 @@ let dopplerObjects = {
 
 function setDopplerVol( vol )
 {
-	dopplerVol = clamp( 0.2 * vol, 0.0001, 0.2 );
+	dopplerVol = clamp( 0.5 * vol, 0.0001, 0.2 );
 }
 
 function setDopplerState( state )
@@ -617,7 +618,8 @@ function createDopplerObject( audioContext )
 	let osc = audioContext.createOscillator();
 	let vol = audioContext.createGain();
 
-	osc.type = "triangle";
+	// osc.type = "triangle";
+	osc.setPeriodicWave( wave );
 	osc.frequency.value = 0.0;
 	vol.gain.value = 0.0; 
 

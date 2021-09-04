@@ -45,6 +45,7 @@ files {
 	"nui/radar.html",
 	"nui/radar.css",
 	"nui/radar.js",
+	"nui/wavetable.js",
 	"nui/images/*.png",
 	"nui/images/plates/*.png",
 	"nui/fonts/*.ttf",
