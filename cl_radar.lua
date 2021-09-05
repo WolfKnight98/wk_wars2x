@@ -338,12 +338,19 @@ function RADAR:SetPowerState( state, instantOverride )
 
 					-- Let the UI side know the system has loaded
 					SendNUIMessage( { _type = "poweredUp", fast = self:IsFastDisplayEnabled() } )
+
+					Citizen.Wait( 200 )
+					self:SetDopplerState( true )
 				end )
+			else
+				self:SetDopplerState( true )
 			end
 		else
 			-- If the system is being turned off, then we reset the antennas
 			self:ResetAntenna( "front" )
 			self:ResetAntenna( "rear" )
+
+			self:SetDopplerState( false )
 		end
 	end
 end
