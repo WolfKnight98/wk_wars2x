@@ -358,6 +358,10 @@ function RADAR:GetDisplayState()
 	return self.vars.displayed
 end
 
+exports('GetDisplayState', function()
+    return RADAR:GetDisplayState()
+end)
+
 -- Return the state of the fastDisplay setting, short hand direct way to check if the fast system is enabled
 function RADAR:IsFastDisplayEnabled()
 	return self:GetSettingValue( "fastDisplay" )
@@ -367,6 +371,10 @@ end
 function RADAR:IsEitherAntennaOn()
 	return self:IsAntennaTransmitting( "front" ) or self:IsAntennaTransmitting( "rear" )
 end
+
+exports('IsEitherAntennaOn', function()
+    return RADAR:IsEitherAntennaOn()
+end)
 
 -- Sends an update to the NUI side with the current state of the antennas and if the fast system is enabled
 function RADAR:SendSettingUpdate()
