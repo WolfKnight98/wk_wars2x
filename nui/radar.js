@@ -83,6 +83,7 @@ const elements =
 
 	uiSettingsBtn: $( "#uiSettings" ), 
 	uiSettingsBox: $( "#uiSettingsBox" ), 
+	resetUiBtn: $( "#resetUiPositions" ),
 	closeUiBtn: $( "#closeUiSettings" ),
 	
 	plateReaderBtn: $( "#plateReaderBtn" ), 
@@ -839,6 +840,13 @@ var safezone = 0;
 // Close the UI settings window when the 'Close' button is pressed
 elements.closeUiBtn.click( function() {
 	setEleVisible( elements.uiSettingsBox, false );
+} )
+
+// Reset the UI button positions to 0% 0% incase somehow the UI is oustide the window
+elements.resetUiBtn.click( function() {
+	updatePosition( elements.remote, 0, 0 )
+	updatePosition( elements.radar, 0, 0 )
+	updatePosition( elements.plateReader, 0, 0 )
 } )
 
 // Close the plate reader settings window when the 'Close' button is pressed

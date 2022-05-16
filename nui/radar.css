@@ -989,21 +989,36 @@ button:focus { outline: none; }
 		position: absolute;
 		left: 0;
 		right: 0;
-		bottom: 30px;
+		bottom: 10px;
 		margin: auto;
 
 		border-radius: 10px;
 		border: none;
 		background-color: rgb( 225, 225, 225 );
 	}
-		#uiSettingsBox .close:hover {
+		#uiSettingsBox .close:hover, #uiSettingsBox .reset:hover {
 			background-color: rgb( 255, 255, 255 );
 		}
 
-		#uiSettingsBox .close:active {
+		#uiSettingsBox .close:active, #uiSettingsBox .reset:active {
 			background-color: rgb( 190, 190, 190 );
 			padding: 0;
 		}
+
+	#uiSettingsBox .reset {
+		width: 140px;
+		height: 20px;
+
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 35px;
+		margin: auto;
+
+		border-radius: 10px;
+		border: none;
+		background-color: rgb( 225, 225, 225 );
+	}
 
 #keyLockLabel {
 	position: absolute;
