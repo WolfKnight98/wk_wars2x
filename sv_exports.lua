@@ -2,10 +2,10 @@
 
 	Wraith ARS 2X
 	Created by WolfKnight
-	
-	For discussions, information on future updates, and more, join 
-	my Discord: https://discord.gg/fD4e6WD 
-	
+
+	For discussions, information on future updates, and more, join
+	my Discord: https://discord.gg/fD4e6WD
+
 	MIT License
 
 	Copyright (c) 2020 WolfKnight
@@ -28,12 +28,10 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 
----------------------------------------------------------------------------------------]]--
-
--- Although there is only one export at the moment, more may be added down the line. 
-
+---------------------------------------------------------------------------------------]] --
+-- Although there is only one export at the moment, more may be added down the line.
 --[[---------------------------------------------------------------------------------------
-	Locks the designated plate reader camera for the given client. 
+	Locks the designated plate reader camera for the given client.
 
 	Parameters:
 		clientId:
@@ -44,7 +42,14 @@
 			Play an audible beep, either true or false
 		boloAudio:
 			Play the bolo lock sound, either true or false
----------------------------------------------------------------------------------------]]--
-function TogglePlateLock( clientId, cam, beepAudio, boloAudio )
-	TriggerClientEvent( "wk:togglePlateLock", clientId, cam, beepAudio, boloAudio )
-end 
+---------------------------------------------------------------------------------------]] --
+function TogglePlateLock(clientId, cam, beepAudio, boloAudio)
+    TriggerClientEvent("wk:togglePlateLock", clientId, cam, beepAudio, boloAudio)
+end
+
+function GetPatrolSpeed(clientId)
+    TriggerClientEvent("wk::GetPatrolSpeed", clientId)
+end
+-----------------------------------------------
+-- EXPORTS ADDED BY SONORAN SOFTWARE SYSTEMS --
+-----------------------------------------------
