@@ -1768,6 +1768,11 @@ function RADAR:Main()
 
 		-- Send the update to the NUI side
 		SendNUIMessage( { _type = "update", speed = data.patrolSpeed, antennas = data.antennas } )
+		---------------------------------------
+		-- Added by Sonoran Software Systems --
+		-- Adds needed compatibility for ------
+		------- Sonoran Radar script ----------
+		TriggerEvent('Sonoran::UpdateAnt', data.antennas)
 	end
 end
 
