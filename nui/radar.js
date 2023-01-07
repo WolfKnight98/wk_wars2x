@@ -89,8 +89,8 @@ const elements =
 	plateReaderBtn: $( "#plateReaderBtn" ), 
 	plateReaderBox: $( "#plateReaderBox" ), 
 	boloText: $( "#boloText" ), 
+	boloPlates: $( "#boloPlates" ),
 	setBoloBtn: $( "#setBoloPlate" ), 
-	clearBoloBtn: $( "#clearBoloPlate" ), 
 	closePrBtn: $( "#closePlateReaderSettings" ),
 
 	openHelp: $( "#helpBtn" ), 
@@ -218,6 +218,9 @@ const dirs =
 	closing: 1,
 	away: 2
 }
+
+// Plate Reader
+let boloPlates = [];
 
 
 /*------------------------------------------------------------------------------------
@@ -770,18 +773,23 @@ elements.setBoloBtn.click( function() {
 		// Add the padding to the string
 		let text = plate.padStart( plate.length + startSpace );
 		text = text.padEnd( text.length + endSpace );  
-
-		// Send the plate to the Lua side
-		sendData( "setBoloPlate", text ); 
-	} else {
-		sendData( "setBoloPlate", plate ); 
+		plate = text;
 	}
+
+	if ( !boloPlates.includes( plate ) ) {
+		boloPlates.push( plate );
+		elements.boloPlates.append( `<tr data-plate="${plate}"><td class="plate_text">${plate}</td><td><button class="btn" style="width: unset;" onclick="clearBoloPlate(event)">Remove</button></td></tr>` );
+	}
+
+	elements.boloText.val("");
 } )
 
 // Sets the on click function for the clear BOLO button
-elements.clearBoloBtn.click( function() {
-	sendData( "clearBoloPlate", null ); 
-} )
+function clearBoloPlate( event ) {
+	const plate = event.target.parentElement.parentElement.dataset.plate;
+	event.target.parentElement.parentElement.remove();
+	boloPlates = boloPlates.filter( e => e !== plate );
+}
 
 // Checks what the user is typing into the plate box
 function checkPlateInput( event )
@@ -852,6 +860,7 @@ elements.resetUiBtn.click( function() {
 // Close the plate reader settings window when the 'Close' button is pressed
 elements.closePrBtn.click( function() {
 	setEleVisible( elements.plateReaderBox, false ); 
+	sendData( "setBoloPlate", boloPlates );
 } )
 
 // Set the remote scale buttons to change the remote's scale 
