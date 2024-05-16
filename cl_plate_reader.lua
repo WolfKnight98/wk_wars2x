@@ -48,7 +48,7 @@ READER.vars =
 	hidden = false,
 
 	-- The BOLO plate
-	boloPlate = "",
+	boloPlates = {},
 
 	-- Cameras, this table contains all of the data needed for operation of the front and rear plate reader
 	cams = {
@@ -99,22 +99,19 @@ function READER:GetIndex( cam ) return self.vars.cams[cam].index end
 function READER:SetIndex( cam, index ) self.vars.cams[cam].index = index end
 
 -- Returns the bolo plate
-function READER:GetBoloPlate()
-	if ( self.vars.boloPlate ~= nil ) then
-		return self.vars.boloPlate
+function READER:GetBoloPlate( plate )
+	for _,v in ipairs(self.vars.boloPlates) do
+		if v == plate then
+			return true
+		end
 	end
+	return false
 end
 
 -- Sets the bolo plate to the given plate
-function READER:SetBoloPlate( plate )
-	self.vars.boloPlate = plate
-	UTIL:Notify( "BOLO plate set to: ~b~" .. plate )
-end
-
--- Clears the BOLO plate
-function READER:ClearBoloPlate()
-	self.vars.boloPlate = nil
-	UTIL:Notify( "~b~BOLO plate cleared!" )
+function READER:SetBoloPlate( plates )
+	self.vars.boloPlates = plates
+	UTIL:Notify( "~b~BOLO plates updated" )
 end
 
 -- Returns if the given reader is locked
@@ -216,13 +213,6 @@ RegisterNUICallback( "setBoloPlate", function( plate, cb )
 	cb( "ok" )
 end )
 
--- Runs when the "Clear BOLO Plate" button is pressed on the plate reader box
-RegisterNUICallback( "clearBoloPlate", function( plate, cb )
-	-- Clear the BOLO plate
-	READER:ClearBoloPlate()
-	cb( "ok" )
-end )
-
 
 --[[----------------------------------------------------------------------------------
 	Plate reader threads
@@ -275,7 +265,7 @@ function READER:Main()
 						self:SetIndex( cam, index )
 
 						-- Automatically lock the plate if the scanned plate matches the BOLO
-						if ( plate == self:GetBoloPlate() ) then
+						if ( self:GetBoloPlate( plate ) ) then
 							self:LockCam( cam, false, true )
 
 							SYNC:LockReaderCam( cam, READER:GetCameraDataPacket( cam ) )

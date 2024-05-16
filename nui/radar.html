@@ -242,14 +242,17 @@
 			<div class="container">
 				<button id="togglePlateReader" data-nuitype="togglePlateReaderDisplay" class="btn">Toggle Display</button>
 
+				<div style="height: 315px; overflow: auto;">
+					<table id ="boloPlates">
+					</table>
+				</div>
+
 				<input id="boloText" type="text" maxlength="8" placeholder="12ABC345" onkeypress="checkPlateInput(event)" class="plate_input"/>
 
-				<button id="setBoloPlate" class="btn">Set BOLO Plate</button>
-
-				<button id="clearBoloPlate" class="btn">Clear BOLO Plate</button>
+				<button id="setBoloPlate" class="btn">Add BOLO Plate</button>
+				<button id="closePlateReaderSettings" class="close">CLOSE</button>
 			</div>
 
-			<button id="closePlateReaderSettings" class="close">CLOSE</button>
 		</div>
 
 		<div id="uiSettingsBox">
