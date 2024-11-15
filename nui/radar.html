@@ -1,325 +1,328 @@
 <!-----------------------------------------------------------------------------------------
 
-	Wraith ARS 2X
-	Created by WolfKnight
-	
-	For discussions, information on future updates, and more, join 
-	my Discord: https://discord.gg/fD4e6WD 
-	
-	MIT License
+    Wraith ARS 2X
+    Created by WolfKnight
+    
+    For discussions, information on future updates, and more, join 
+    my Discord: https://discord.gg/fD4e6WD 
+    
+    MIT License
 
-	Copyright (c) 2020-2021 WolfKnight
+    Copyright (c) 2020-2021 WolfKnight
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-	The above copyright notice and this permission notice shall be included in all
-	copies or substantial portions of the Software.
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	SOFTWARE.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 
 ------------------------------------------------------------------------------------------>
 
 <!DOCTYPE html>
 
 <html>
-	<head>
-		<link href="radar.css" rel="stylesheet" type="text/css"/>
-	</head>
+    <head>
+        <link href="radar.css" rel="stylesheet" type="text/css"/>
+    </head>
 
-	<body>
-		<div id="radarFrame">
-			<div class="frame_border"></div>
+    <body>
+        <div id="radarFrame">
+            <div class="frame_border"></div>
 
-			<div class="radar_container"> 
-				<div class="panel_side panel_left"></div>
+            <div class="radar_container"> 
+                <div class="panel_side panel_left"></div>
 
-				<div id="radar">
-					<div class="label label_top">FRONT ANTENNA</div>
+                <div id="radar">
+                    <div class="label label_top">FRONT ANTENNA</div>
 
-					<div class="pwr_button_container">
-						<div id="pwrBtn" data-nuitype="togglePower" class="pwr_button">PWR</div>
-					</div>
+                    <div class="pwr_button_container">
+                        <div id="pwrBtn" data-nuitype="togglePower" class="pwr_button">PWR</div>
+                    </div>
 
-					<div class="modes_container">
-						<div class="modes">
-							<p id="frontSame">SAME</p>
-							<p id="frontOpp">OPP</p>
-							<p id="frontXmit">XMIT</p>
-						</div>
+                    <div class="modes_container">
+                        <div class="modes">
+                            <p id="frontSame">SAME</p>
+                            <p id="frontOpp">OPP</p>
+                            <p id="frontXmit">XMIT</p>
+                        </div>
 
-						<div class="modes">
-							<p id="rearSame">SAME</p>
-							<p id="rearOpp">OPP</p>
-							<p id="rearXmit">XMIT</p>
-						</div>
-					</div>
+                        <div class="modes">
+                            <p id="rearSame">SAME</p>
+                            <p id="rearOpp">OPP</p>
+                            <p id="rearXmit">XMIT</p>
+                        </div>
+                    </div>
 
-					<div class="speeds_container">
-						<div class="display">
-							<p class="ghost_speed">888</p>
-							<p class="speed" id="frontSpeed"></p>
-						</div>
+                    <div class="speeds_container">
+                        <div class="display">
+                            <p class="ghost_speed">888</p>
+                            <p class="speed" id="frontSpeed"></p>
+                        </div>
 
-						<div class="display">
-							<p class="ghost_speed">888</p>
-							<p class="speed" id="rearSpeed"></p>
-						</div>
-					</div>
+                        <div class="display">
+                            <p class="ghost_speed">888</p>
+                            <p class="speed" id="rearSpeed"></p>
+                        </div>
+                    </div>
 
-					<div class="speed_arrows_container">
-						<div class="speed_arrows">
-							<div class="arrow" id="frontDirAway"></div>
-							<div class="arrow arrow_down" id="frontDirTowards"></div>
-						</div>
+                    <div class="speed_arrows_container">
+                        <div class="speed_arrows">
+                            <div class="arrow" id="frontDirAway"></div>
+                            <div class="arrow arrow_down" id="frontDirTowards"></div>
+                        </div>
 
-						<div class="speed_arrows">
-							<div class="arrow" id="rearDirTowards"></div>
-							<div class="arrow arrow_down" id="rearDirAway"></div>
-						</div>
-					</div>
+                        <div class="speed_arrows">
+                            <div class="arrow" id="rearDirTowards"></div>
+                            <div class="arrow arrow_down" id="rearDirAway"></div>
+                        </div>
+                    </div>
 
-					<div class="modes_container">
-						<div class="modes fast_top">
-							<p id="frontFastLabel">FAST</p>
-							<p id="frontFastLockLabel">LOCK</p>
-						</div>
+                    <div class="modes_container">
+                        <div class="modes fast_top">
+                            <p id="frontFastLabel">FAST</p>
+                            <p id="frontFastLockLabel">LOCK</p>
+                        </div>
 
-						<div class="modes fast_bottom">
-							<p id="rearFastLabel">FAST</p>
-							<p id="rearFastLockLabel">LOCK</p>
-						</div>
-					</div>
+                        <div class="modes fast_bottom">
+                            <p id="rearFastLabel">FAST</p>
+                            <p id="rearFastLockLabel">LOCK</p>
+                        </div>
+                    </div>
 
-					<div class="speeds_container">
-						<div class="display fast fast_top">
-							<p class="fast_ghost_speed">888</p>
-							<p class="fast_speed" id="frontFastSpeed"></p>
-						</div>
+                    <div class="speeds_container">
+                        <div class="display fast fast_top">
+                            <p class="fast_ghost_speed">888</p>
+                            <p class="fast_speed" id="frontFastSpeed"></p>
+                        </div>
 
-						<div class="display fast fast_bottom">
-							<p class="fast_ghost_speed">888</p>
-							<p class="fast_speed" id="rearFastSpeed"></p>
-						</div>
-					</div>
+                        <div class="display fast fast_bottom">
+                            <p class="fast_ghost_speed">888</p>
+                            <p class="fast_speed" id="rearFastSpeed"></p>
+                        </div>
+                    </div>
 
-					<div class="speed_arrows_container">
-						<div class="speed_arrows fast_top">
-							<div class="arrow" id="frontFastDirAway"></div>
-							<div class="arrow arrow_down" id="frontFastDirTowards"></div>
-						</div>
+                    <div class="speed_arrows_container">
+                        <div class="speed_arrows fast_top">
+                            <div class="arrow" id="frontFastDirAway"></div>
+                            <div class="arrow arrow_down" id="frontFastDirTowards"></div>
+                        </div>
 
-						<div class="speed_arrows fast_bottom">
-							<div class="arrow" id="rearFastDirTowards"></div>
-							<div class="arrow arrow_down" id="rearFastDirAway"></div>
-						</div>
-					</div>
+                        <div class="speed_arrows fast_bottom">
+                            <div class="arrow" id="rearFastDirTowards"></div>
+                            <div class="arrow arrow_down" id="rearFastDirAway"></div>
+                        </div>
+                    </div>
 
-					<div class="patrol_and_logo_container">
-						<div class="logo"><span class="name">Wraith</span> ARS 2X</div>
+                    <div class="patrol_and_logo_container">
+                        <div class="logo"><span class="name">Wraith</span> ARS 2X</div>
 
-						<div class="speeds_container">
-							<div class="display fast">
-								<p class="patrol_ghost_speed">888</p>
-								<p class="patrol_speed" id="patrolSpeed"></p>
-							</div>
-						</div>
+                        <div class="speeds_container">
+                            <div class="display fast">
+                                <p class="patrol_ghost_speed">888</p>
+                                <p class="patrol_speed" id="patrolSpeed"></p>
+                            </div>
+                        </div>
 
-						<div class="speed_label">PATROL SPEED</div>
-					</div>
+                        <div class="speed_label">PATROL SPEED</div>
+                    </div>
 
-					<div class="label label_bottom">REAR ANTENNA</div>
-				</div>
+                    <div class="label label_bottom">REAR ANTENNA</div>
+                </div>
 
-				<div class="panel_side panel_right"></div>
-			</div>
-		</div>
+                <div class="panel_side panel_right"></div>
+            </div>
+        </div>
 
-		<div id="rc">
-			<button id="toggleDisplay" data-nuitype="toggleRadarDisplay" class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
+        <div id="rc">
+            <button id="toggleDisplay" data-nuitype="toggleRadarDisplay" class="rounded_btn toggle_display">TOGGLE DISPLAY</button>
 
-			<p class="label">FRONT ANTENNA</p>
+            <p class="label">FRONT ANTENNA</p>
 
-			<div class="antenna_btns_container">
-				<div class="btns btns_top">
-					<button id="frontOppMode" data-nuitype="setAntennaMode" data-value="front" data-mode="2" class="zone_btn top_left">OPP LK/REL</button>
+            <div class="antenna_btns_container">
+                <div class="btns btns_top">
+                    <button id="frontOppMode" data-nuitype="setAntennaMode" data-value="front" data-mode="2" class="zone_btn top_left">OPP LK/REL</button>
 
-					<div class="xmit_wrap">
-						<div class="xmit_btn xmit_top">
-							<div class="arrow"></div>
-							<button id="frontXmitToggle" data-nuitype="toggleAntenna" data-value="front" class="top_middle">XMIT HOLD</button>
-						</div>
-					</div>
+                    <div class="xmit_wrap">
+                        <div class="xmit_btn xmit_top">
+                            <div class="arrow"></div>
+                            <button id="frontXmitToggle" data-nuitype="toggleAntenna" data-value="front" class="top_middle">XMIT HOLD</button>
+                        </div>
+                    </div>
 
-					<button id="frontSameMode" data-nuitype="setAntennaMode" data-value="front" data-mode="1" class="zone_btn top_right">SAME LK/REL</button>
-				</div>
+                    <button id="frontSameMode" data-nuitype="setAntennaMode" data-value="front" data-mode="1" class="zone_btn top_right">SAME LK/REL</button>
+                </div>
 
-				<div class="breaker"></div>
+                <div class="breaker"></div>
 
-				<div class="btns btns_bottom">
-					<button id="rearOppMode" data-nuitype="setAntennaMode" data-value="rear" data-mode="2" class="zone_btn bottom_left">LK/REL OPP</button>
+                <div class="btns btns_bottom">
+                    <button id="rearOppMode" data-nuitype="setAntennaMode" data-value="rear" data-mode="2" class="zone_btn bottom_left">LK/REL OPP</button>
 
-					<div class="xmit_wrap">
-						<div class="xmit_btn xmit_bottom">
-							<div class="arrow arrow_bottom"></div>
-							<button id="rearXmitToggle" data-nuitype="toggleAntenna" data-value="rear" class="bottom_middle">HOLD XMIT</button>
-						</div>
-					</div>	
+                    <div class="xmit_wrap">
+                        <div class="xmit_btn xmit_bottom">
+                            <div class="arrow arrow_bottom"></div>
+                            <button id="rearXmitToggle" data-nuitype="toggleAntenna" data-value="rear" class="bottom_middle">HOLD XMIT</button>
+                        </div>
+                    </div>    
 
-					<button id="rearSameMode" data-nuitype="setAntennaMode" data-value="rear" data-mode="1" class="zone_btn bottom_right">LK/REL SAME</button>
-				</div>
-			</div>
+                    <button id="rearSameMode" data-nuitype="setAntennaMode" data-value="rear" data-mode="1" class="zone_btn bottom_right">LK/REL SAME</button>
+                </div>
+            </div>
 
-			<p class="label">REAR ANTENNA</p>
+            <p class="label">REAR ANTENNA</p>
 
-			<button id="menuButton" data-nuitype="menu" class="circle_btn menu blue">MENU</button>
+            <button id="menuButton" data-nuitype="menu" class="circle_btn menu blue">MENU</button>
 
-			<div class="plate_reader_and_help_container">
-				<button id="plateReaderBtn" class="plate_reader blue">PLATE READER</button>
-				<button id="helpBtn" class="help blue">HELP</button>
-			</div>
+            <div class="plate_reader_and_help_container">
+                <button id="plateReaderBtn" class="plate_reader blue">PLATE READER</button>
+                <button id="helpBtn" class="help blue">HELP</button>
+            </div>
 
-			<button id="uiSettings" class="rounded_btn light blue">UI SETTINGS</button>
+            <button id="uiSettings" class="rounded_btn light blue">UI SETTINGS</button>
 
-			<p class="logo"><span class="large">Wraith</span> ARS 2X</p>
-		</div>
-		
-		<div id="plateReaderFrame">
-			<div class="frame_border"></div>
+            <p class="logo"><span class="large">Wraith</span> ARS 2X</p>
+        </div>
+        
+        <div id="plateReaderFrame">
+            <div class="frame_border"></div>
 
-			<div id="plateReader">
-				<div class="labels">
-					<p class="title">FRONT</p>
-					<p class="title">REAR</p>
-				</div>
+            <div id="plateReader">
+                <div class="labels">
+                    <p class="title">FRONT</p>
+                    <p class="title">REAR</p>
+                </div>
 
-				<div class="plates">
-					<div id="frontPlate" class="plate_container">
-						<img id="frontPlateImg" class="plate" src="images/plates/0.png">
-						
-						<div id="frontPlateText" class="text_container">
-							<p id="frontPlateTextFill" class="plate_blue"></p>
-							<p class="hilite"></p>
-							<p id="frontPlateTextLolite" class="lolite"></p>
-							<p class="shadow"></p>
-						</div>
-					</div>
+                <div class="plates">
+                    <div id="frontPlate" class="plate_container">
+                        <img id="frontPlateImg" class="plate" src="images/plates/0.png">
+                        
+                        <div id="frontPlateText" class="text_container">
+                            <p id="frontPlateTextFill" class="plate_blue"></p>
+                            <p class="hilite"></p>
+                            <p id="frontPlateTextLolite" class="lolite"></p>
+                            <p class="shadow"></p>
+                        </div>
+                    </div>
 
-					<div id="rearPlate" class="plate_container">
-						<img id="rearPlateImg" class="plate" src="images/plates/0.png">
+                    <div id="rearPlate" class="plate_container">
+                        <img id="rearPlateImg" class="plate" src="images/plates/0.png">
 
-						<div id="rearPlateText" class="text_container">
-							<p id="rearPlateTextFill" class="plate_blue"></p>
-							<p class="hilite"></p>
-							<p id="rearPlateTextLolite" class="lolite"></p>
-							<p class="shadow"></p>
-						</div>
-					</div>
-				</div>
+                        <div id="rearPlateText" class="text_container">
+                            <p id="rearPlateTextFill" class="plate_blue"></p>
+                            <p class="hilite"></p>
+                            <p id="rearPlateTextLolite" class="lolite"></p>
+                            <p class="shadow"></p>
+                        </div>
+                    </div>
+                </div>
 
-				<div class="labels">
-					<p id="frontPlateLock">LOCKED</p>
-					<p id="rearPlateLock">LOCKED</p>
-				</div>
-			</div>
-		</div>
+                <div class="labels">
+                    <p id="frontPlateLock">LOCKED</p>
+                    <p id="rearPlateLock">LOCKED</p>
+                </div>
+            </div>
+        </div>
 
-		<div id="plateReaderBox">
-			<div class="header">
-				<p class="title">Plate Reader</p>
-			</div>
+        <div id="plateReaderBox">
+            <div class="header">
+                <p class="title">Plate Reader</p>
+            </div>
 
-			<div class="container">
-				<button id="togglePlateReader" data-nuitype="togglePlateReaderDisplay" class="btn">Toggle Display</button>
+            <div class="container">
+                <button id="togglePlateReader" data-nuitype="togglePlateReaderDisplay" class="btn">Toggle Display</button>
 
-				<input id="boloText" type="text" maxlength="8" placeholder="12ABC345" onkeypress="checkPlateInput(event)" class="plate_input"/>
+                <input id="boloText" type="text" maxlength="8" placeholder="12ABC345" onkeypress="checkPlateInput(event)" class="plate_input"/>
 
-				<button id="setBoloPlate" class="btn">Set BOLO Plate</button>
+                <button id="setBoloPlate" class="btn">Set BOLO Plate</button>
 
-				<button id="clearBoloPlate" class="btn">Clear BOLO Plate</button>
-			</div>
+                <button id="clearBoloPlate" class="btn">Clear BOLO Plate</button>
+            </div>
 
-			<button id="closePlateReaderSettings" class="close">CLOSE</button>
-		</div>
+            <button id="closePlateReaderSettings" class="close">CLOSE</button>
+        </div>
 
-		<div id="uiSettingsBox">
-			<div class="header">
-				<p class="title">UI Settings</p>
-			</div>
+        <div id="uiSettingsBox">
+            <div class="header">
+                <p class="title">UI Settings</p>
+            </div>
 
-			<div class="scaling_container">
-				<div class="scaling">
-					<div id="radarDecreaseScale" class="symbol minus"></div>
+            <div class="scaling_container">
+                <div class="scaling">
+                    <div id="radarDecreaseScale" class="symbol minus"></div>
 
-					<div class="info">
-						<p>Radar Scale</p>
-						<p id="radarScaleDisplay" class="multiplier">1.00x</p>
-					</div>
+                    <div class="info">
+                        <p>Radar Scale</p>
+                        <p id="radarScaleDisplay" class="multiplier">1.00x</p>
+                    </div>
 
-					<div id="radarIncreaseScale" class="symbol plus"></div>
-				</div>
+                    <div id="radarIncreaseScale" class="symbol plus"></div>
+                </div>
 
-				<div class="scaling">
-					<div id="remoteDecreaseScale" class="symbol minus"></div>
+                <div class="scaling">
+                    <div id="remoteDecreaseScale" class="symbol minus"></div>
 
-					<div class="info">
-						<p>Remote Scale</p>
-						<p id="remoteScaleDisplay" class="multiplier">1.00x</p>
-					</div>
+                    <div class="info">
+                        <p>Remote Scale</p>
+                        <p id="remoteScaleDisplay" class="multiplier">1.00x</p>
+                    </div>
 
-					<div id="remoteIncreaseScale" class="symbol plus"></div>
-				</div>
+                    <div id="remoteIncreaseScale" class="symbol plus"></div>
+                </div>
 
-				<div class="scaling">
-					<div id="readerDecreaseScale" class="symbol minus"></div>
+                <div class="scaling">
+                    <div id="readerDecreaseScale" class="symbol minus"></div>
 
-					<div class="info">
-						<p>Reader Scale</p>
-						<p id="readerScaleDisplay" class="multiplier">1.00x</p>
-					</div>
+                    <div class="info">
+                        <p>Reader Scale</p>
+                        <p id="readerScaleDisplay" class="multiplier">1.00x</p>
+                    </div>
 
-					<div id="readerIncreaseScale" class="symbol plus"></div>
-				</div>
-			</div>
-			
-			<div class="safezone_container">
-				<p>Safezone: <span id="safezoneDisplay">0px</span></p>
-				<input type="range" min="0" max="100" value="0" step="5" class="slider" id="safezone">
-			</div>
+                    <div id="readerIncreaseScale" class="symbol plus"></div>
+                </div>
+            </div>
+            
+            <div class="safezone_container">
+                <p>Safezone: <span id="safezoneDisplay">0px</span></p>
+                <input type="range" min="0" max="100" value="0" step="5" class="slider" id="safezone">
+            </div>
 
-			<button id="closeUiSettings" class="close">CLOSE</button>
-		</div>
-		
-		<p id="keyLockLabel">Radar key binds <span id="keyLockStateLabel"></span></p>
+            <button id="closeUiSettings" class="close">CLOSE</button>
+        </div>
+        
+        <p id="keyLockLabel">Radar key binds <span id="keyLockStateLabel"></span></p>
 
-		<div id="helpWindow">
-			<iframe id="helpWeb" src="about:blank"></iframe>
-			<button id="closeHelp" class="close">CLOSE HELP</button>
-		</div>
+        <div id="helpWindow">
+            <iframe id="helpWeb" src="about:blank"></iframe>
+            <button id="closeHelp" class="close">CLOSE HELP</button>
+        </div>
 
-		<div id="newUser">
-			<p class="msg">Hey, it appears this is your first time using the Wraith ARS 2X. Would you like to view the quick start video?</p>
-			<button id="showQuickStartVideo" class="btn_yes">Yes</button>
-			<button id="closeNewUserMsg" class="btn_no">No</button>
-		</div>
+        <div id="newUser">
+            <p class="msg">Hey, it appears this is your first time using the Wraith ARS 2X. Would you like to view the quick start video?</p>
+            <button id="showQuickStartVideo" class="btn_yes">Yes</button>
+            <button id="closeNewUserMsg" class="btn_no">No</button>
+        </div>
 
-		<div id="quickStart">
-			<iframe id="quickStartVideo" src="about:blank" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
-			<button id="closeQuickStart" class="close">CLOSE VIDEO</button>
-		</div>
+        <div id="quickStart">
+            <iframe id="quickStartVideo" src="about:blank" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
+            <button id="closeQuickStart" class="close">CLOSE VIDEO</button>
+        </div>
 
-		<!-- Load JavaScript files -->
-		<script src="nui://game/ui/jquery.js" type="text/javascript"></script>
-		<script src="radar.js"></script>
-	</body>
+        <!-- Notification HTML -->
+        <div class="notification" id="notification">Plate copied to clipboard!</div>
+
+        <!-- Load JavaScript files -->
+        <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+        <script src="radar.js"></script>
+    </body>
 </html>

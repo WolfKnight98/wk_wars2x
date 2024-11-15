@@ -32,6 +32,92 @@
 
 READER = {}
 
+local function RegisterKeyBinds()
+    if (UTIL:IsResourceNameValid()) then
+        UTIL:Log("Registering radar commands and key binds.")
+
+        -- Opens the remote control
+        RegisterCommand("radar_remote", function()
+            if (not RADAR:GetKeyLockState()) then
+                RADAR:OpenRemote()
+                UTIL:Log("Remote control opened.")
+            else
+                UTIL:Log("Failed to open remote: Keylock is active.")
+            end
+        end)
+        RegisterKeyMapping("radar_remote", "Open Remote Control", "keyboard", CONFIG.keyDefaults.remote_control)
+
+        -- Copy Front Plate Command
+        RegisterCommand("radar_copy_front_plate", function()
+            UTIL:Log("radar_copy_front_plate keybind pressed.")
+
+            -- Check if the player is in a valid vehicle
+            if PLY:VehicleStateValid() then
+                -- Show a message indicating they are in a valid vehicle
+                UTIL:Notify("Vehicle state is valid. Open up the plate reader to copy plates.")
+                
+                local frontPlate = READER:GetPlate("front")
+
+                -- Check if plate data is available
+                if frontPlate ~= "" then
+                    SendNUIMessage({
+                        _type = "copyToClipboard",
+                        plateType = "front"
+                    })
+                    UTIL:Log("Front plate copied to clipboard via keybind.")
+                else
+                    UTIL:Log("Attempted to copy front plate: Plate box is empty.")
+                end
+            else
+                -- Log a message if the vehicle is invalid
+                UTIL:Log("Front plate copy failed: Player is not in a valid vehicle.")
+            end
+        end)
+        RegisterKeyMapping("radar_copy_front_plate", "Copy Front License Plate", "keyboard", CONFIG.keyDefaults.plate_front_lock)
+
+        -- Copy Rear Plate Command
+        RegisterCommand("radar_copy_rear_plate", function()
+            UTIL:Log("radar_copy_rear_plate keybind pressed.")
+
+            -- Check if the player is in a valid vehicle
+            if PLY:VehicleStateValid() then
+                -- Show a message indicating they are in a valid vehicle
+                UTIL:Notify("Vehicle state is valid. Open up the plate reader to copy plates.")
+                
+                local rearPlate = READER:GetPlate("rear")
+
+                -- Check if plate data is available
+                if rearPlate ~= "" then
+                    SendNUIMessage({
+                        _type = "copyToClipboard",
+                        plateType = "rear"
+                    })
+                    UTIL:Log("Rear plate copied to clipboard via keybind.")
+                else
+                    UTIL:Log("Attempted to copy rear plate: Plate box is empty.")
+                end
+            else
+                -- Log a message if the vehicle is invalid
+                UTIL:Log("Rear plate copy failed: Player is not in a valid vehicle.")
+            end
+        end)
+        RegisterKeyMapping("radar_copy_rear_plate", "Copy Rear License Plate", "keyboard", CONFIG.keyDefaults.plate_rear_lock)
+
+        -- Additional commands with CONFIG key mappings
+    else
+        UTIL:Log("ERROR: Resource name is not wk_wars2x. Key binds will not be registered for compatibility reasons. Contact the server owner and ask them to change the resource name back to wk_wars2x.")
+    end
+end
+
+-- Initialize key binds when the resource starts
+Citizen.CreateThread(function()
+    RegisterKeyBinds()
+end)
+
+
+
+
+
 --[[----------------------------------------------------------------------------------
 	Plate reader variables
 

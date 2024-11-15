@@ -1,3 +1,4 @@
+
 /*-----------------------------------------------------------------------------------------
 
 	Wraith ARS 2X
@@ -1176,3 +1177,32 @@ button:focus { outline: none; }
 	#newUser .btn_no {
 		grid-column: 3;
 	}
+
+/*------------------------------------------------------------------------------------
+    Updated Notification Styles to Match UI
+------------------------------------------------------------------------------------*/
+.notification {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(to bottom, rgb(70, 70, 70), rgb(45, 45, 45));
+    color: rgb(255, 255, 255);
+    padding: 10px 20px;
+    border: 3px solid rgb(0, 0, 0);
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: 'Heebo', Verdana, Geneva, Tahoma, sans-serif;
+    z-index: 1000;
+}
+
+.notification.show {
+    display: block;
+    animation: fadeInOut 2s forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10%, 90% { opacity: 1; }
+    100% { opacity: 0; }
+}

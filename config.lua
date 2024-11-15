@@ -83,7 +83,13 @@ CONFIG.keyDefaults =
 	plate_front_lock = "numpad9",
 
 	-- Plate reader rear lock/unlock Key
-	plate_rear_lock = "numpad6"
+	plate_rear_lock = "numpad6",
+
+	-- Plate copy keybinds (add custom keybinds if required)
+	copy_front_plate = "numpad1",
+	copy_rear_plate = "numpad3"
+
+	-- Plate copy keybinds
 }
 
 -- Here you can change the default values for the operator menu, do note, if any of these values are not

@@ -1141,27 +1141,106 @@ window.addEventListener( "message", function( event ) {
 			settingUpdate( item.antennaData ); 
 			break; 
 
-		// Plate reader events
-		case "setReaderDisplayState":
-			setEleVisible( elements.plateReader, item.state ); 
-			break; 
-		case "changePlate":
-			setPlate( item.cam, item.plate, item.index );
-			break;
-		case "lockPlate":
-			setPlateLock( item.cam, item.state, item.isBolo ); 
-			break; 
-			
-		// Audio events
-		case "audio":
-			playAudio( item.name, item.vol ); 
-			break; 
-		case "lockAudio":
-			playLockAudio( item.ant, item.dir, item.vol ); 
-			break; 
-		
-		// default
-		default:
-			break;
-	}
-} );
+// Plate reader events
+case "setReaderDisplayState":
+    setEleVisible(elements.plateReader, item.state); 
+    break; 
+case "changePlate":
+    setPlate(item.cam, item.plate, item.index);
+    break;
+case "lockPlate":
+    setPlateLock(item.cam, item.state, item.isBolo); 
+    break; 
+
+case "copyToClipboard":  // Use the copyPlateToClipboard function for copying plate data
+	copyPlateToClipboard(item.plateType);
+	break;
+
+// Audio events
+case "audio":
+    playAudio(item.name, item.vol); 
+    break; 
+case "lockAudio":
+    playLockAudio(item.ant, item.dir, item.vol); 
+    break; 
+
+// default
+default:
+    break;
+}
+
+
+
+
+// Function to copy text to clipboard and play a sound
+function copyPlateToClipboard(plateType) {
+    let plateTextElement = document.getElementById(`${plateType}PlateTextFill`);
+    let plateText = plateTextElement ? plateTextElement.textContent : "";
+
+    // Create a temporary textarea for clipboard copying
+    let textarea = document.createElement('textarea');
+    textarea.value = plateText;
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+        let successful = document.execCommand('copy');
+        let msg = successful ? "Plate copied to clipboard!" : "Failed to copy plate.";
+        
+        // Show the notification and play audio if successful
+        showNotification(msg);
+        if (successful) {
+            playAudio("beep", 1.0);  // Ensure 'beep' sound exists in audioNames
+        }
+        console.log(`[Wraith ARS 2X] ${msg} (${plateType} plate).`);
+    } catch (err) {
+        showNotification('Clipboard copy not supported.');
+        console.error('Clipboard copy failed:', err);
+    }
+    document.body.removeChild(textarea);
+}
+
+// Function to show a notification message
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.add('show');
+
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 2000);
+}
+
+// Function to log messages to txAdmin and console
+function txAdminLog(message) {
+    fetch(`https://${GetParentResourceName()}/txAdminLog`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+    }).catch(error => {
+        console.error(`[Wraith ARS 2X] Failed to send log to txAdmin:`, error);
+    });
+}
+
+// Function to play audio, log to console, and log to txAdmin
+function playAudio(name, volume = 1.0) {
+    const audioFile = audioNames[name];
+    if (audioFile) {
+        const audio = new Audio(`sounds/${audioFile}`);
+        audio.volume = volume;
+
+        audio.play().then(() => {
+            const logMessage = `[Wraith ARS 2X] Sound played: ${name}`;
+            console.log(logMessage);
+            txAdminLog(logMessage);  // Log to txAdmin
+        }).catch(error => {
+            const errorMessage = `[Wraith ARS 2X] Failed to play sound: ${name}`;
+            console.error(errorMessage, error);
+            txAdminLog(errorMessage);  // Log error to txAdmin
+        });
+    } else {
+        const warnMessage = `[Wraith ARS 2X] Audio file not found: ${name}`;
+        console.warn(warnMessage);
+        txAdminLog(warnMessage);  // Log missing file to txAdmin
+    }
+}});
