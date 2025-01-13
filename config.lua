@@ -140,3 +140,21 @@ CONFIG.uiDefaults =
 	-- Options: 0 - 100
 	safezone = 20
 }
+
+-- Do you want only whitelisted vehicles to have the radar?
+-- Bypasses the emergency vehicle check
+CONFIG.useWhiteList = false
+CONFIG.vhlWhiteList =
+{
+	"fbi",
+	"fbi2",
+}
+
+-- Do you want only specific emergency vehicles to have the radar?
+-- Only works if CONFIG.useWhitelist is false
+CONFIG.useBlacklist = true
+CONFIG.vhlBlacklist =
+{
+	"ambulance",
+	"firetruk",
+}

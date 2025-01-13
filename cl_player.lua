@@ -101,8 +101,48 @@ Citizen.CreateThread( function()
 		PLY.veh = GetVehiclePedIsIn( PLY.ped, false )
 		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped
 		PLY.inPassengerSeat = GetPedInVehicleSeat( PLY.veh, 0 ) == PLY.ped
-		PLY.vehClassValid = GetVehicleClass( PLY.veh ) == 18
 
+		-- Perform check on vehicle and exit if vehicle is not allowed to run radar
+		if CONFIG.useWhitelist == true then
+			-- Check against whitelist
+			local modelHash = GetEntityModel(PLY.veh)
+			local modelName = GetDisplayNameFromVehicleModel(modelHash):lower() -- Convert to lowercase for comparison
+
+			local isWhitelisted = false
+			for _, whitelistedModel in ipairs(CONFIG.vhlWhiteList) do
+				if modelName == whitelistedModel:lower() then
+					isWhitelisted = true
+					PLY.vehClassValid = true
+				end
+			end
+
+			if not isWhitelisted then
+				PLY.vehClassValid = false -- set default
+			end
+
+		elseif (GetVehicleClass(PLY.veh) == 18) then
+			if CONFIG.useBlacklist == true then
+				-- Check against blacklist
+				local modelHash = GetEntityModel(PLY.veh)
+				local modelName = GetDisplayNameFromVehicleModel(modelHash):lower() -- Convert to lowercase for comparison
+				local isBlacklisted = false
+				for _, blacklistedModel in ipairs(CONFIG.vhlBlacklist) do
+					if modelName == blacklistedModel:lower() then
+						isBlacklisted = true
+					end
+				end
+
+				if isBlacklisted then
+					PLY.vehClassValid = false -- set default
+				else
+					PLY.vehClassValid = true
+				end
+			else
+				PLY.vehClassValid = true
+			end
+		else
+			PLY.vehClassValid = false -- set default
+		end
 		Citizen.Wait( 500 )
 	end
 end )
@@ -114,20 +154,16 @@ Citizen.CreateThread( function()
 		if ( IsPedGettingIntoAVehicle( PLY.ped ) and RADAR:IsPassengerViewAllowed() ) then
 			-- Get the vehicle the player is entering
 			local vehEntering = GetVehiclePedIsEntering( PLY.ped )
+			-- Wait two seconds, this gives enough time for the player to get sat in the seat
+			Citizen.Wait( 2000 )
 
-			-- Only proceed if the vehicle the player is entering is an emergency vehicle
-			if ( GetVehicleClass( vehEntering ) == 18 ) then
-				-- Wait two seconds, this gives enough time for the player to get sat in the seat
-				Citizen.Wait( 2000 )
+			-- Get the vehicle the player is now in
+			local veh = GetVehiclePedIsIn( PLY.ped, false )
 
-				-- Get the vehicle the player is now in
-				local veh = GetVehiclePedIsIn( PLY.ped, false )
-
-				-- Trigger the main sync data function if the vehicle the player is now in is the same as the one they
-				-- began entering
-				if ( veh == vehEntering ) then
-					SYNC:SyncDataOnEnter()
-				end
+			-- Trigger the main sync data function if the vehicle the player is now in is the same as the one they
+			-- began entering
+			if ( veh == vehEntering ) then
+				SYNC:SyncDataOnEnter()
 			end
 		end
 
