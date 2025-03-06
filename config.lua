@@ -69,6 +69,8 @@ CONFIG.use_sonorancad = false
 -- These keybinds can be changed by each person in their GTA Settings->Keybinds->FiveM
 CONFIG.keyDefaults =
 {
+	-- Doppler Toggle	
+	dopplertoggle = "home",
 	-- Doppler Volume Up	
 	dopplervolumeup = "pageup",
 	--Doppler Volume Down
@@ -99,6 +101,9 @@ CONFIG.keyDefaults =
 CONFIG.menuDefaults =
 {
 	
+	-- Default Doppler Volume
+	["dopplerStatus"] = false, 
+
 	-- Default Doppler Volume
 	["dopplerVolume"] = 0,
 

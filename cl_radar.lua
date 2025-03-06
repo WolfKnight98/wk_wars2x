@@ -195,6 +195,7 @@ RADAR.vars =
 	currentOptionIndex = 1,
 	menuOptions = {
 		{ displayText = { "DOP", "VOL" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦", "¦6¦", "¦7¦", "¦8¦", "¦9¦", "¦10" },  options = { 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 }, optionIndex = -1, settingText = "dopplerVolume" },
+		{ displayText = { "DOP", "LER" }, optionsText = { "On¦", "Off" },  options = { true, false }, optionIndex = -1, settingText = "dopplerStatus" },
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = -1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "opp" },
@@ -322,17 +323,17 @@ function RADAR:SetPowerState( state, instantOverride )
 
 		-- Send the NUI message to toggle the power
 		SendNUIMessage( { _type = "radarPower", state = state, override = instantOverride, fast = self:IsFastDisplayEnabled() } )
-
+		
 		-- Power is now turned on
 		if ( self:IsPowerOn() ) then
-			checkDopplerVolume()
-			setDopplerVolume()
 			-- Also make sure the operator menu is inactive
 			self:SetMenuState( false )
 
 			-- Only do the power up simulation if allowed
 			if ( not instantOverride ) then
 				-- Tell the system the radar is 'powering up'
+				
+				setDopplerVolume()
 				self:SetPoweringUpState( true )
 
 				-- Set a 2 second countdown
@@ -357,7 +358,7 @@ function RADAR:ToggleDisplayState()
 	-- Toggle the display variable
 	self.vars.displayed = not self.vars.displayed
 
-	-- Send the toggle message to the NUI side
+		-- Send the toggle message to the NUI side
 	SendNUIMessage( { _type = "setRadarDisplayState", state = self:GetDisplayState() } )
 end
 
@@ -547,6 +548,7 @@ function RADAR:CloseMenu( playAudio )
 	-- Set the internal menu state to be closed (false)
 	RADAR:SetMenuState( false )
 	setDopplerVolume()
+	checkDopplerStatus()
 	-- Send a setting update to the NUI side
 	RADAR:SendSettingUpdate()
 
@@ -1866,6 +1868,7 @@ Citizen.CreateThread( function()
 		Citizen.Wait( 3000 )
 	end
 end )
+
 ------------------------------------------------
 ------------------------------------------------
 --------------DOPPLER SOUND EFFECT--------------
@@ -1885,7 +1888,7 @@ local function startDoppler()
 
     Citizen.CreateThread(function()
         while dopplerRunning do
-            Citizen.Wait(-1) -- Run every 100ms
+            Citizen.Wait(-1) -- Run every frame
 
             local frontSpeed = RADAR.vars.antennas["front"].speed
             local rearSpeed = RADAR.vars.antennas["rear"].speed
@@ -1937,20 +1940,18 @@ end)
 
 
 
--- Function to get the doppler volume level.
-function checkDopplerVolume()
-    local currentVolume = RADAR:GetSettingValue("dopplerVolume") or 1.0
-	    SendNUIMessage({ type = "setDopplerVolume", volume = newVolume })
-    if currentVolume == 0.0 then
-        stopDoppler()
-        print("[Doppler] Volume is 0.0, stopping Doppler.")
-    elseif currentVolume >= 0.1 and currentVolume <= 1.0 then
+-- Function to get the doppler status.
+function checkDopplerStatus()
+    local dopplerStatus = RADAR:GetSettingValue("dopplerStatus")
+    if dopplerStatus then
         startDoppler()
-        print("[Doppler] Volume is " .. currentVolume .. ", starting Doppler.")
+        print("[Doppler] Doppler status is true, starting Doppler.")
     else
-        print("[Doppler] Invalid volume setting: " .. currentVolume)
+        stopDoppler()
+        print("[Doppler] Doppler status is false, stopping Doppler.")
     end
 end
+
 
 -- Function to set doppler volume level (temp, resets to user setting in remote after restart/relog)
 function setDopplerVolume()
@@ -1983,12 +1984,30 @@ function DecreaseDopplerVolume()
     print("[Doppler] Volume decreased to: " .. newVolume)
 end
 
+-- Function to toggle Radar state
+function ToggleDopplerState()
+    local currentState = RADAR:GetSettingValue("dopplerStatus")
+    local newState = not currentState
+    RADAR:SetSettingValue("dopplerStatus", newState)
+
+    if newState then
+	startDoppler()
+        print("[RADAR] Radar turned ON.")
+    else
+	stopDoppler()
+        print("[RADAR] Radar turned OFF.")
+    end
+end
+
 -- Register keybinds
-RegisterKeyMapping("dopplervolumeup", "Doppler Increase Volume", "keyboard", CONFIG.keyDefaults.dopplervolumeup)
+RegisterKeyMapping("dopplervolumeup", "Doppler - Increase Volume", "keyboard", CONFIG.keyDefaults.dopplervolumeup)
 RegisterCommand("dopplervolumeup", function() IncreaseDopplerVolume() end, false)
 
-RegisterKeyMapping("dopplervolumedown", "Doppler Decrease Volume", "keyboard", CONFIG.keyDefaults.dopplervolumedown)
+RegisterKeyMapping("dopplervolumedown", "Doppler - Decrease Volume", "keyboard", CONFIG.keyDefaults.dopplervolumedown)
 RegisterCommand("dopplervolumedown", function() DecreaseDopplerVolume() end, false)
+
+RegisterKeyMapping("dopplertoggle", "Doppler - Toggle State", "keyboard", CONFIG.keyDefaults.dopplertoggle)
+RegisterCommand("dopplertoggle", function() ToggleDopplerState() end, false)
 
 
 
