@@ -158,6 +158,8 @@ RADAR.vars =
 
 	-- These are the settings that are used in the operator menu
 	settings = {
+
+		["dopplerVolume"] = CONFIG.menuDefaults["dopplerVolume"],
 		-- Should the system calculate and display faster targets
 		["fastDisplay"] = CONFIG.menuDefaults["fastDisplay"],
 
@@ -170,6 +172,9 @@ RADAR.vars =
 
 		-- The volume of the verbal lock confirmation
 		["voice"] = CONFIG.menuDefaults["voice"],
+
+		
+		["dopplerVol"] = CONFIG.menuDefaults["doplperVol"],
 
 		-- The volume of the plate reader audio
 		["plateAudio"] = CONFIG.menuDefaults["plateAudio"],
@@ -189,6 +194,8 @@ RADAR.vars =
 	menuActive = false,
 	currentOptionIndex = 1,
 	menuOptions = {
+		{ displayText = { "DOP", "VOL" }, optionsText = { "Off", "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦", "¦6¦", "¦7¦", "¦8¦", "¦9¦", "¦10" },  options = { 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 }, optionIndex = -1, settingText = "dopplerVolume" },
+		{ displayText = { "DOP", "LER" }, optionsText = { "On¦", "Off" },  options = { true, false }, optionIndex = -1, settingText = "dopplerStatus" },
 		{ displayText = { "¦¦¦", "FAS" }, optionsText = { "On¦", "Off" }, options = { true, false }, optionIndex = -1, settingText = "fastDisplay" },
 		{ displayText = { "¦SL", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "same" },
 		{ displayText = { "¦OP", "SEn" }, optionsText = { "¦1¦", "¦2¦", "¦3¦", "¦4¦", "¦5¦" }, options = { 0.2, 0.4, 0.6, 0.8, 1.0 }, optionIndex = -1, settingText = "opp" },
@@ -316,7 +323,7 @@ function RADAR:SetPowerState( state, instantOverride )
 
 		-- Send the NUI message to toggle the power
 		SendNUIMessage( { _type = "radarPower", state = state, override = instantOverride, fast = self:IsFastDisplayEnabled() } )
-
+		
 		-- Power is now turned on
 		if ( self:IsPowerOn() ) then
 			-- Also make sure the operator menu is inactive
@@ -325,6 +332,8 @@ function RADAR:SetPowerState( state, instantOverride )
 			-- Only do the power up simulation if allowed
 			if ( not instantOverride ) then
 				-- Tell the system the radar is 'powering up'
+				
+				setDopplerVolume()
 				self:SetPoweringUpState( true )
 
 				-- Set a 2 second countdown
@@ -349,7 +358,7 @@ function RADAR:ToggleDisplayState()
 	-- Toggle the display variable
 	self.vars.displayed = not self.vars.displayed
 
-	-- Send the toggle message to the NUI side
+		-- Send the toggle message to the NUI side
 	SendNUIMessage( { _type = "setRadarDisplayState", state = self:GetDisplayState() } )
 end
 
@@ -538,7 +547,8 @@ end
 function RADAR:CloseMenu( playAudio )
 	-- Set the internal menu state to be closed (false)
 	RADAR:SetMenuState( false )
-
+	setDopplerVolume()
+	checkDopplerStatus()
 	-- Send a setting update to the NUI side
 	RADAR:SendSettingUpdate()
 
@@ -1858,3 +1868,151 @@ Citizen.CreateThread( function()
 		Citizen.Wait( 3000 )
 	end
 end )
+
+------------------------------------------------
+------------------------------------------------
+--------------DOPPLER SOUND EFFECT--------------
+------------------------------------------------
+------------------------------------------------
+
+local dopplerRunning = false -- Tracks whether Doppler is active
+local wasDopplerOn = false   -- Tracks if Doppler was on before exiting
+
+-- Function to start Doppler
+local function startDoppler()
+    if dopplerRunning then return end -- Prevent multiple loops
+
+    dopplerRunning = true
+    TriggerEvent("chat:addMessage", {color = {0, 255, 0}, args = {"Radar", "Doppler toggled on."}})
+    SendNUIMessage({ type = "playDopplerLoop" })
+
+    Citizen.CreateThread(function()
+        while dopplerRunning do
+            Citizen.Wait(-1) -- Run every frame
+
+            local frontSpeed = RADAR.vars.antennas["front"].speed
+            local rearSpeed = RADAR.vars.antennas["rear"].speed
+
+            -- Ensure frontSpeed and rearSpeed are strings before using gsub()
+            frontSpeed = tostring(frontSpeed or "0"):gsub("[^%d.]", "")
+            rearSpeed = tostring(rearSpeed or "0"):gsub("[^%d.]", "")
+
+            -- Convert to numbers
+            frontSpeed = tonumber(frontSpeed) or 0
+            rearSpeed = tonumber(rearSpeed) or 0
+
+            -- Determine the fastest speed
+            local fastestSpeed = math.max(frontSpeed, rearSpeed)
+
+            -- Ensure at least 0.01 speed if no vehicles detected
+            if fastestSpeed <= 0 then
+                fastestSpeed = -99
+            end
+
+            -- Send fastest speed to NUI (JavaScript)
+            SendNUIMessage({ type = "setDopplerSpeed", speed = fastestSpeed })
+        end
+    end)
+end
+
+-- Function to stop Doppler
+local function stopDoppler()
+    if not dopplerRunning then return end -- Prevent unnecessary stops
+
+    dopplerRunning = false
+    TriggerEvent("chat:addMessage", {color = {255, 0, 0}, args = {"Radar", "Doppler off."}})
+    SendNUIMessage({ type = "stopDopplerLoop" })
+end
+
+-- Thread to see if radar is shown to user. If so, turns on doppler sound. If not, stops.
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(1000) -- Check every second
+
+        if not RADAR:GetDisplayHidden() and not dopplerRunning and wasDopplerOn then
+            startDoppler() -- Turn it back on if it was on before display was hidden
+        elseif RADAR:GetDisplayHidden() and dopplerRunning then
+            wasDopplerOn = true -- Save state before turning it off
+            stopDoppler() -- Turn it off when display is hidden
+        end
+    end
+end)
+
+
+
+-- Function to get the doppler status.
+function checkDopplerStatus()
+    local dopplerStatus = RADAR:GetSettingValue("dopplerStatus")
+    if dopplerStatus then
+        startDoppler()
+        print("[Doppler] Doppler status is true, starting Doppler.")
+    else
+        stopDoppler()
+        print("[Doppler] Doppler status is false, stopping Doppler.")
+    end
+end
+
+
+-- Function to set doppler volume level (temp, resets to user setting in remote after restart/relog)
+function setDopplerVolume()
+    local newVolume = RADAR:GetSettingValue("dopplerVolume") or 1.0
+    print("[Doppler] Current Doppler Volume: " .. newVolume)
+
+    -- Send the volume to the NUI
+    SendNUIMessage({ type = "setDopplerVolume", volume = newVolume })
+end
+
+-- Function to increase Doppler volume
+function IncreaseDopplerVolume()
+    local currentVolume = RADAR:GetSettingValue("dopplerVolume") or 1.0
+    local newVolume = math.min(currentVolume + 0.1, 1.0) -- Ensure max is 1.0
+
+    RADAR:SetSettingValue("dopplerVolume", newVolume)
+    SendNUIMessage({ type = "setDopplerVolume", volume = newVolume })
+
+    print("[Doppler] Volume increased to: " .. newVolume)
+end
+
+-- Function to decrease Doppler volume
+function DecreaseDopplerVolume()
+    local currentVolume = RADAR:GetSettingValue("dopplerVolume") or 1.0
+    local newVolume = math.max(currentVolume - 0.1, 0.0) -- Ensure min is 0.0
+
+    RADAR:SetSettingValue("dopplerVolume", newVolume)
+    SendNUIMessage({ type = "setDopplerVolume", volume = newVolume })
+
+    print("[Doppler] Volume decreased to: " .. newVolume)
+end
+
+-- Function to toggle Radar state
+function ToggleDopplerState()
+    local currentState = RADAR:GetSettingValue("dopplerStatus")
+    local newState = not currentState
+    RADAR:SetSettingValue("dopplerStatus", newState)
+
+    if newState then
+	startDoppler()
+        print("[RADAR] Radar turned ON.")
+    else
+	stopDoppler()
+        print("[RADAR] Radar turned OFF.")
+    end
+end
+
+-- Register keybinds
+RegisterKeyMapping("dopplervolumeup", "Doppler - Increase Volume", "keyboard", CONFIG.keyDefaults.dopplervolumeup)
+RegisterCommand("dopplervolumeup", function() IncreaseDopplerVolume() end, false)
+
+RegisterKeyMapping("dopplervolumedown", "Doppler - Decrease Volume", "keyboard", CONFIG.keyDefaults.dopplervolumedown)
+RegisterCommand("dopplervolumedown", function() DecreaseDopplerVolume() end, false)
+
+RegisterKeyMapping("dopplertoggle", "Doppler - Toggle State", "keyboard", CONFIG.keyDefaults.dopplertoggle)
+RegisterCommand("dopplertoggle", function() ToggleDopplerState() end, false)
+
+
+
+------------------------------------------------
+------------------------------------------------
+--------------DOPPLER SOUND EFFECT--------------
+------------------------------------------------
+------------------------------------------------

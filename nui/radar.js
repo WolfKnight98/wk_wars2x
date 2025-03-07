@@ -575,6 +575,8 @@ function updateDisplays( ps, ants )
 	}
 }
 
+
+
 // Updates all of the mode leds on the radar interface
 function settingUpdate( ants )
 {
@@ -1164,4 +1166,118 @@ window.addEventListener( "message", function( event ) {
 		default:
 			break;
 	}
-} );
+});
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+/////////////////// DOPPLER SOUND EFFECT ///////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let dopplerSource = null;
+let dopplerGainNode = null;
+let dopplerSpeed = 0.01; // Default playback speed
+let dopplerVolume = 1.0; // Default volume (1.0 = 100%)
+
+// Event listeners
+window.addEventListener("message", function (event) {
+	if (event.data.type === "playDopplerLoop") {
+		playDopplerLoop();
+	} else if (event.data.type === "setDopplerSpeed" && event.data.speed !== undefined) {
+		let receivedSpeed = parseFloat(event.data.speed);
+		let newSpeed = receivedSpeed === -99 ? 0.01 : 1.0 + (receivedSpeed / 100);
+		setDopplerPlaybackSpeed(newSpeed);
+	} else if (event.data.type === "setDopplerVolume" && event.data.volume !== undefined) {
+		setDopplerVolume(parseFloat(event.data.volume));
+	} else if (event.data.type === "stopDopplerLoop") {
+		stopDopplerLoop();
+	}
+});
+
+// Plays the audio loop, audio file from from speed.ogg
+function playDopplerLoop() {
+	if (dopplerSource) {
+		console.log("[DEBUG] Doppler is already playing. Skipping restart.");
+		return;
+	}
+
+	let source = audioContext.createBufferSource();
+	dopplerSource = source;
+
+	fetch("nui://wk_wars2x/nui/sounds/speed.ogg")
+		.then(response => response.arrayBuffer())
+		.then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+		.then(audioBuffer => {
+			source.buffer = audioBuffer;
+			source.loop = true; // Enables continuous looping
+
+			if (!dopplerGainNode) {
+				dopplerGainNode = audioContext.createGain();
+			}
+
+			dopplerGainNode.gain.value = dopplerVolume; // Apply volume
+			source.playbackRate.value = dopplerSpeed; // Apply current speed
+
+			source.connect(dopplerGainNode);
+			dopplerGainNode.connect(audioContext.destination);
+			source.start(0);
+
+			console.log("[DEBUG] Doppler sound started.");
+		})
+		.catch(error => console.error("Error playing Doppler audio:", error));
+}
+
+// Gets speed from MPH/KMH (no clue how KMH radars work, im american), change speed to change pitch
+function setDopplerPlaybackSpeed(speed) {
+	if (dopplerSource) {
+		dopplerSpeed = speed;
+		dopplerSource.playbackRate.value = dopplerSpeed;
+//		console.log(`[DEBUG] Doppler speed updated: ${dopplerSpeed}`);
+	}
+}
+
+// Sets the volume for the radar audio
+function setDopplerVolume(volume) {
+	if (dopplerVolume === volume) return; // Avoid unnecessary updates
+
+	dopplerVolume = volume / 1; // Convert 1-10 to 0.1-1.0 scale
+
+	if (dopplerVolume === 0.0) {
+		stopDopplerLoop(); // Stop sound if volume is 0
+	} else {
+		if (dopplerGainNode) {
+			dopplerGainNode.gain.value = dopplerVolume;
+			console.log(`[DEBUG] Doppler volume updated dynamically: ${dopplerVolume}`);
+		} else {
+			playDopplerLoop(); // Restart sound if not playing
+		}
+	}
+}
+
+// Stops the loop.
+function stopDopplerLoop() {
+	if (dopplerSource) {
+		try {
+			dopplerSource.stop();
+		} catch (error) {
+			console.warn("[WARNING] Tried to stop Doppler before it started.");
+		}
+		dopplerSource.disconnect();
+		dopplerSource = null;
+		console.log("[DEBUG] Doppler loop stopped.");
+	}
+
+	if (dopplerGainNode) {
+		dopplerGainNode.disconnect();
+		dopplerGainNode = null;
+	}
+}
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+/////////////////// DOPPLER SOUND EFFECT ///////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
