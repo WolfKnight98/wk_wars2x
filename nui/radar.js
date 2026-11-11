@@ -691,6 +691,30 @@ function sendSaveData()
 	}
 }
 
+// Center one or both displays and persist their positions immediately.
+function centerRadarUi(target)
+{
+    const both = target === "both";
+    const positions = both ? ["radar", "plateReader"] : [target];
+    for (const name of positions) {
+        if (name !== "radar" && name !== "plateReader") continue;
+        const element = elements[name];
+        const scale = name === "radar" ? radarScale : readerScale;
+        const width = element.outerWidth() * scale;
+        const height = element.outerHeight() * scale;
+        const screenWidth = $(window).width();
+        const screenHeight = $(window).height();
+        const offsetY = both ? (name === "radar" ? -height / 2 - 12 : height / 2 + 12) : 0;
+        element.css({
+            left: Math.max(0, (screenWidth - width) / 2) + "px",
+            top: Math.max(0, Math.min(screenHeight - height, (screenHeight - height) / 2 + offsetY)) + "px"
+        });
+    }
+    setUiHasBeenEdited(true);
+    sendSaveData();
+    setUiHasBeenEdited(false);
+}
+
 // Loads the UI settings 
 function loadUiSettings( data, isSave )
 {
@@ -1092,6 +1116,9 @@ window.addEventListener( "message", function( event ) {
 
 	switch ( type ) {
 		// System events 
+		case "centerRadarUi":
+			centerRadarUi(item.target);
+			break;
 		case "loadUiSettings":
 			loadUiSettings( item.data, true );
 			break;

@@ -101,6 +101,18 @@ local function RegisterKeyBinds()
 		end )
 		RegisterKeyMapping( "radar_key_lock", "Toggle Keybind Lock", "keyboard", CONFIG.keyDefaults.key_lock )
 
+		-- Recenter the radar and/or automatic plate reader without clearing preferences.
+		for _, resetCommand in ipairs({ "resetradarui", "resetradar", "resetplate" }) do
+			RegisterCommand(resetCommand, function()
+				local target = resetCommand == "resetradarui" and "both" or (resetCommand == "resetradar" and "radar" or "plateReader")
+				SendNUIMessage({ _type = "centerRadarUi", target = target })
+				UTIL:Notify("Radar display position updated and saved.")
+			end, false)
+		end
+		TriggerEvent("chat:addSuggestion", "/resetradarui", "Center radar and plate reader on screen.")
+		TriggerEvent("chat:addSuggestion", "/resetradar", "Center radar only.")
+		TriggerEvent("chat:addSuggestion", "/resetplate", "Center plate reader only.")
+
 		-- Deletes all of the KVPs
 		RegisterCommand( "reset_radar_data", function()
 			DeleteResourceKvp( "wk_wars2x_ui_data" )
